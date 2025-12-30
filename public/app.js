@@ -13,8 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let hls = null;
     let heartbeatInterval = null;
 
-    // Initially hide subtitle select
-    subSelect.style.display = 'none';
+    // Initially show subtitle select (or hide if purely no subs, but let's keep it visible as "CC: Off" if we want consistent UI)
+    // subSelect.style.display = 'none'; // REMOVED: Let CSS control or hide strictly if 0 options.
 
     // Fetch Metadata when URL changes
     urlInput.addEventListener('blur', fetchMetadata);
@@ -31,12 +31,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Auto-fetch metadata if URL pasted
     urlInput.addEventListener('paste', () => {
-        setTimeout(fetchMetadata, 100);
+        // Fix for "sometimes video plays sometimes audio": 
+        // Ensure we don't start stream too aggressively before metadata check
+        setTimeout(() => {
+            fetchMetadata();
+            // Optional: Auto-play on paste if desired, but safer to wait for user or metadata
+        }, 100);
     });
 
     // Audio Change -> Seamless Switch (Netflix Style)
     // HLS.js handles switching without restart if manifest has multiple audio tracks
     audioSelect.addEventListener('change', () => {
+        // Prevent focus stealing from video
+        videoPlayer.focus();
+
         if (hls && hls.audioTracks.length > 1) {
             const newIndex = parseInt(audioSelect.value);
             console.log(`Switching Audio Track to Index: ${newIndex}`);
@@ -48,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Subtitle Change -> Restart Stream (Sidecar)
     subSelect.addEventListener('change', () => {
+        videoPlayer.focus();
         if (!videoPlayer.paused || hls) {
             startStream('subSelect');
         }

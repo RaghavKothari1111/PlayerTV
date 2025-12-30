@@ -27,14 +27,7 @@
 
         <div class="input-group">
             <input type="text" id="urlInput" placeholder="Enter Direct Video URL..." spellcheck="false">
-            <div class="controls-row">
-                <select id="audioSelect" class="track-select">
-                    <option value="0">Loading Tracks...</option>
-                </select>
-                <select id="subSelect" class="track-select">
-                    <option value="-1">Subtitles: Off</option>
-                </select>
-            </div>
+            <!-- Controls moved to overlay -->
             <button id="playBtn">Play Stream</button>
         </div>
 
@@ -49,6 +42,14 @@
 
             <!-- Custom Overlay Controls (visible when hovering) -->
             <div class="custom-controls">
+                <div class="controls-group">
+                    <select id="audioSelect" class="track-select glass-select">
+                        <option value="0">Audio...</option>
+                    </select>
+                    <select id="subSelect" class="track-select glass-select">
+                        <option value="-1">CC: Off</option>
+                    </select>
+                </div>
                 <button id="fullscreenBtn" class="icon-btn" title="Fullscreen">
                     <ion-icon name="resize-outline"></ion-icon>
                 </button>

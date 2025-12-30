@@ -187,14 +187,21 @@ const server = http.createServer((req, res) => {
                             audioStreams.push({ index: 1, streamIndex: 0, lang: 'und', title: 'Default' });
                         }
 
-                        const isLGTV = true;
+                        // START CHANGE: Use libx264 for compatibility
+                        // const isLGTV = true; 
+                        // Force transcoding to ensure video plays on all devices (solves "audio only" black screen)
                         let videoCodec = 'libx264';
-                        let videoOpts = ['-preset', 'ultrafast', '-tune', 'zerolatency', '-crf', '18', '-pix_fmt', 'yuv420p'];
+                        let videoOpts = ['-preset', 'ultrafast', '-tune', 'zerolatency', '-crf', '23', '-pix_fmt', 'yuv420p'];
 
+                        // If you want to re-enable copy mode for specific devices, implementation logic should go here.
+                        // For now, robustness > raw performance for this fix.
+                        /*
                         if (isLGTV && (codecName === 'h264' || codecName === 'hevc')) {
                             videoCodec = 'copy';
                             videoOpts = ['-bsf:v', `${codecName}_mp4toannexb`];
                         }
+                        */
+                        // END CHANGE
 
                         // --- Build Dynamic Filter Complex & Maps ---
                         let filterComplex = '';

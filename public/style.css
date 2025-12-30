@@ -166,22 +166,57 @@ video:focus,
     opacity: 0;
     transition: opacity 0.3s;
     pointer-events: none;
-    /* Let clicks pass through if hidden */
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    z-index: 10;
 }
 
-.video-wrapper:hover .custom-controls {
+.video-wrapper:hover .custom-controls,
+.custom-controls:hover {
+    /* Ensure it stays visible when interacting */
     opacity: 1;
     pointer-events: auto;
 }
 
-.icon-btn {
-    background: rgba(0, 0, 0, 0.5);
+.controls-group {
+    display: flex;
+    gap: 10px;
+}
+
+.glass-select {
+    background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(10px);
-    border: 1px solid var(--glass-border);
-    padding: 10px;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s;
+    max-width: 150px;
+}
+
+.glass-select:hover {
+    background: rgba(0, 0, 0, 0.8);
+    border-color: var(--primary);
+}
+
+.glass-select option {
+    background: #0f172a;
+    color: white;
+}
+
+.icon-btn {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 8px;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    /* Match select radius */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -191,7 +226,7 @@ video:focus,
 
 .icon-btn:hover {
     background: var(--primary);
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 /* Status */
