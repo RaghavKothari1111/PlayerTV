@@ -225,7 +225,8 @@ const server = http.createServer((req, res) => {
 
                             // Add to HLS Stream Map
                             // Use sanitize title for NAME
-                            const safeTitle = (audio.title || `Audio ${i + 1}`).replace(/[^a-zA-Z0-9 ]/g, '').trim() || `Audio${i + 1}`;
+                            // Fix: Replace spaces with underscores because var_stream_map uses space as delimiter
+                            const safeTitle = (audio.title || `Audio_${i + 1}`).replace(/[^a-zA-Z0-9]/g, '_').trim() || `Audio_${i + 1}`;
                             varStreamMap += ` a:${i},agroup:audio,language:${audio.lang},name="${safeTitle}"`;
                         });
 
