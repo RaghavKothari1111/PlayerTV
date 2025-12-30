@@ -31,7 +31,7 @@ function resetWatchdog() {
                 }
             } catch (e) { }
         }
-    }, 15000);
+    }, 60000); // 60s Timeout (Better for TV browsers)
 }
 
 const server = http.createServer((req, res) => {
@@ -194,42 +194,60 @@ const server = http.createServer((req, res) => {
                             return;
                         }
 
-                        // Extract each subtitle to a file
+                        // Extract each subtitle to a file (SEQUENTIALLY to avoid crashing server)
                         const subtitleFiles = [];
-                        let completed = 0;
 
-                        for (const sub of subs) {
-                            const filename = `sub_${sub.index}_${sub.lang}.vtt`;
-                            const filepath = path.join(hlsDir, filename);
+                        // Helper to run extraction as a promise
+                        const extractTrack = (sub) => {
+                            return new Promise((resolve) => {
+                                const filename = `sub_${sub.index}_${sub.lang}.vtt`;
+                                const filepath = path.join(hlsDir, filename);
 
-                            const ffmpegSub = spawn('ffmpeg', [
-                                '-y',
-                                '-i', videoUrl,
-                                '-map', `0:s:${sub.index}`,
-                                '-c:s', 'webvtt',
-                                filepath
-                            ]);
-
-                            ffmpegSub.on('close', (subCode) => {
-                                completed++;
-                                if (subCode === 0) {
+                                // If file exists, skip extraction
+                                if (fs.existsSync(filepath)) {
                                     subtitleFiles.push({
                                         index: sub.index,
                                         lang: sub.lang,
                                         title: sub.title,
                                         file: `/hls/${filename}`
                                     });
+                                    resolve();
+                                    return;
                                 }
 
-                                if (completed === subs.length) {
-                                    res.writeHead(200, { 'Content-Type': 'application/json' });
-                                    res.end(JSON.stringify({ subtitles: subtitleFiles }));
-                                }
+                                const ffmpegSub = spawn('ffmpeg', [
+                                    '-y',
+                                    '-i', videoUrl,
+                                    '-map', `0:s:${sub.index}`,
+                                    '-c:s', 'webvtt',
+                                    filepath
+                                ]);
+
+                                ffmpegSub.on('close', (subCode) => {
+                                    if (subCode === 0) {
+                                        subtitleFiles.push({
+                                            index: sub.index,
+                                            lang: sub.lang,
+                                            title: sub.title,
+                                            file: `/hls/${filename}`
+                                        });
+                                    }
+                                    resolve();
+                                });
                             });
+                        };
+
+                        // Process all sequentially
+                        for (const sub of subs) {
+                            await extractTrack(sub);
                         }
+
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ subtitles: subtitleFiles }));
+
                     } catch (e) {
                         res.writeHead(500);
-                        res.end(JSON.stringify({ error: 'Parse Error' }));
+                        res.end(JSON.stringify({ error: 'Parse Error' + e.message }));
                     }
                 } else {
                     res.writeHead(500);
@@ -364,8 +382,8 @@ const server = http.createServer((req, res) => {
                     // --- HLS Settings ---
                     '-f', 'hls',
                     '-hls_time', '4',
-                    '-hls_list_size', '20',
-                    '-hls_flags', 'delete_segments',
+                    '-hls_list_size', '45', // 3 minutes buffer (Users request: Save space, keep last ~2 mins)
+                    '-hls_flags', 'delete_segments+program_date_time', // Sliding window: Delete old segments
                     '-start_number', '0',
                     path.join(hlsDir, 'stream.m3u8')
                 );
@@ -411,29 +429,26 @@ const server = http.createServer((req, res) => {
                         res.end(JSON.stringify({ error: 'Timeout waiting for stream' }));
                     }
                 }, 500);
+            }); // End Probe Callback
+        } // End /start block
 
-            } else if (parsedUrl.pathname === '/stop') {
-                if (ffmpegProcess) {
-                    ffmpegProcess.kill('SIGKILL');
-                    ffmpegProcess = null;
-                }
-                res.writeHead(200);
-                res.end('Stopped');
-
-            } else if (parsedUrl.pathname === '/ping') {
-                // Client keeps connection alive
-                resetWatchdog();
-                res.writeHead(200);
-                res.end('Pong');
-
-            } else {
-                // Not Found
-                res.writeHead(404);
-                res.end('Not Found');
+        else if (parsedUrl.pathname === '/stop') {
+            if (ffmpegProcess) {
+                ffmpegProcess.kill('SIGKILL');
+                ffmpegProcess = null;
             }
-        }); // End Probe Callback
-});
-});
+            res.writeHead(200);
+            res.end('Stopped');
+
+        } else if (parsedUrl.pathname === '/ping') {
+            // Client keeps connection alive
+            resetWatchdog();
+            res.writeHead(200);
+            res.end('Pong');
+
+        }
+    }); // End fs.stat
+}); // End createServer
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {
