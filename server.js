@@ -1,44 +1,41 @@
 const http = require('http');
-const { spawn } = require('child_process');
-const url = require('url');
 const fs = require('fs');
 const path = require('path');
+const { spawn } = require('child_process');
+const url = require('url');
 
-const port = process.env.PORT || 3000;
+// --- Configuration ---
+const VIDEO_DIR = '/app/data';
+const HLS_DIR_NAME = 'hls';
+const PUBLIC_DIR = path.join(__dirname, 'public');
+
+// --- Global State ---
 let ffmpegProcess = null;
 let watchdogTimer = null;
 
-// Ensure HLS dir exists
-const hlsDir = path.join(__dirname, 'public', 'hls');
+// --- Setup Directories ---
+const hlsDir = path.join(PUBLIC_DIR, HLS_DIR_NAME);
 if (!fs.existsSync(hlsDir)) {
     fs.mkdirSync(hlsDir, { recursive: true });
 }
 
+// --- Watchdog Logic (Auto-Stop on Inactivity) ---
 function resetWatchdog() {
     if (watchdogTimer) clearTimeout(watchdogTimer);
-    // Kill process if no ping for 15 seconds
     watchdogTimer = setTimeout(() => {
+        console.log("Watchdog: No activity for 10 minutes. Stopping FFmpeg.");
         if (ffmpegProcess) {
-            console.log("Watchdog: No heartbeat, killing ffmpeg...");
             ffmpegProcess.kill('SIGKILL');
             ffmpegProcess = null;
-
-            // Optional: Clean HLS dir
-            try {
-                const files = fs.readdirSync(hlsDir);
-                for (const file of files) {
-                    fs.unlinkSync(path.join(hlsDir, file));
-                }
-            } catch (e) { }
         }
-    }, 60000); // 60s Timeout (Better for TV browsers)
+    }, 10 * 60 * 1000); // 10 Minutes
 }
 
 const server = http.createServer((req, res) => {
-    // Handling CORS
+    // Enable CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Range');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     if (req.method === 'OPTIONS') {
         res.writeHead(204);
@@ -48,397 +45,296 @@ const server = http.createServer((req, res) => {
 
     const parsedUrl = url.parse(req.url, true);
 
-    // Serve Static Files
-    let filePath = path.join(__dirname, 'public', parsedUrl.pathname === '/' ? 'index.html' : parsedUrl.pathname);
+    // --- Serve Static Files ---
+    let filePath = path.join(PUBLIC_DIR, parsedUrl.pathname === '/' ? 'index.html' : parsedUrl.pathname);
 
-    // Check if file exists (basic static file server)
     fs.stat(filePath, (err, stats) => {
         if (!err && stats.isFile()) {
             const ext = path.extname(filePath);
-            const contentTypes = {
+            const contentType = {
                 '.html': 'text/html',
-                '.css': 'text/css',
                 '.js': 'text/javascript',
+                '.css': 'text/css',
                 '.m3u8': 'application/vnd.apple.mpegurl',
-                '.ts': 'video/mp2t'
-            };
-            const contentType = contentTypes[ext] || 'application/octet-stream';
+                '.ts': 'video/mp2t',
+                '.vtt': 'text/vtt'
+            }[ext] || 'application/octet-stream';
 
             res.writeHead(200, { 'Content-Type': contentType });
             fs.createReadStream(filePath).pipe(res);
-            return;
-        }
-
-        // Custom API Endpoints
-        if (parsedUrl.pathname === '/metadata') {
-            const videoUrl = parsedUrl.query.url;
-            if (!videoUrl) {
-                res.writeHead(400);
-                res.end('Missing URL');
-                return;
-            }
-
-            // Probe with ffprobe
-            const ffprobe = spawn('ffprobe', [
-                '-v', 'quiet',
-                '-print_format', 'json',
-                '-show_streams',
-                videoUrl
-            ]);
-
-            let output = '';
-            ffprobe.stdout.on('data', chunk => output += chunk);
-
-            ffprobe.on('close', code => {
-                if (code === 0) {
-                    try {
-                        const data = JSON.parse(output);
-                        const metadata = {
-                            audio: data.streams.filter(s => s.codec_type === 'audio').map((s, i) => ({
-                                index: i, // Relative audio index
-                                lang: s.tags?.language || 'und',
-                                title: s.tags?.title || `Track ${i + 1}`,
-                                codec: s.codec_name
-                            })),
-                            subs: data.streams.filter(s => s.codec_type === 'subtitle').map((s, i) => ({
-                                index: i, // Relative subtitle index
-                                lang: s.tags?.language || 'und',
-                                title: s.tags?.title || `Track ${i + 1}`,
-                                codec: s.codec_name
-                            }))
-                        };
-                        res.writeHead(200, { 'Content-Type': 'application/json' });
-                        res.end(JSON.stringify(metadata));
-                    } catch (e) {
-                        res.writeHead(500);
-                        res.end(JSON.stringify({ error: 'Parse Error' }));
-                    }
-                } else {
-                    res.writeHead(500);
-                    res.end(JSON.stringify({ error: 'Probe Failed' }));
+        } else {
+            // --- API Endpoints ---
+            if (parsedUrl.pathname === '/metadata') {
+                const videoUrl = parsedUrl.query.url;
+                if (!videoUrl) {
+                    res.writeHead(400);
+                    res.end(JSON.stringify({ error: 'Missing URL' }));
+                    return;
                 }
-            });
 
-        } else if (parsedUrl.pathname === '/subtitles') {
-            const videoUrl = parsedUrl.query.url;
-            const subIndex = parsedUrl.query.index;
+                console.log(`Fetching metadata for: ${videoUrl}`);
+                const ffprobe = spawn('ffprobe', [
+                    '-v', 'quiet',
+                    '-print_format', 'json',
+                    '-show_streams',
+                    videoUrl
+                ]);
 
-            if (!videoUrl || !subIndex) {
-                res.writeHead(400);
-                res.end('Missing params');
-                return;
-            }
+                let output = '';
+                ffprobe.stdout.on('data', (data) => output += data);
+                ffprobe.stderr.on('data', (data) => console.error(`ffprobe error: ${data}`));
 
-            console.log(`Extracting Subtitles: ${subIndex} from ${videoUrl}`);
+                ffprobe.on('close', async (code) => {
+                    if (code === 0) {
+                        try {
+                            const data = JSON.parse(output);
 
-            res.writeHead(200, {
-                'Content-Type': 'text/vtt',
-                'Access-Control-Allow-Origin': '*'
-            });
+                            // Define Allowed Text-Based Codecs
+                            const textSubtitleCodecs = [
+                                'subrip',
+                                'webvtt',
+                                'ass',
+                                'ssa',
+                                'mov_text',
+                                'mpl2',
+                                'text'
+                            ];
 
-            // Stream subs directly to client
-            const subProcess = spawn('ffmpeg', [
-                '-i', videoUrl,
-                '-map', `0:${subIndex}`,
-                '-c:s', 'webvtt',
-                '-f', 'webvtt',
-                '-' // Pipe to stdout
-            ]);
+                            const subs = data.streams
+                                .filter(s => s.codec_type === 'subtitle')
+                                .filter(s => {
+                                    const isText = textSubtitleCodecs.includes(s.codec_name);
+                                    if (!isText) {
+                                        console.log(`Skipping unsupported subtitle codec: ${s.codec_name} (Index ${s.index})`);
+                                    }
+                                    return isText;
+                                })
+                                .map((s, i) => ({
+                                    index: s.index, // Absolute index from ffprobe
+                                    lang: s.tags?.language || 'und',
+                                    title: s.tags?.title || `Track ${i + 1}`,
+                                    codec: s.codec_name
+                                }));
 
-            subProcess.stdout.pipe(res);
+                            const audio = data.streams
+                                .filter(s => s.codec_type === 'audio')
+                                .map((s, i) => ({
+                                    index: s.index,
+                                    lang: s.tags?.language || 'und',
+                                    codec: s.codec_name
+                                }));
 
-            subProcess.stderr.on('data', d => {
-                // console.log(`SubExtract Error: ${d}`);
-            });
+                            if (subs.length === 0) {
+                                res.writeHead(200, { 'Content-Type': 'application/json' });
+                                res.end(JSON.stringify({ audio, subs: [] }));
+                                return;
+                            }
 
-            req.on('close', () => {
-                subProcess.kill();
-            });
+                            res.writeHead(200, { 'Content-Type': 'application/json' });
+                            res.end(JSON.stringify({ audio, subs }));
 
-        } else if (parsedUrl.pathname === '/extract-subtitles') {
-            const videoUrl = parsedUrl.query.url;
+                        } catch (e) {
+                            res.writeHead(500);
+                            res.end(JSON.stringify({ error: 'Parse Error' + e.message }));
+                        }
+                    } else {
+                        res.writeHead(500);
+                        res.end(JSON.stringify({ error: 'Probe Failed' }));
+                    }
+                });
 
-            if (!videoUrl) {
-                res.writeHead(400);
-                res.end(JSON.stringify({ error: 'Missing URL' }));
-                return;
-            }
+            } else if (parsedUrl.pathname === '/start') {
+                const videoUrl = parsedUrl.query.url;
+                const audioIndex = parseInt(parsedUrl.query.audioIndex) || 0;
+                let subIndex = parseInt(parsedUrl.query.subIndex) || -1;
 
-            console.log(`Extracting all subtitles from: ${videoUrl}`);
+                if (!videoUrl) {
+                    res.writeHead(400);
+                    res.end('Missing URL');
+                    return;
+                }
 
-            // First, get subtitle metadata
-            const ffprobe = spawn('ffprobe', [
-                '-v', 'quiet',
-                '-print_format', 'json',
-                '-show_streams',
-                videoUrl
-            ]);
-
-            let output = '';
-            ffprobe.stdout.on('data', chunk => output += chunk);
-
-            ffprobe.on('close', async (code) => {
-                if (code === 0) {
+                // Cleanup previous stream
+                if (ffmpegProcess) {
                     try {
-                        const data = JSON.parse(output);
+                        ffmpegProcess.stdin.write('q');
+                        ffmpegProcess.kill('SIGKILL');
+                    } catch (e) { }
+                    ffmpegProcess = null;
+                }
 
-                        // Define Allowed Text-Based Codecs
-                        const textSubtitleCodecs = [
-                            'subrip',
-                            'webvtt',
-                            'ass',
-                            'ssa',
-                            'mov_text',
-                            'mpl2',
-                            'text'
+                // Clear HLS directory
+                try {
+                    const files = fs.readdirSync(hlsDir);
+                    for (const file of files) {
+                        fs.unlinkSync(path.join(hlsDir, file));
+                    }
+                } catch (e) { }
+
+                // --- REFACTORED: Start Process Wrapper for Retry Logic ---
+                const startEncodingProcess = (currentSubIndex, isRetry) => {
+                    console.log(`Starting HLS for: ${videoUrl} | Audio: ${audioIndex} | Sub: ${currentSubIndex} | Retry: ${isRetry}`);
+
+                    // 1. Probe for Codec
+                    const probe = spawn('ffprobe', [
+                        '-v', 'quiet',
+                        '-print_format', 'json',
+                        '-show_streams',
+                        '-select_streams', 'v:0',
+                        videoUrl
+                    ]);
+
+                    let probeData = '';
+                    probe.stdout.on('data', d => probeData += d);
+
+                    probe.on('close', (code) => {
+                        let codecName = 'unknown';
+                        if (code === 0) {
+                            try {
+                                const pd = JSON.parse(probeData);
+                                if (pd.streams && pd.streams.length > 0) {
+                                    codecName = pd.streams[0].codec_name;
+                                }
+                            } catch (e) { }
+                        }
+                        console.log(`Detected Codec: ${codecName}`);
+
+                        const isLGTV = true;
+                        let videoCodec = 'libx264';
+                        let videoOpts = ['-preset', 'ultrafast', '-tune', 'zerolatency', '-crf', '18', '-pix_fmt', 'yuv420p'];
+
+                        if (isLGTV) {
+                            if (codecName === 'h264') {
+                                videoCodec = 'copy';
+                                videoOpts = ['-bsf:v', 'h264_mp4toannexb'];
+                            } else if (codecName === 'hevc') {
+                                videoCodec = 'copy';
+                                videoOpts = ['-bsf:v', 'hevc_mp4toannexb'];
+                            }
+                        }
+
+                        // Base Args
+                        const ffmpegArgs = [
+                            '-user_agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                            '-i', videoUrl,
+                            '-map', '0:v:0',
+                            '-map', '[outa]',
                         ];
 
-                        const subs = data.streams
-                            .filter(s => s.codec_type === 'subtitle')
-                            .filter(s => {
-                                const isText = textSubtitleCodecs.includes(s.codec_name);
-                                if (!isText) {
-                                    console.log(`Skipping unsupported subtitle codec: ${s.codec_name} (Index ${s.index})`);
+                        let varStreamMap = "v:0,a:0";
+
+                        if (currentSubIndex !== -1) {
+                            ffmpegArgs.push('-map', `0:${currentSubIndex}`);
+                            ffmpegArgs.push('-c:s', 'webvtt');
+                            varStreamMap += " s:0";
+                        }
+
+                        ffmpegArgs.push(
+                            '-c:v', videoCodec,
+                            ...videoOpts,
+                            '-filter_complex',
+                            `[0:a:${audioIndex}]aformat=channel_layouts=5.1[a51];` +
+                            `[a51]channelsplit=channel_layout=5.1[FL][FR][FC][LFE][SL][SR];` +
+                            `[FC]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_orig];` +
+                            `[FL]equalizer=f=6000:t=q:w=1:g=4[eFL];` +
+                            `[FR]equalizer=f=6000:t=q:w=1:g=4[eFR];` +
+                            `[eFC_orig]asplit=3[eFC1][eFC2][eFC3];` +
+                            `[eFL][eFC1]amix=inputs=2:weights='0.70 0.30'[nFL];` +
+                            `[eFR][eFC2]amix=inputs=2:weights='0.70 0.30'[nFR];` +
+                            `[eFC3]volume=1.5[nFC];` +
+                            `[nFL][nFR][nFC][LFE][SL][SR]join=inputs=6:channel_layout=5.1[outa]`,
+                            '-c:a', 'aac',
+                            '-b:a', '640k',
+                            '-ac', '6',
+                            '-max_muxing_queue_size', '4096',
+                            '-f', 'hls',
+                            '-hls_time', '4',
+                            '-hls_list_size', '0',
+                            '-hls_flags', 'program_date_time',
+                            '-start_number', '0',
+                            '-master_pl_name', 'main.m3u8',
+                            '-var_stream_map', varStreamMap,
+                            path.join(hlsDir, 'stream_%v.m3u8')
+                        );
+
+                        ffmpegArgs.unshift('-y');
+
+                        console.log("DEBUG: Launching FFmpeg");
+                        ffmpegProcess = spawn('ffmpeg', ffmpegArgs);
+
+                        ffmpegProcess.stderr.on('data', (data) => {
+                            // console.log(`ffmpeg: ${data}`); // Verbose
+                        });
+
+                        ffmpegProcess.on('close', (code) => {
+                            console.log(`FFmpeg exited with code ${code}`);
+                            if (code !== 0 && !res.headersSent) {
+                                // --- FALLBACK LOGIC ---
+                                if (currentSubIndex !== -1) {
+                                    console.log("⚠️ Subtitle failed. Retrying without subtitles...");
+                                    clearInterval(checkPlaylist); // Stop waiting for this attempt
+                                    startEncodingProcess(-1, true); // Retry with no subs
+                                } else {
+                                    // Already failed without subs, or genuine error
+                                    clearInterval(checkPlaylist);
+                                    res.writeHead(500);
+                                    res.end(JSON.stringify({ error: `FFmpeg Fatal Error Code: ${code}` }));
                                 }
-                                return isText;
-                            })
-                            .map((s, i) => ({
-                                index: s.index, // Absolute index from ffprobe
-                                lang: s.tags?.language || 'und',
-                                title: s.tags?.title || `Track ${i + 1}`,
-                                codec: s.codec_name
-                            }));
+                            }
+                        });
 
-                        if (subs.length === 0) {
-                            res.writeHead(200, { 'Content-Type': 'application/json' });
-                            res.end(JSON.stringify({ subtitles: [] }));
-                            return;
-                        }
 
-                        // Generate streaming URLs (Instant, no extraction wait)
-                        const subtitleFiles = subs.map(sub => ({
-                            index: sub.index,
-                            lang: sub.lang,
-                            title: sub.title,
-                            file: `/subtitles?url=${encodeURIComponent(videoUrl)}&index=${sub.index}`
-                        }));
+                        // Poll for playlist
+                        let attempts = 0;
+                        const maxAttempts = 240;
 
-                        res.writeHead(200, { 'Content-Type': 'application/json' });
-                        res.end(JSON.stringify({ subtitles: subtitleFiles }));
+                        if (global.checkPlaylist) clearInterval(global.checkPlaylist); // Clear any old timer
 
-                    } catch (e) {
-                        res.writeHead(500);
-                        res.end(JSON.stringify({ error: 'Parse Error' + e.message }));
-                    }
-                } else {
-                    res.writeHead(500);
-                    res.end(JSON.stringify({ error: 'Probe Failed' }));
-                }
-            });
+                        const checkPlaylist = setInterval(() => {
+                            attempts++;
+                            // Check for Master Playlist
+                            if (fs.existsSync(path.join(hlsDir, 'main.m3u8'))) {
+                                console.log("Stream Ready!");
+                                clearInterval(checkPlaylist);
+                                if (!res.headersSent) {
+                                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                                    res.end(JSON.stringify({ status: 'started', fallback: isRetry })); // Inform client if fallback happened
+                                }
+                                resetWatchdog();
+                            } else if (attempts >= maxAttempts) {
+                                clearInterval(checkPlaylist);
+                                if (ffmpegProcess) ffmpegProcess.kill('SIGKILL');
+                                if (!res.headersSent) {
+                                    res.writeHead(500);
+                                    res.end(JSON.stringify({ error: 'Timeout waiting for stream' }));
+                                }
+                            }
+                        }, 500);
 
-        } else if (parsedUrl.pathname === '/start') {
-            const videoUrl = parsedUrl.query.url;
-            const audioIndex = parseInt(parsedUrl.query.audioIndex) || 0;
-            const subIndex = parseInt(parsedUrl.query.subIndex) || -1; // -1 = No Subs
+                        // expose to outer scope for cleanup if needed (hacky but functional for recursive retry)
+                        global.checkPlaylist = checkPlaylist;
+                    });
+                };
 
-            if (!videoUrl) {
-                res.writeHead(400);
-                res.end('Missing URL');
-                return;
-            }
+                // Trigger Initial Start
+                startEncodingProcess(subIndex, false);
 
-            // Cleanup previous stream
-            if (ffmpegProcess) {
-                try {
-                    ffmpegProcess.stdin.write('q'); // Try graceful exit
+            } else if (parsedUrl.pathname === '/stop') {
+                if (ffmpegProcess) {
                     ffmpegProcess.kill('SIGKILL');
-                } catch (e) { }
-                ffmpegProcess = null;
+                    ffmpegProcess = null;
+                }
+                res.writeHead(200);
+                res.end('Stopped');
+
+            } else if (parsedUrl.pathname === '/ping') {
+                resetWatchdog();
+                res.writeHead(200);
+                res.end('Pong');
             }
-
-            // Clear HLS directory (sync for safety)
-            try {
-                const files = fs.readdirSync(hlsDir);
-                for (const file of files) {
-                    fs.unlinkSync(path.join(hlsDir, file));
-                }
-            } catch (e) {
-                // console.error("Error clearing HLS dir:", e);
-            }
-
-            console.log(`Starting HLS for: ${videoUrl} | Audio: ${audioIndex} | Sub: ${subIndex}`);
-
-            // Detect Codec (Probe first to decide Strategy)
-            console.log(`Probing video codec for: ${videoUrl}`);
-            const probe = spawn('ffprobe', [
-                '-v', 'quiet',
-                '-print_format', 'json',
-                '-show_streams',
-                '-select_streams', 'v:0',
-                videoUrl
-            ]);
-
-            let probeData = '';
-            probe.stdout.on('data', d => probeData += d);
-
-            probe.on('close', (code) => {
-                let codecName = 'unknown';
-                if (code === 0) {
-                    try {
-                        const pd = JSON.parse(probeData);
-                        if (pd.streams && pd.streams.length > 0) {
-                            codecName = pd.streams[0].codec_name;
-                        }
-                    } catch (e) {
-                        console.log("Probe JSON Parse Error");
-                    }
-                }
-                console.log(`Detected Codec: ${codecName}`);
-
-                // Detect Client Type (Force TV Mode for Performance)
-                const isLGTV = true;
-                console.log(`Client Detected: Forcing TV Mode (Direct Stream Copy)`);
-
-                // Transcoding Strategy
-                let videoCodec = 'libx264';
-                let videoOpts = ['-preset', 'ultrafast', '-tune', 'zerolatency', '-crf', '18', '-pix_fmt', 'yuv420p'];
-
-                if (isLGTV) {
-                    if (codecName === 'h264') {
-                        videoCodec = 'copy';
-                        videoOpts = ['-bsf:v', 'h264_mp4toannexb'];
-                    } else if (codecName === 'hevc') {
-                        videoCodec = 'copy';
-                        videoOpts = ['-bsf:v', 'hevc_mp4toannexb'];
-                    } else {
-                        // Fallback: Transcode required for other formats on HLS
-                        console.log("LG TV detected but codec not H264/HEVC -> Falling back to Transcode");
-                    }
-                }
-
-                console.log(`Selected Video Codec: ${videoCodec}`);
-
-                // Base Args
-                const ffmpegArgs = [
-                    '-user_agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                    '-i', videoUrl,
-                    '-map', '0:v:0',
-                    '-map', '[outa]',
-                ];
-
-                // Subtitle Logic
-                let varStreamMap = "v:0,a:0"; // Default: Video+Audio Only
-
-                if (subIndex !== -1) {
-                    ffmpegArgs.push('-map', `0:${subIndex}`);
-                    ffmpegArgs.push('-c:s', 'webvtt');
-                    varStreamMap += " s:0"; // Add subtitle stream group
-                }
-
-                ffmpegArgs.push(
-                    // --- Video Strategy ---
-                    '-c:v', videoCodec,
-                    ...videoOpts,
-
-                    // --- Audio: Complex Filter (Selected Track) ---
-                    '-filter_complex',
-                    `[0:a:${audioIndex}]aformat=channel_layouts=5.1[a51];` +
-                    `[a51]channelsplit=channel_layout=5.1[FL][FR][FC][LFE][SL][SR];` +
-                    // EQ Processing
-                    `[FC]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_orig];` +
-                    `[FL]equalizer=f=6000:t=q:w=1:g=4[eFL];` +
-                    `[FR]equalizer=f=6000:t=q:w=1:g=4[eFR];` +
-                    // Power Split Center Channel (Need 3 copies: To Left, To Right, To Center)
-                    `[eFC_orig]asplit=3[eFC1][eFC2][eFC3];` +
-                    // Mixing
-                    `[eFL][eFC1]amix=inputs=2:weights='0.70 0.30'[nFL];` +
-                    `[eFR][eFC2]amix=inputs=2:weights='0.70 0.30'[nFR];` +
-                    `[eFC3]volume=1.5[nFC];` +
-                    // Merge back to 5.1
-                    `[nFL][nFR][nFC][LFE][SL][SR]join=inputs=6:channel_layout=5.1[outa]`,
-
-                    // --- Audio Encoding ---
-                    '-c:a', 'aac',
-                    '-b:a', '640k',
-                    '-ac', '6',
-
-                    // --- Resilience Settings ---
-                    '-max_muxing_queue_size', '4096',
-
-                    // --- HLS Settings ---
-                    '-f', 'hls',
-                    '-hls_time', '4',
-                    '-hls_list_size', '0',
-                    '-hls_flags', 'program_date_time',
-                    '-start_number', '0',
-
-                    // Master Playlist Logic
-                    '-master_pl_name', 'main.m3u8',
-                    '-var_stream_map', varStreamMap,
-                    path.join(hlsDir, 'stream_%v.m3u8') // Pattern for variants
-                );
-
-                // Force overwrite output
-                ffmpegArgs.unshift('-y');
-
-                console.log("DEBUG: AudioIdx:", audioIndex);
-                console.log("DEBUG: Full Command:", "ffmpeg " + ffmpegArgs.map(a => a.includes(' ') ? `"${a}"` : a).join(' '));
-
-                ffmpegProcess = spawn('ffmpeg', ffmpegArgs);
-
-                ffmpegProcess.stderr.on('data', (data) => {
-                    console.log(`ffmpeg: ${data}`);
-                });
-
-                ffmpegProcess.on('close', (code) => {
-                    console.log(`FFmpeg exited with code ${code}`);
-                    // If ffmpeg exits before playlist is ready, fail the request
-                    if (code !== 0 && !res.headersSent) {
-                        clearInterval(checkPlaylist);
-                        res.writeHead(500);
-                        res.end(JSON.stringify({ error: `FFmpeg exited early with code ${code}` }));
-                    }
-                });
-
-                // Poll for playlist availability
-                let attempts = 0;
-                const maxAttempts = 240; // 120 seconds timeout
-
-                const checkPlaylist = setInterval(() => {
-                    attempts++;
-                    if (fs.existsSync(path.join(hlsDir, 'main.m3u8'))) {
-                        clearInterval(checkPlaylist);
-                        res.writeHead(200, { 'Content-Type': 'application/json' });
-                        res.end(JSON.stringify({ status: 'started' }));
-                        // Reset Watchdog after success
-                        resetWatchdog();
-                    } else if (attempts >= maxAttempts) {
-                        clearInterval(checkPlaylist);
-                        if (ffmpegProcess) ffmpegProcess.kill('SIGKILL');
-                        res.writeHead(500);
-                        res.end(JSON.stringify({ error: 'Timeout waiting for stream' }));
-                    }
-                }, 500);
-            }); // End Probe Callback
-        } // End /start block
-
-        else if (parsedUrl.pathname === '/stop') {
-            if (ffmpegProcess) {
-                ffmpegProcess.kill('SIGKILL');
-                ffmpegProcess = null;
-            }
-            res.writeHead(200);
-            res.end('Stopped');
-
-        } else if (parsedUrl.pathname === '/ping') {
-            // Client keeps connection alive
-            resetWatchdog();
-            res.writeHead(200);
-            res.end('Pong');
-
         }
-    }); // End fs.stat
-}); // End createServer
+    });
+});
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {
