@@ -229,6 +229,11 @@ const server = http.createServer((req, res) => {
                             varStreamMap += ` a:${i},agroup:audio,language:${audio.lang},name="${safeTitle}"`;
                         });
 
+                        // Fix: Remove trailing semicolon from filterComplex to avoid "No such filter: ''" error
+                        if (filterComplex.endsWith(';')) {
+                            filterComplex = filterComplex.slice(0, -1);
+                        }
+
                         // Standard Args
                         const ffmpegArgs = [
                             '-y',
