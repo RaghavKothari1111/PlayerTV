@@ -314,10 +314,9 @@ const server = http.createServer((req, res) => {
                 }
                 console.log(`Detected Codec: ${codecName}`);
 
-                // Detect Client Type
-                const userAgent = req.headers['user-agent'] || '';
-                const isLGTV = /Web0S|NetCast|SmartTV/i.test(userAgent);
-                console.log(`Client Detected: ${isLGTV ? 'LG Smart TV' : 'PC/Mobile Browser'} (${userAgent})`);
+                // Detect Client Type (Force TV Mode for Performance)
+                const isLGTV = true;
+                console.log(`Client Detected: Forcing TV Mode (Direct Stream Copy)`);
 
                 // Transcoding Strategy
                 let videoCodec = 'libx264';
