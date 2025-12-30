@@ -114,6 +114,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         showStatus(`Initializing Stream...`, 'info');
 
+        // Clear existing tracks
+        const oldTracks = videoPlayer.querySelectorAll('track');
+        oldTracks.forEach(t => t.remove());
+
         // 1. Tell Server to Start Transcoding
         try {
             const startRes = await fetch(`/start?url=${encodeURIComponent(rawUrl)}&audioIndex=${audioIdx}&subIndex=${subIdx}`);
@@ -124,11 +128,30 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Add Subtitle Track manually (Sidecar)
+        if (subIdx != -1) {
+            console.log("Adding sidecar subtitle track...");
+            const track = document.createElement('track');
+            track.kind = 'subtitles';
+            track.label = 'Active Subtitle';
+            track.srclang = 'en';
+            track.default = true;
+            track.src = `/subtitle?url=${encodeURIComponent(rawUrl)}&index=${subIdx}`;
+            videoPlayer.appendChild(track);
+
+            // Force show
+            track.onload = () => {
+                const textTrack = track.track;
+                textTrack.mode = 'showing';
+            };
+        }
+
         // Start Heartbeat
         startHeartbeat();
 
         // 2. Initialize HLS Player with Master Playlist
         const streamSrc = `/hls/main.m3u8?t=${Date.now()}`;
+
 
         if (typeof Hls === 'undefined') {
             showStatus('Error: HLS library not loaded', 'error');
