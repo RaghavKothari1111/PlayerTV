@@ -213,23 +213,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 showStatus('Playing (HLS)', 'success');
                 placeholder.style.opacity = '0';
 
-                // --- POPULATE AUDIO TRACKS FROM HLS MANIFEST ---
-                if (hls.audioTracks && hls.audioTracks.length > 0) {
-                    console.log("HLS Audio Tracks found:", hls.audioTracks);
-                    audioSelect.innerHTML = hls.audioTracks.map((t, i) =>
-                        `<option value="${i}">Audio ${i + 1} (${t.lang || 'und'}) - ${t.name || 'Track ' + (i + 1)}</option>`
-                    ).join('');
+                // --- SYNC AUDIO TRACKS ---
+                // We prefer the Metadata-populated list because it has codec details.
+                // We only overwrite if that list is empty or if HLS gives us something different.
 
-                    // Set current selected
+                if (hls.audioTracks && hls.audioTracks.length > 0) {
+                    console.log("HLS Audio Tracks active:", hls.audioTracks);
+                    // If dropdown is empty or currently "Loading", fill it from HLS
+                    if (audioSelect.options.length <= 1 && audioSelect.value === '0') {
+                        audioSelect.innerHTML = hls.audioTracks.map((t, i) =>
+                            `<option value="${i}">Audio ${i + 1} (${t.lang || 'und'}) - ${t.name || 'Track ' + (i + 1)}</option>`
+                        ).join('');
+                    }
+
+                    // Sync the active HLS track to the dropdown
                     audioSelect.value = hls.audioTrack;
                     audioSelect.style.display = 'inline-block';
 
                     // Force update dropdown if it changes externally
                     hls.on(Hls.Events.AUDIO_TRACK_SWITCHED, (e, data) => {
+                        console.log("HLS Audio Switched to", data.id);
                         audioSelect.value = data.id;
                     });
                 } else {
-                    audioSelect.innerHTML = '<option value="0">Default Audio</option>';
+                    // If HLS sees no tracks, keep the metadata ones if they exist.
+                    // Don't overwrite with "Default Audio" blindly.
+                    console.log("HLS reports no specific audio tracks (using default)");
                 }
             });
 
