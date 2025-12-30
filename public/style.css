@@ -170,6 +170,14 @@ video {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    outline: none !important;
+    border: none !important;
+}
+
+video:focus, .video-wrapper:focus {
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .placeholder-overlay {

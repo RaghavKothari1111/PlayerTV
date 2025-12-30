@@ -165,6 +165,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 } catch (err) {
                     console.error('Failed to extract subtitles:', err);
+                } finally {
+                    // Always clear the "Loading Subs" message
+                    showStatus('Playing', 'success');
+                    // Hide placeholder if still there
+                    placeholder.style.opacity = '0';
                 }
 
                 // videoPlayer.play() is already called in MANIFEST_PARSED
