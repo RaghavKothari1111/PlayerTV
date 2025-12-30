@@ -124,6 +124,8 @@ const server = http.createServer((req, res) => {
                                     codec: s.codec_name
                                 }));
 
+                            console.log("Audio Metadata:", JSON.stringify(audio, null, 2));
+
                             if (subs.length === 0) {
                                 res.writeHead(200, { 'Content-Type': 'application/json' });
                                 res.end(JSON.stringify({ audio, subs: [] }));
