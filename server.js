@@ -255,15 +255,15 @@ const server = http.createServer((req, res) => {
 
                             '-max_muxing_queue_size', '4096',
                             '-f', 'hls',
-                            '-hls_time', '4',
+                            '-hls_time', '6', // Increased to 6s for stability
                             '-hls_list_size', '0',
-                            '-hls_playlist_type', 'event', // Important: Tells player playlist will grow
-                            '-hls_flags', 'program_date_time', // Removed delete_segments for VOD-style history
+                            '-hls_playlist_type', 'event',
+                            // Removed program_date_time to avoid timeline reset issues
                             '-hls_allow_cache', '1',
                             '-start_number', '0',
-                            '-master_pl_name', 'main.m3u8', // FFmpeg generates the MASTER playlist linking all variants
+                            '-master_pl_name', 'main.m3u8',
                             '-var_stream_map', varStreamMap,
-                            '-hls_segment_filename', path.join(hlsDir, 'stream_%v_%d.ts'), // %v = variant index
+                            '-hls_segment_filename', path.join(hlsDir, 'stream_%v_%d.ts'),
                             path.join(hlsDir, 'stream_%v.m3u8')
                         ];
 
