@@ -450,13 +450,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Reset timer on interaction
+    // Reset timer on interaction - Bind to DOCUMENT to catch fullscreen events reliably
     const activityEvents = ['mousemove', 'click', 'keydown', 'touchstart'];
     activityEvents.forEach(evt => {
-        videoContainer.addEventListener(evt, () => {
-            // Only trigger if state logic allows (e.g., if paused, we just stay active)
+        document.addEventListener(evt, () => {
+            // Only logic if we are interacting with the player or in fullscreen
+            // (Simple check: always active if page is loaded, as it's the main app)
             if (videoPlayer.paused) {
                 videoContainer.classList.add('user-active');
+                clearTimeout(inactivityTimeout); // Don't hide if paused
             } else {
                 startInactivityTimer();
             }
@@ -466,4 +468,42 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle initial state
     videoContainer.classList.add('is-paused');
     videoContainer.classList.add('user-active');
+
+    // --- Keyboard Shortcuts ---
+    document.addEventListener('keydown', (e) => {
+        // Ignore if user is typing in an input
+        if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT') return;
+
+        switch (e.key) {
+            case ' ': // Space: Toggle Play/Pause
+            case 'k':
+            case 'K':
+                e.preventDefault();
+                togglePlay();
+                // Trigger activity to show controls briefly
+                startInactivityTimer();
+                break;
+            case 'ArrowRight': // Forward 10s
+                e.preventDefault();
+                videoPlayer.currentTime = Math.min(videoPlayer.currentTime + 10, videoPlayer.duration);
+                startInactivityTimer();
+                break;
+            case 'ArrowLeft': // Rewind 10s
+                e.preventDefault();
+                videoPlayer.currentTime = Math.max(videoPlayer.currentTime - 10, 0);
+                startInactivityTimer();
+                break;
+            case 'f': // Fullscreen
+            case 'F':
+                e.preventDefault();
+                toggleFullScreen();
+                break;
+            case 'm': // Mute
+            case 'M':
+                e.preventDefault();
+                videoPlayer.muted = !videoPlayer.muted;
+                updateVolumeIcon();
+                break;
+        }
+    });
 });
