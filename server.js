@@ -238,8 +238,7 @@ const server = http.createServer((req, res) => {
 
         } else if (parsedUrl.pathname === '/start') {
             const videoUrl = parsedUrl.query.url;
-            const audioIndex = parseInt(parsedUrl.query.audioIndex) || 0;
-            // SubIndex is now handled by client sidecar
+            const subIndex = parseInt(parsedUrl.query.subIndex) || -1; // -1 = No Subs
 
             if (!videoUrl) {
                 res.writeHead(400);
@@ -266,7 +265,7 @@ const server = http.createServer((req, res) => {
                 // console.error("Error clearing HLS dir:", e);
             }
 
-            console.log(`Starting HLS for: ${videoUrl} | Audio: ${audioIndex}`);
+            console.log(`Starting HLS for: ${videoUrl} | Audio: ${audioIndex} | Sub: ${subIndex}`);
 
             // Detect Codec (Probe first to decide Strategy)
             console.log(`Probing video codec for: ${videoUrl}`);
@@ -326,8 +325,14 @@ const server = http.createServer((req, res) => {
                     '-map', '[outa]',
                 ];
 
-                // Subtitles are handled via /subtitles endpoint (Sidecar)
-                ffmpegArgs.push('-sn');
+                // Subtitle Logic
+                let varStreamMap = "v:0,a:0"; // Default: Video+Audio Only
+
+                if (subIndex !== -1) {
+                    ffmpegArgs.push('-map', `0:${subIndex}`);
+                    ffmpegArgs.push('-c:s', 'webvtt');
+                    varStreamMap += " s:0"; // Add subtitle stream group
+                }
 
                 ffmpegArgs.push(
                     // --- Video Strategy ---
@@ -362,10 +367,14 @@ const server = http.createServer((req, res) => {
                     // --- HLS Settings ---
                     '-f', 'hls',
                     '-hls_time', '4',
-                    '-hls_list_size', '0', // 0 = Keep all segments (VOD style, fixes jumping)
-                    '-hls_flags', 'program_date_time', // Standard flags only, NO delete_segments
+                    '-hls_list_size', '0',
+                    '-hls_flags', 'program_date_time',
                     '-start_number', '0',
-                    path.join(hlsDir, 'stream.m3u8')
+
+                    // Master Playlist Logic
+                    '-master_pl_name', 'main.m3u8',
+                    '-var_stream_map', varStreamMap,
+                    path.join(hlsDir, 'stream_%v.m3u8') // Pattern for variants
                 );
 
                 // Force overwrite output

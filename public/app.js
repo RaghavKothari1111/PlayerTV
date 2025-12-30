@@ -8,9 +8,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const fullscreenBtn = document.getElementById('fullscreenBtn');
 
     const audioSelect = document.getElementById('audioSelect');
+    const subSelect = document.getElementById('subSelect');
 
     let hls = null;
     let heartbeatInterval = null;
+
+    // Initially hide subtitle select
+    subSelect.style.display = 'none';
 
     // Fetch Metadata when URL changes
     urlInput.addEventListener('blur', fetchMetadata);
@@ -30,16 +34,27 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(fetchMetadata, 100);
     });
 
+    // Subtitle Change -> Restart Stream (Netflix Style)
+    // Only if user explicitly changes it.
+    subSelect.addEventListener('change', () => {
+        // Only restart if playing
+        if (!videoPlayer.paused || hls) {
+            startStream();
+        }
+    });
+
     async function fetchMetadata() {
         const rawUrl = urlInput.value.trim();
         if (!rawUrl) return;
 
         try {
             audioSelect.innerHTML = '<option>Loading...</option>';
+            // Do NOT show "Loading..." for subtitles, keep hidden
 
             const res = await fetch(`/metadata?url=${encodeURIComponent(rawUrl)}`);
             const data = await res.json();
 
+            // Audio Options
             if (data.audio) {
                 audioSelect.innerHTML = data.audio.map((t, i) =>
                     `<option value="${t.index}">Audio ${i + 1}: ${t.lang} (${t.codec})</option>`
@@ -48,9 +63,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 audioSelect.innerHTML = '<option value="0">Default Audio</option>';
             }
 
+            // Subtitle Options
+            const validSubs = data.subs || [];
+            if (validSubs.length > 0) {
+                const options = validSubs.map((t, i) =>
+                    `<option value="${t.index}">${t.lang} - ${t.title}</option>`
+                ).join('');
+                // Add "Off" option
+                subSelect.innerHTML = '<option value="-1">Subtitles: Off</option>' + options;
+                subSelect.style.display = 'inline-block'; // Show it now
+            } else {
+                subSelect.innerHTML = '<option value="-1">Subtitles: Off</option>';
+                subSelect.style.display = 'none'; // Keep hidden
+            }
+
         } catch (e) {
             console.error("Metadata fetch failed", e);
             audioSelect.innerHTML = '<option value="0">Default Audio</option>';
+            subSelect.style.display = 'none';
         }
     }
 
@@ -75,17 +105,18 @@ document.addEventListener('DOMContentLoaded', () => {
     async function startStream() {
         const rawUrl = urlInput.value.trim();
         const audioIdx = audioSelect.value || 0;
+        const subIdx = subSelect.value || -1;
 
         if (!rawUrl) {
             showStatus('Please enter a valid URL', 'error');
             return;
         }
 
-        showStatus('Initializing Stream...', 'info');
+        showStatus(`Initializing Stream...`, 'info');
 
-        // 1. Tell Server to Start Transcoding (Video/Audio Only)
+        // 1. Tell Server to Start Transcoding
         try {
-            const startRes = await fetch(`/start?url=${encodeURIComponent(rawUrl)}&audioIndex=${audioIdx}`);
+            const startRes = await fetch(`/start?url=${encodeURIComponent(rawUrl)}&audioIndex=${audioIdx}&subIndex=${subIdx}`);
             if (!startRes.ok) throw new Error('Failed to start stream server');
         } catch (err) {
             console.error(err);
@@ -96,9 +127,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Start Heartbeat
         startHeartbeat();
 
-        // 2. Initialize HLS Player
-        const streamSrc = `/hls/stream.m3u8?t=${Date.now()}`;
-
+        // 2. Initialize HLS Player with Master Playlist
+        const streamSrc = `/hls/main.m3u8?t=${Date.now()}`;
 
         if (typeof Hls === 'undefined') {
             showStatus('Error: HLS library not loaded', 'error');
@@ -114,7 +144,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 debug: false,
                 enableWorker: true,
                 lowLatencyMode: false,
-                backBufferLength: 90
+                maxBufferLength: 30, // Increased to 30s as requested
+                maxMaxBufferLength: 40,
+                backBufferLength: 0,
+                capLevelToPlayerSize: true,
+                subtitleDisplay: true
             });
 
             showStatus('Loading HLS Playlist...', 'info');
@@ -122,79 +156,10 @@ document.addEventListener('DOMContentLoaded', () => {
             hls.attachMedia(videoPlayer);
 
             hls.on(Hls.Events.MANIFEST_PARSED, function () {
-                // 1. Play Video IMMEDIATELY
                 videoPlayer.play().catch(e => console.log("Autoplay blocked"));
-                showStatus('Playing (HLS) - Loading Subs...', 'success');
+                showStatus('Playing (HLS)', 'success');
                 placeholder.style.opacity = '0';
-
-                // 2. Fetch subtitles in background
-                fetchSubtitles();
             });
-
-            async function fetchSubtitles() {
-                try {
-                    // showStatus('Extracting subtitles...', 'info'); // Don't overwrite playing status
-                    const subsRes = await fetch(`/extract-subtitles?url=${encodeURIComponent(rawUrl)}`);
-                    const subsData = await subsRes.json();
-
-                    // Cleanup old tracks
-                    const oldTracks = videoPlayer.getElementsByTagName('track');
-                    while (oldTracks.length > 0) oldTracks[0].remove();
-
-                    // Add all subtitle tracks
-                    const subSelect = document.getElementById('subSelect');
-                    subSelect.innerHTML = '<option value="-1">Subtitles: Off</option>';
-
-                    if (subsData.subtitles && subsData.subtitles.length > 0) {
-                        console.log(`Embedding ${subsData.subtitles.length} subtitle tracks`);
-                        
-                        subsData.subtitles.forEach((sub, index) => {
-                            // 1. Create Track Element
-                            const track = document.createElement('track');
-                            track.kind = 'subtitles';
-                            track.label = sub.title || `${sub.lang} (Track ${index + 1})`;
-                            track.srclang = sub.lang;
-                            track.src = sub.file; // Streaming URL
-                            track.default = false; // Controlled by UI
-                            videoPlayer.appendChild(track);
-
-                            // 2. Add to Dropdown
-                            const opt = document.createElement('option');
-                            opt.value = index;
-                            opt.textContent = track.label;
-                            subSelect.appendChild(opt);
-                        });
-
-                        // Select first subtitle by default? Or respect "Off"?
-                        // User seems to want them. Let's select first.
-                        subSelect.value = "0"; 
-                        toggleSubtitle(0);
-                    }
-
-                    // Handle Subtitle Selection
-                    subSelect.addEventListener('change', (e) => {
-                        toggleSubtitle(parseInt(e.target.value));
-                    });
-
-                    function toggleSubtitle(index) {
-                        for (let i = 0; i < videoPlayer.textTracks.length; i++) {
-                            videoPlayer.textTracks[i].mode = 'hidden'; // Hide all first
-                        }
-                        if (index >= 0 && index < videoPlayer.textTracks.length) {
-                             videoPlayer.textTracks[index].mode = 'showing';
-                        }
-                    }
-
-                } catch (err) {
-                    console.error('Failed to extract subtitles:', err);
-                } finally {
-                    // Always clear the "Loading Subs" message
-                    showStatus('Playing', 'success');
-                    // Hide placeholder if still there
-                    placeholder.style.opacity = '0';
-                }
-            }
-
 
             hls.on(Hls.Events.ERROR, function (event, data) {
                 if (data.fatal) {
