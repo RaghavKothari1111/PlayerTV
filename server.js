@@ -325,8 +325,8 @@ const server = http.createServer((req, res) => {
 
                 // --- HLS Settings ---
                 '-f', 'hls',
-                '-hls_time', '10',
-                '-hls_list_size', '12',
+                '-hls_time', '4',
+                '-hls_list_size', '20',
                 '-hls_flags', 'delete_segments',
                 '-start_number', '0',
                 path.join(hlsDir, 'stream.m3u8')
@@ -356,7 +356,7 @@ const server = http.createServer((req, res) => {
 
             // Poll for playlist availability
             let attempts = 0;
-            const maxAttempts = 60; // 30 seconds timeout
+            const maxAttempts = 240; // 120 seconds timeout
 
             const checkPlaylist = setInterval(() => {
                 attempts++;
