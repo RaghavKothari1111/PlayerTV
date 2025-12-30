@@ -172,11 +172,21 @@ video:focus,
     flex-direction: column;
     gap: 10px;
     z-index: 20;
+    pointer-events: none;
+    /* Disable clicks when hidden */
 }
 
-.video-wrapper:hover .player-controls-area,
+/* Show when active OR paused OR hovering controls explicitly (safety) */
+.video-wrapper.user-active .player-controls-area,
+.video-wrapper.is-paused .player-controls-area,
 .player-controls-area:hover {
     opacity: 1;
+    pointer-events: auto;
+}
+
+/* Hide cursor when inactive and playing */
+.video-wrapper:not(.user-active):not(.is-paused) {
+    cursor: none;
 }
 
 /* Progress Bar */

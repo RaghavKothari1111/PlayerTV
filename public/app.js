@@ -54,9 +54,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (videoPlayer.paused) {
             videoPlayer.play();
             playPauseBtn.innerHTML = '<ion-icon name="pause"></ion-icon>';
+            videoContainer.classList.remove('is-paused'); // Remove paused class
+            startInactivityTimer(); // Start hiding logic
         } else {
             videoPlayer.pause();
             playPauseBtn.innerHTML = '<ion-icon name="play"></ion-icon>';
+            videoContainer.classList.add('is-paused'); // Keep controls visible
+            clearTimeout(inactivityTimeout); // Stop hiding logic
+            videoContainer.classList.add('user-active'); // Ensure visible
         }
     }
 
@@ -426,4 +431,39 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (type === 'success') statusMessage.style.color = '#4ade80';
         else statusMessage.style.color = '#94a3b8';
     }
+
+    // --- Auto-Hide Controls Logic ---
+    let inactivityTimeout;
+
+    function startInactivityTimer() {
+        // Clear existing
+        clearTimeout(inactivityTimeout);
+
+        // Show controls
+        videoContainer.classList.add('user-active');
+
+        // If playing, hide after 3s
+        if (!videoPlayer.paused) {
+            inactivityTimeout = setTimeout(() => {
+                videoContainer.classList.remove('user-active');
+            }, 3000);
+        }
+    }
+
+    // Reset timer on interaction
+    const activityEvents = ['mousemove', 'click', 'keydown', 'touchstart'];
+    activityEvents.forEach(evt => {
+        videoContainer.addEventListener(evt, () => {
+            // Only trigger if state logic allows (e.g., if paused, we just stay active)
+            if (videoPlayer.paused) {
+                videoContainer.classList.add('user-active');
+            } else {
+                startInactivityTimer();
+            }
+        });
+    });
+
+    // Handle initial state
+    videoContainer.classList.add('is-paused');
+    videoContainer.classList.add('user-active');
 });
