@@ -13,8 +13,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let hls = null;
     let heartbeatInterval = null;
 
-    // Initially show subtitle select (or hide if purely no subs, but let's keep it visible as "CC: Off" if we want consistent UI)
-    // subSelect.style.display = 'none'; // REMOVED: Let CSS control or hide strictly if 0 options.
+    // --- Custom Controls Elements ---
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const muteBtn = document.getElementById('muteBtn');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.getElementById('progressBar');
+    const timeDisplay = document.getElementById('timeDisplay');
+
+    // Initially show subtitle select
+    // subSelect.style.display = 'none'; // REMOVED
 
     // Fetch Metadata when URL changes
     urlInput.addEventListener('blur', fetchMetadata);
@@ -25,19 +33,80 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Play Button (Main)
     playBtn.addEventListener('click', () => {
         startStream('playBtn');
     });
 
     // Auto-fetch metadata if URL pasted
     urlInput.addEventListener('paste', () => {
-        // Fix for "sometimes video plays sometimes audio": 
-        // Ensure we don't start stream too aggressively before metadata check
-        setTimeout(() => {
-            fetchMetadata();
-            // Optional: Auto-play on paste if desired, but safer to wait for user or metadata
-        }, 100);
+        setTimeout(fetchMetadata, 100);
     });
+
+    // --- Custom Control Logic ---
+
+    // Play/Pause Toggle
+    playPauseBtn.addEventListener('click', togglePlay);
+    videoPlayer.addEventListener('click', togglePlay); // Click video to toggle
+
+    function togglePlay() {
+        if (videoPlayer.paused) {
+            videoPlayer.play();
+            playPauseBtn.innerHTML = '<ion-icon name="pause"></ion-icon>';
+        } else {
+            videoPlayer.pause();
+            playPauseBtn.innerHTML = '<ion-icon name="play"></ion-icon>';
+        }
+    }
+
+    videoPlayer.addEventListener('play', () => playPauseBtn.innerHTML = '<ion-icon name="pause"></ion-icon>');
+    videoPlayer.addEventListener('pause', () => playPauseBtn.innerHTML = '<ion-icon name="play"></ion-icon>');
+
+    // Time Update & Progress
+    videoPlayer.addEventListener('timeupdate', updateProgress);
+
+    function updateProgress() {
+        if (!videoPlayer.duration) return;
+        const percent = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+        progressBar.style.width = `${percent}%`;
+        timeDisplay.textContent = `${formatTime(videoPlayer.currentTime)} / ${formatTime(videoPlayer.duration)}`;
+    }
+
+    // Seek
+    progressContainer.addEventListener('click', (e) => {
+        const rect = progressContainer.getBoundingClientRect();
+        const pos = (e.clientX - rect.left) / rect.width;
+        videoPlayer.currentTime = pos * videoPlayer.duration;
+    });
+
+    // Volume
+    volumeSlider.addEventListener('input', (e) => {
+        videoPlayer.volume = e.target.value;
+        videoPlayer.muted = false;
+        updateVolumeIcon();
+    });
+
+    muteBtn.addEventListener('click', () => {
+        videoPlayer.muted = !videoPlayer.muted;
+        updateVolumeIcon();
+    });
+
+    function updateVolumeIcon() {
+        if (videoPlayer.muted || videoPlayer.volume === 0) {
+            muteBtn.innerHTML = '<ion-icon name="volume-mute"></ion-icon>';
+            volumeSlider.value = 0;
+        } else {
+            muteBtn.innerHTML = '<ion-icon name="volume-high"></ion-icon>';
+            volumeSlider.value = videoPlayer.volume;
+        }
+    }
+
+    function formatTime(s) {
+        if (isNaN(s)) return "0:00";
+        const mins = Math.floor(s / 60);
+        const secs = Math.floor(s % 60);
+        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
 
     // Audio Change -> Seamless Switch (Netflix Style)
     // HLS.js handles switching without restart if manifest has multiple audio tracks
@@ -54,13 +123,42 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Subtitle Change -> Restart Stream (Sidecar)
+    // Subtitle Change -> Seamless Update (No stream restart needed)
     subSelect.addEventListener('change', () => {
-        videoPlayer.focus();
-        if (!videoPlayer.paused || hls) {
-            startStream('subSelect');
-        }
+        const rawUrl = urlInput.value.trim();
+        const subIdx = subSelect.value;
+        updateSubtitle(rawUrl, subIdx);
     });
+
+    function updateSubtitle(videoUrl, subIndex) {
+        // Clear existing tracks
+        const oldTracks = videoPlayer.querySelectorAll('track');
+        oldTracks.forEach(t => t.remove());
+
+        if (subIndex != -1) {
+            console.log(`Loading Subtitle Track: ${subIndex}`);
+            const track = document.createElement('track');
+            track.kind = 'subtitles';
+            track.label = 'Active Subtitle';
+            track.srclang = 'en';
+            track.default = true;
+            track.src = `/subtitle?url=${encodeURIComponent(videoUrl)}&index=${subIndex}`;
+
+            videoPlayer.appendChild(track);
+
+            // Force show
+            track.onload = () => {
+                const textTrack = track.track;
+                textTrack.mode = 'showing';
+            };
+            // Fallback if onload doesn't fire immediately
+            setTimeout(() => {
+                if (track.track) track.track.mode = 'showing';
+            }, 100);
+        } else {
+            console.log("Subtitles Disabled");
+        }
+    }
 
     // ... (fetchMetadata logic truncated for brevity, but we need to ensure it doesn't conflict)
     // We will clear audio options in startStream or rely on HLS overwriting them.
@@ -74,8 +172,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!rawUrl) return;
 
         try {
-            audioSelect.innerHTML = '<option>Loading...</option>';
-            // Do NOT show "Loading..." for subtitles, keep hidden
+            // audioSelect.innerHTML = '<option>Loading...</option>'; 
+            // Better UX: Don't clear audio immediately, just let it update or fail.
 
             const res = await fetch(`/metadata?url=${encodeURIComponent(rawUrl)}`);
             const data = await res.json();
@@ -97,17 +195,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     `<option value="${t.index}">${t.lang} - ${t.title}</option>`
                 ).join('');
                 // Add "Off" option
-                subSelect.innerHTML = '<option value="-1">Subtitles: Off</option>' + options;
-                subSelect.style.display = 'inline-block'; // Show it now
+                subSelect.innerHTML = '<option value="-1">CC: Off</option>' + options;
             } else {
-                subSelect.innerHTML = '<option value="-1">Subtitles: Off</option>';
-                subSelect.style.display = 'none'; // Keep hidden
+                subSelect.innerHTML = '<option value="-1">CC: Off</option>';
             }
 
         } catch (e) {
             console.error("Metadata fetch failed", e);
             audioSelect.innerHTML = '<option value="0">Default Audio</option>';
-            subSelect.style.display = 'none';
         }
     }
 
@@ -152,10 +247,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         showStatus(`Initializing Stream...`, 'info');
 
-        // Clear existing tracks
-        const oldTracks = videoPlayer.querySelectorAll('track');
-        oldTracks.forEach(t => t.remove());
-
         // 1. Tell Server to Start Transcoding
         try {
             const startRes = await fetch(`/start?url=${encodeURIComponent(rawUrl)}&audioIndex=${audioIdx}&subIndex=${subIdx}`);
@@ -168,22 +259,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Add Subtitle Track manually (Sidecar)
-        if (subIdx != -1) {
-            console.log("Adding sidecar subtitle track...");
-            const track = document.createElement('track');
-            track.kind = 'subtitles';
-            track.label = 'Active Subtitle';
-            track.srclang = 'en';
-            track.default = true;
-            track.src = `/subtitle?url=${encodeURIComponent(rawUrl)}&index=${subIdx}`;
-            videoPlayer.appendChild(track);
+        updateSubtitle(rawUrl, subIdx);
 
-            // Force show
-            track.onload = () => {
-                const textTrack = track.track;
-                textTrack.mode = 'showing';
-            };
-        }
 
         // Start Heartbeat
         startHeartbeat();

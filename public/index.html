@@ -32,7 +32,7 @@
         </div>
 
         <div class="video-wrapper" id="videoContainer">
-            <video id="videoPlayer" controls playsinline>
+            <video id="videoPlayer" playsinline>
                 Your browser does not support the video tag.
             </video>
 
@@ -40,19 +40,34 @@
                 <span>Ready to Stream</span>
             </div>
 
-            <!-- Custom Overlay Controls (visible when hovering) -->
-            <div class="custom-controls">
-                <div class="controls-group">
-                    <select id="audioSelect" class="track-select glass-select">
-                        <option value="0">Audio...</option>
-                    </select>
-                    <select id="subSelect" class="track-select glass-select">
-                        <option value="-1">CC: Off</option>
-                    </select>
+            <!-- Custom Overlay Controls (Bottom) -->
+            <div class="player-controls-area">
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-filled" id="progressBar"></div>
                 </div>
-                <button id="fullscreenBtn" class="icon-btn" title="Fullscreen">
-                    <ion-icon name="resize-outline"></ion-icon>
-                </button>
+
+                <div class="controls-main">
+                    <div class="controls-left">
+                        <button id="playPauseBtn" class="control-btn"><ion-icon name="play"></ion-icon></button>
+
+                        <div class="volume-container">
+                            <button id="muteBtn" class="control-btn"><ion-icon name="volume-high"></ion-icon></button>
+                            <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="1">
+                        </div>
+
+                        <span id="timeDisplay" class="time-display">0:00 / 0:00</span>
+                    </div>
+
+                    <div class="controls-right">
+                        <select id="audioSelect" class="control-select" title="Audio Track">
+                            <option value="0">Audio</option>
+                        </select>
+                        <select id="subSelect" class="control-select" title="Subtitles">
+                            <option value="-1">CC: Off</option>
+                        </select>
+                        <button id="fullscreenBtn" class="control-btn"><ion-icon name="scan"></ion-icon></button>
+                    </div>
+                </div>
             </div>
         </div>
 
