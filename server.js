@@ -128,9 +128,8 @@ const server = http.createServer((req, res) => {
 
             } else if (parsedUrl.pathname === '/start') {
                 const videoUrl = parsedUrl.query.url;
-                const audioIndex = parseInt(parsedUrl.query.audioIndex) || 0;
+                // audioIndex is ignored as we now map ALL audios
                 // subIndex is unused for HLS gen now, but good to know
-                const subIndex = parseInt(parsedUrl.query.subIndex) || -1;
 
                 if (!videoUrl) {
                     res.writeHead(400);
@@ -156,17 +155,36 @@ const server = http.createServer((req, res) => {
                 } catch (e) { }
 
                 const startEncodingProcess = () => {
-                    console.log(`Starting HLS (Video Only) for: ${videoUrl} | Audio: ${audioIndex}`);
+                    console.log(`Starting HLS (Multi-Audio) for: ${videoUrl}`);
 
-                    // 1. Probe for Codec
-                    const probe = spawn('ffprobe', ['-v', 'quiet', '-print_format', 'json', '-show_streams', '-select_streams', 'v:0', videoUrl]);
+                    // 1. Probe for All Streams
+                    const probe = spawn('ffprobe', ['-v', 'quiet', '-print_format', 'json', '-show_streams', videoUrl]);
                     let probeData = '';
                     probe.stdout.on('data', d => probeData += d);
 
                     probe.on('close', (code) => {
+                        let audioStreams = [];
                         let codecName = 'unknown';
+
                         if (code === 0) {
-                            try { codecName = JSON.parse(probeData).streams[0].codec_name; } catch (e) { }
+                            try {
+                                const pd = JSON.parse(probeData);
+                                codecName = pd.streams.find(s => s.codec_type === 'video')?.codec_name || 'unknown';
+                                audioStreams = pd.streams
+                                    .filter(s => s.codec_type === 'audio')
+                                    .map((s, i) => ({
+                                        index: s.index,
+                                        streamIndex: i,
+                                        lang: s.tags?.language || 'und',
+                                        title: s.tags?.title || `Track ${i + 1}`
+                                    }));
+                            } catch (e) {
+                                console.error("Probe parse error", e);
+                            }
+                        }
+
+                        if (audioStreams.length === 0) {
+                            audioStreams.push({ index: 1, streamIndex: 0, lang: 'und', title: 'Default' });
                         }
 
                         const isLGTV = true;
@@ -178,40 +196,69 @@ const server = http.createServer((req, res) => {
                             videoOpts = ['-bsf:v', `${codecName}_mp4toannexb`];
                         }
 
-                        // --- Build FFmpeg Arguments (Video Only) ---
+                        // --- Build Dynamic Filter Complex & Maps ---
+                        let filterComplex = '';
+                        let audioMaps = [];
+                        // We will use ONE video stream (v:0) and MULTIPLE audio streams (a:0, a:1...)
+                        // var_stream_map: "v:0,agroup:audio a:0,agroup:audio,language:eng a:1,agroup:audio,language:hin"
+                        let varStreamMap = 'v:0,agroup:audio';
+
+                        audioStreams.forEach((audio, i) => {
+                            // Unique Filter Chain for EACH audio track
+                            // We construct unique IDs for the filter nodes to ensure no collision
+                            const fc =
+                                `[0:${audio.index}]aformat=channel_layouts=5.1[a51_${i}];` +
+                                `[a51_${i}]channelsplit=channel_layout=5.1[FL_${i}][FR_${i}][FC_${i}][LFE_${i}][SL_${i}][SR_${i}];` +
+                                `[FC_${i}]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_orig_${i}];` +
+                                `[FL_${i}]equalizer=f=6000:t=q:w=1:g=4[eFL_${i}];` +
+                                `[FR_${i}]equalizer=f=6000:t=q:w=1:g=4[eFR_${i}];` +
+                                `[eFC_orig_${i}]asplit=3[eFC1_${i}][eFC2_${i}][eFC3_${i}];` +
+                                `[eFL_${i}][eFC1_${i}]amix=inputs=2:weights='0.70 0.30'[nFL_${i}];` +
+                                `[eFR_${i}][eFC2_${i}]amix=inputs=2:weights='0.70 0.30'[nFR_${i}];` +
+                                `[eFC3_${i}]volume=1.5[nFC_${i}];` +
+                                `[nFL_${i}][nFR_${i}][nFC_${i}][LFE_${i}][SL_${i}][SR_${i}]join=inputs=6:channel_layout=5.1[outa${i}];`;
+
+                            filterComplex += fc;
+
+                            // Map the output of the filter
+                            audioMaps.push('-map', `[outa${i}]`);
+
+                            // Add to HLS Stream Map
+                            // Use sanitize title for NAME
+                            const safeTitle = (audio.title || `Audio ${i + 1}`).replace(/[^a-zA-Z0-9 ]/g, '').trim() || `Audio${i + 1}`;
+                            varStreamMap += ` a:${i},agroup:audio,language:${audio.lang},name="${safeTitle}"`;
+                        });
+
+                        // Standard Args
                         const ffmpegArgs = [
                             '-y',
                             '-user_agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
                             '-i', videoUrl,
-                            '-map', '0:v:0', // Video
-                            '-map', '[outa]', // Audio (from filter)
+                            '-map', '0:v:0', // Output Stream #0 implies the FIRST mapped stream -> Video
+                            ...audioMaps,    // Output Stream #1..N -> Audios
+
                             '-c:v', videoCodec,
                             ...videoOpts,
-                            '-filter_complex',
-                            `[0:a:${audioIndex}]aformat=channel_layouts=5.1[a51];` +
-                            `[a51]channelsplit=channel_layout=5.1[FL][FR][FC][LFE][SL][SR];` +
-                            `[FC]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_orig];` +
-                            `[FL]equalizer=f=6000:t=q:w=1:g=4[eFL];` +
-                            `[FR]equalizer=f=6000:t=q:w=1:g=4[eFR];` +
-                            `[eFC_orig]asplit=3[eFC1][eFC2][eFC3];` +
-                            `[eFL][eFC1]amix=inputs=2:weights='0.70 0.30'[nFL];` +
-                            `[eFR][eFC2]amix=inputs=2:weights='0.70 0.30'[nFR];` +
-                            `[eFC3]volume=1.5[nFC];` +
-                            `[nFL][nFR][nFC][LFE][SL][SR]join=inputs=6:channel_layout=5.1[outa]`,
+
+                            '-filter_complex', filterComplex,
+
                             '-c:a', 'aac',
                             '-b:a', '640k',
                             '-ac', '6',
+
                             '-max_muxing_queue_size', '4096',
                             '-f', 'hls',
                             '-hls_time', '4',
                             '-hls_list_size', '0',
                             '-hls_flags', 'program_date_time',
                             '-start_number', '0',
-                            '-hls_segment_filename', path.join(hlsDir, 'video_%d.ts'),
-                            path.join(hlsDir, 'video.m3u8')
+                            '-master_pl_name', 'main.m3u8', // FFmpeg generates the MASTER playlist linking all variants
+                            '-var_stream_map', varStreamMap,
+                            '-hls_segment_filename', path.join(hlsDir, 'stream_%v_%d.ts'), // %v = variant index
+                            path.join(hlsDir, 'stream_%v.m3u8')
                         ];
 
-                        console.log("DEBUG: Launching FFmpeg (Video Only)");
+                        console.log("DEBUG: Launching FFmpeg Multi-Audio");
                         ffmpegProcess = spawn('ffmpeg', ffmpegArgs);
 
                         ffmpegProcess.stderr.on('data', (data) => console.log(`ffmpeg: ${data}`));
@@ -224,24 +271,18 @@ const server = http.createServer((req, res) => {
                         });
 
 
-                        // --- Generate MAIN.m3u8 Manually (Simple Pointer) ---
-                        const mainM3u8Path = path.join(hlsDir, 'main.m3u8');
-                        const masterPlaylistContent = '#EXTM3U\n#EXT-X-VERSION:3\n#EXT-X-STREAM-INF:BANDWIDTH=5000000\nvideo.m3u8\n';
-                        fs.writeFileSync(mainM3u8Path, masterPlaylistContent);
-
-                        // Poll for VIDEO playlist
+                        // Poll for MAIN playlist
                         let attempts = 0;
                         const maxAttempts = 240;
                         if (global.checkPlaylist) clearInterval(global.checkPlaylist);
 
                         const checkPlaylist = setInterval(() => {
                             attempts++;
-                            // Check for VIDEO Playlist
-                            if (fs.existsSync(path.join(hlsDir, 'video.m3u8'))) {
+                            // Check for Master Playlist (ffmpeg creates it now)
+                            if (fs.existsSync(path.join(hlsDir, 'main.m3u8'))) {
                                 console.log("Stream Ready!");
                                 clearInterval(checkPlaylist);
                                 if (!res.headersSent) {
-                                    // Return SUCCESS
                                     res.writeHead(200, { 'Content-Type': 'application/json' });
                                     res.end(JSON.stringify({ status: 'started' }));
                                 }

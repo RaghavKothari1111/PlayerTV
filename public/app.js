@@ -34,14 +34,33 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(fetchMetadata, 100);
     });
 
-    // Subtitle Change -> Restart Stream (Netflix Style)
-    // Only if user explicitly changes it.
+    // Audio Change -> Seamless Switch (Netflix Style)
+    // HLS.js handles switching without restart if manifest has multiple audio tracks
+    audioSelect.addEventListener('change', () => {
+        if (hls && hls.audioTracks.length > 1) {
+            const newIndex = parseInt(audioSelect.value);
+            console.log(`Switching Audio Track to Index: ${newIndex}`);
+            hls.audioTrack = newIndex;
+        } else {
+            // Fallback for native or single track (requires restart if using old method, but we want seamless)
+            // If native, safari handles it via system controls usually.
+            console.log("Audio switch requested but HLS not controlling multiple tracks.");
+        }
+    });
+
+    // Subtitle Change -> Restart Stream (Sidecar)
     subSelect.addEventListener('change', () => {
-        // Only restart if playing
         if (!videoPlayer.paused || hls) {
             startStream();
         }
     });
+
+    // ... (fetchMetadata logic truncated for brevity, but we need to ensure it doesn't conflict)
+    // We will clear audio options in startStream or rely on HLS overwriting them.
+
+    // ... 
+
+    // (Removed incorrect hls.on block)
 
     async function fetchMetadata() {
         const rawUrl = urlInput.value.trim();
@@ -55,13 +74,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
 
             // Audio Options
-            if (data.audio) {
-                audioSelect.innerHTML = data.audio.map((t, i) =>
-                    `<option value="${t.index}">Audio ${i + 1}: ${t.lang} (${t.codec})</option>`
-                ).join('');
-            } else {
-                audioSelect.innerHTML = '<option value="0">Default Audio</option>';
-            }
+            // Audio Options will be handled by HLS manifest once playing
+            // For now, show "Ready" or similar
+            audioSelect.innerHTML = '<option value="0">Audio (Loading...)</option>';
 
             // Subtitle Options
             const validSubs = data.subs || [];
@@ -182,6 +197,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 videoPlayer.play().catch(e => console.log("Autoplay blocked"));
                 showStatus('Playing (HLS)', 'success');
                 placeholder.style.opacity = '0';
+
+                // --- POPULATE AUDIO TRACKS FROM HLS MANIFEST ---
+                if (hls.audioTracks && hls.audioTracks.length > 0) {
+                    console.log("HLS Audio Tracks found:", hls.audioTracks);
+                    audioSelect.innerHTML = hls.audioTracks.map((t, i) =>
+                        `<option value="${i}">Audio ${i + 1} (${t.lang || 'und'}) - ${t.name || 'Track ' + (i + 1)}</option>`
+                    ).join('');
+
+                    // Set current selected
+                    audioSelect.value = hls.audioTrack;
+                    audioSelect.style.display = 'inline-block';
+
+                    // Force update dropdown if it changes externally
+                    hls.on(Hls.Events.AUDIO_TRACK_SWITCHED, (e, data) => {
+                        audioSelect.value = data.id;
+                    });
+                } else {
+                    audioSelect.innerHTML = '<option value="0">Default Audio</option>';
+                }
             });
 
             hls.on(Hls.Events.ERROR, function (event, data) {
