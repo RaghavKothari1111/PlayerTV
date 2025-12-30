@@ -201,6 +201,21 @@ video:focus,
     border-radius: 3px;
     position: relative;
     box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+    z-index: 2;
+    /* On top of buffer */
+}
+
+.progress-buffer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    z-index: 1;
+    /* Behind filled progress */
+    transition: width 0.2s;
 }
 
 /* Controls Layout */

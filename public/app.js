@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const volumeSlider = document.getElementById('volumeSlider');
     const progressContainer = document.getElementById('progressContainer');
     const progressBar = document.getElementById('progressBar');
+    const progressBuffer = document.getElementById('progressBuffer');
     const timeDisplay = document.getElementById('timeDisplay');
 
     // Initially show subtitle select
@@ -64,12 +65,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Time Update & Progress
     videoPlayer.addEventListener('timeupdate', updateProgress);
+    videoPlayer.addEventListener('progress', updateBuffer); // Listen for buffer updates
 
     function updateProgress() {
         if (!videoPlayer.duration) return;
         const percent = (videoPlayer.currentTime / videoPlayer.duration) * 100;
         progressBar.style.width = `${percent}%`;
         timeDisplay.textContent = `${formatTime(videoPlayer.currentTime)} / ${formatTime(videoPlayer.duration)}`;
+    }
+
+    function updateBuffer() {
+        if (!videoPlayer.duration) return;
+        if (videoPlayer.buffered.length > 0) {
+            // Find the buffered range that covers the current time
+            const currentTime = videoPlayer.currentTime;
+            let bufferedEnd = 0;
+
+            for (let i = 0; i < videoPlayer.buffered.length; i++) {
+                const checkStart = videoPlayer.buffered.start(i);
+                const checkEnd = videoPlayer.buffered.end(i);
+
+                // If current time is within this range (or close to it)
+                if (currentTime >= checkStart && currentTime <= checkEnd + 0.5) {
+                    bufferedEnd = checkEnd;
+                    break;
+                }
+            }
+            // If we didn't find a direct match, maybe just show the last buffered chunk?
+            // Usually, showing what's buffered AHEAD of current time is most useful.
+            // If nothing found relative to current, default to the furthest buffered point 
+            // but usually players prioritize the contiguous buffer from current head.
+
+            // Common simple logic: just use the end of the LAST buffer range strictly?
+            // Better: use the end of the range surrounding the playhead.
+
+            const percent = (bufferedEnd / videoPlayer.duration) * 100;
+            progressBuffer.style.width = `${percent}%`;
+        }
     }
 
     // Seek
