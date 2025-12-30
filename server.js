@@ -139,7 +139,7 @@ const server = http.createServer((req, res) => {
             // Stream subs directly to client
             const subProcess = spawn('ffmpeg', [
                 '-i', videoUrl,
-                '-map', `0:s:${subIndex}`,
+                '-map', `0:${subIndex}`,
                 '-c:s', 'webvtt',
                 '-f', 'webvtt',
                 '-' // Pipe to stdout
@@ -181,12 +181,33 @@ const server = http.createServer((req, res) => {
                 if (code === 0) {
                     try {
                         const data = JSON.parse(output);
-                        const subs = data.streams.filter(s => s.codec_type === 'subtitle').map((s, i) => ({
-                            index: i,
-                            lang: s.tags?.language || 'und',
-                            title: s.tags?.title || `Track ${i + 1}`,
-                            codec: s.codec_name
-                        }));
+
+                        // Define Allowed Text-Based Codecs
+                        const textSubtitleCodecs = [
+                            'subrip',
+                            'webvtt',
+                            'ass',
+                            'ssa',
+                            'mov_text',
+                            'mpl2',
+                            'text'
+                        ];
+
+                        const subs = data.streams
+                            .filter(s => s.codec_type === 'subtitle')
+                            .filter(s => {
+                                const isText = textSubtitleCodecs.includes(s.codec_name);
+                                if (!isText) {
+                                    console.log(`Skipping unsupported subtitle codec: ${s.codec_name} (Index ${s.index})`);
+                                }
+                                return isText;
+                            })
+                            .map((s, i) => ({
+                                index: s.index, // Absolute index from ffprobe
+                                lang: s.tags?.language || 'und',
+                                title: s.tags?.title || `Track ${i + 1}`,
+                                codec: s.codec_name
+                            }));
 
                         if (subs.length === 0) {
                             res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -194,53 +215,13 @@ const server = http.createServer((req, res) => {
                             return;
                         }
 
-                        // Extract each subtitle to a file (SEQUENTIALLY to avoid crashing server)
-                        const subtitleFiles = [];
-
-                        // Helper to run extraction as a promise
-                        const extractTrack = (sub) => {
-                            return new Promise((resolve) => {
-                                const filename = `sub_${sub.index}_${sub.lang}.vtt`;
-                                const filepath = path.join(hlsDir, filename);
-
-                                // If file exists, skip extraction
-                                if (fs.existsSync(filepath)) {
-                                    subtitleFiles.push({
-                                        index: sub.index,
-                                        lang: sub.lang,
-                                        title: sub.title,
-                                        file: `/hls/${filename}`
-                                    });
-                                    resolve();
-                                    return;
-                                }
-
-                                const ffmpegSub = spawn('ffmpeg', [
-                                    '-y',
-                                    '-i', videoUrl,
-                                    '-map', `0:s:${sub.index}`,
-                                    '-c:s', 'webvtt',
-                                    filepath
-                                ]);
-
-                                ffmpegSub.on('close', (subCode) => {
-                                    if (subCode === 0) {
-                                        subtitleFiles.push({
-                                            index: sub.index,
-                                            lang: sub.lang,
-                                            title: sub.title,
-                                            file: `/hls/${filename}`
-                                        });
-                                    }
-                                    resolve();
-                                });
-                            });
-                        };
-
-                        // Process all sequentially
-                        for (const sub of subs) {
-                            await extractTrack(sub);
-                        }
+                        // Generate streaming URLs (Instant, no extraction wait)
+                        const subtitleFiles = subs.map(sub => ({
+                            index: sub.index,
+                            lang: sub.lang,
+                            title: sub.title,
+                            file: `/subtitles?url=${encodeURIComponent(videoUrl)}&index=${sub.index}`
+                        }));
 
                         res.writeHead(200, { 'Content-Type': 'application/json' });
                         res.end(JSON.stringify({ subtitles: subtitleFiles }));

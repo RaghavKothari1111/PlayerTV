@@ -142,27 +142,49 @@ document.addEventListener('DOMContentLoaded', () => {
                     while (oldTracks.length > 0) oldTracks[0].remove();
 
                     // Add all subtitle tracks
+                    const subSelect = document.getElementById('subSelect');
+                    subSelect.innerHTML = '<option value="-1">Subtitles: Off</option>';
+
                     if (subsData.subtitles && subsData.subtitles.length > 0) {
                         console.log(`Embedding ${subsData.subtitles.length} subtitle tracks`);
+                        
                         subsData.subtitles.forEach((sub, index) => {
+                            // 1. Create Track Element
                             const track = document.createElement('track');
                             track.kind = 'subtitles';
                             track.label = sub.title || `${sub.lang} (Track ${index + 1})`;
                             track.srclang = sub.lang;
-                            track.src = sub.file;
-                            if (index === 0) {
-                                track.default = true;
-                            }
+                            track.src = sub.file; // Streaming URL
+                            track.default = false; // Controlled by UI
                             videoPlayer.appendChild(track);
+
+                            // 2. Add to Dropdown
+                            const opt = document.createElement('option');
+                            opt.value = index;
+                            opt.textContent = track.label;
+                            subSelect.appendChild(opt);
                         });
 
-                        // Force showing first track
-                        setTimeout(() => {
-                            if (videoPlayer.textTracks.length > 0) {
-                                videoPlayer.textTracks[0].mode = 'showing';
-                            }
-                        }, 100);
+                        // Select first subtitle by default? Or respect "Off"?
+                        // User seems to want them. Let's select first.
+                        subSelect.value = "0"; 
+                        toggleSubtitle(0);
                     }
+
+                    // Handle Subtitle Selection
+                    subSelect.addEventListener('change', (e) => {
+                        toggleSubtitle(parseInt(e.target.value));
+                    });
+
+                    function toggleSubtitle(index) {
+                        for (let i = 0; i < videoPlayer.textTracks.length; i++) {
+                            videoPlayer.textTracks[i].mode = 'hidden'; // Hide all first
+                        }
+                        if (index >= 0 && index < videoPlayer.textTracks.length) {
+                             videoPlayer.textTracks[index].mode = 'showing';
+                        }
+                    }
+
                 } catch (err) {
                     console.error('Failed to extract subtitles:', err);
                 } finally {
@@ -171,8 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Hide placeholder if still there
                     placeholder.style.opacity = '0';
                 }
-
-                // videoPlayer.play() is already called in MANIFEST_PARSED
             }
 
 
