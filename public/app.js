@@ -71,10 +71,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch(`/metadata?url=${encodeURIComponent(rawUrl)}`);
             const data = await res.json();
 
-            // Audio Options
-            // Audio Options will be handled by HLS manifest once playing
-            // For now, show "Ready" or similar
-            audioSelect.innerHTML = '<option value="0">Audio (Loading...)</option>';
+            // Audio Options (Preview from Metadata)
+            if (data.audio && data.audio.length > 0) {
+                audioSelect.innerHTML = data.audio.map((t, i) =>
+                    `<option value="${t.index}">Audio ${i + 1}: ${t.lang} (${t.codec})</option>`
+                ).join('');
+                audioSelect.value = data.audio[0].index; // Select first by default
+            } else {
+                audioSelect.innerHTML = '<option value="0">Default Audio</option>';
+            }
 
             // Subtitle Options
             const validSubs = data.subs || [];
