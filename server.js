@@ -284,6 +284,7 @@ const server = http.createServer((req, res) => {
 
             // Base Args
             const ffmpegArgs = [
+                '-user_agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
                 '-i', videoUrl,
                 '-map', '0:v:0',
                 '-map', '[outa]',
@@ -335,7 +336,7 @@ const server = http.createServer((req, res) => {
             ffmpegProcess = spawn('ffmpeg', ffmpegArgs);
 
             ffmpegProcess.stderr.on('data', (data) => {
-                // console.log(`ffmpeg: ${data}`); // Optional: Uncomment for noisy logs
+                console.log(`ffmpeg: ${data}`);
             });
 
             ffmpegProcess.on('close', (code) => {
