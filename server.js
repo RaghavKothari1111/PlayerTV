@@ -226,8 +226,9 @@ const server = http.createServer((req, res) => {
                             // Add to HLS Stream Map
                             // Use sanitize title for NAME
                             // Fix: Replace spaces with underscores because var_stream_map uses space as delimiter
-                            const safeTitle = (audio.title || `Audio_${i + 1}`).replace(/[^a-zA-Z0-9]/g, '_').trim() || `Audio_${i + 1}`;
-                            varStreamMap += ` a:${i},agroup:audio,language:${audio.lang},name="${safeTitle}"`;
+                            // Also remove quotes as they seem to break the keyval parser
+                            const safeTitle = (audio.title || `Audio_${i + 1}`).replace(/[^a-zA-Z0-9]/g, '_').replace(/^_+|_+$/g, '') || `Audio_${i + 1}`;
+                            varStreamMap += ` a:${i},agroup:audio,language:${audio.lang},name:${safeTitle}`;
                         });
 
                         // Fix: Remove trailing semicolon from filterComplex to avoid "No such filter: ''" error
