@@ -1,6 +1,0 @@
-services:
-  - type: web
-    name: player-tv
-    env: docker
-    plan: free
-    autoDeploy: true
