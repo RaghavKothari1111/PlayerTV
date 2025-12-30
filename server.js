@@ -119,7 +119,7 @@ const server = http.createServer((req, res) => {
                             const audio = data.streams
                                 .filter(s => s.codec_type === 'audio')
                                 .map((s, i) => ({
-                                    index: s.index,
+                                    index: i, // Relative Index for 0:a:i selection
                                     lang: s.tags?.language || 'und',
                                     codec: s.codec_name
                                 }));
