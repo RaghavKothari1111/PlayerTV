@@ -302,12 +302,17 @@ const server = http.createServer((req, res) => {
                 '-filter_complex',
                 `[0:a:${audioIndex}]aformat=channel_layouts=5.1[a51];` +
                 `[a51]channelsplit=channel_layout=5.1[FL][FR][FC][LFE][SL][SR];` +
-                `[FC]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC];` +
+                // EQ Processing
+                `[FC]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_orig];` +
                 `[FL]equalizer=f=6000:t=q:w=1:g=4[eFL];` +
                 `[FR]equalizer=f=6000:t=q:w=1:g=4[eFR];` +
-                `[eFL][eFC]amix=inputs=2:weights='0.70 0.30'[nFL];` +
-                `[eFR][eFC]amix=inputs=2:weights='0.70 0.30'[nFR];` +
-                `[eFC]volume=1.5[nFC];` +
+                // Power Split Center Channel (Need 3 copies: To Left, To Right, To Center)
+                `[eFC_orig]asplit=3[eFC1][eFC2][eFC3];` +
+                // Mixing
+                `[eFL][eFC1]amix=inputs=2:weights='0.70 0.30'[nFL];` +
+                `[eFR][eFC2]amix=inputs=2:weights='0.70 0.30'[nFR];` +
+                `[eFC3]volume=1.5[nFC];` +
+                // Merge back to 5.1
                 `[nFL][nFR][nFC][LFE][SL][SR]join=inputs=6:channel_layout=5.1[outa]`,
 
                 // --- Audio Encoding ---
