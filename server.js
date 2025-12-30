@@ -269,131 +269,170 @@ const server = http.createServer((req, res) => {
 
             console.log(`Starting HLS for: ${videoUrl} | Audio: ${audioIndex}`);
 
-            // Detect Client Type
-            const userAgent = req.headers['user-agent'] || '';
-            const isLGTV = /Web0S|NetCast|SmartTV/i.test(userAgent);
-            console.log(`Client Detected: ${isLGTV ? 'LG Smart TV' : 'PC/Mobile Browser'} (${userAgent})`);
+            // Detect Codec (Probe first to decide Strategy)
+            console.log(`Probing video codec for: ${videoUrl}`);
+            const probe = spawn('ffprobe', [
+                '-v', 'quiet',
+                '-print_format', 'json',
+                '-show_streams',
+                '-select_streams', 'v:0',
+                videoUrl
+            ]);
 
-            // Transcoding Strategy
-            const videoCodec = isLGTV ? 'copy' : 'libx264';
-            let videoOpts = isLGTV
-                ? ['-bsf:v', 'h264_mp4toannexb'] // TV: Copy with HLS fix
-                : ['-preset', 'ultrafast', '-tune', 'zerolatency', '-crf', '18', '-pix_fmt', 'yuv420p']; // PC: Transcode
+            let probeData = '';
+            probe.stdout.on('data', d => probeData += d);
 
-            console.log(`Selected Video Codec: ${videoCodec}`);
-
-            // Base Args
-            const ffmpegArgs = [
-                '-user_agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                '-i', videoUrl,
-                '-map', '0:v:0',
-                '-map', '[outa]',
-            ];
-
-            // Subtitles are handled via /subtitles endpoint (Sidecar)
-            ffmpegArgs.push('-sn');
-
-            ffmpegArgs.push(
-                // --- Video Strategy ---
-                '-c:v', videoCodec,
-                ...videoOpts,
-
-                // --- Audio: Complex Filter (Selected Track) ---
-                '-filter_complex',
-                `[0:a:${audioIndex}]aformat=channel_layouts=5.1[a51];` +
-                `[a51]channelsplit=channel_layout=5.1[FL][FR][FC][LFE][SL][SR];` +
-                // EQ Processing
-                `[FC]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_orig];` +
-                `[FL]equalizer=f=6000:t=q:w=1:g=4[eFL];` +
-                `[FR]equalizer=f=6000:t=q:w=1:g=4[eFR];` +
-                // Power Split Center Channel (Need 3 copies: To Left, To Right, To Center)
-                `[eFC_orig]asplit=3[eFC1][eFC2][eFC3];` +
-                // Mixing
-                `[eFL][eFC1]amix=inputs=2:weights='0.70 0.30'[nFL];` +
-                `[eFR][eFC2]amix=inputs=2:weights='0.70 0.30'[nFR];` +
-                `[eFC3]volume=1.5[nFC];` +
-                // Merge back to 5.1
-                `[nFL][nFR][nFC][LFE][SL][SR]join=inputs=6:channel_layout=5.1[outa]`,
-
-                // --- Audio Encoding ---
-                '-c:a', 'aac',
-                '-b:a', '640k',
-                '-ac', '6',
-
-                // --- Resilience Settings ---
-                '-max_muxing_queue_size', '4096',
-
-                // --- HLS Settings ---
-                '-f', 'hls',
-                '-hls_time', '4',
-                '-hls_list_size', '20',
-                '-hls_flags', 'delete_segments',
-                '-start_number', '0',
-                path.join(hlsDir, 'stream.m3u8')
-            );
-
-            // Force overwrite output
-            ffmpegArgs.unshift('-y');
-
-            console.log("DEBUG: AudioIdx:", audioIndex);
-            console.log("DEBUG: Full Command:", "ffmpeg " + ffmpegArgs.map(a => a.includes(' ') ? `"${a}"` : a).join(' '));
-
-            ffmpegProcess = spawn('ffmpeg', ffmpegArgs);
-
-            ffmpegProcess.stderr.on('data', (data) => {
-                console.log(`ffmpeg: ${data}`);
-            });
-
-            ffmpegProcess.on('close', (code) => {
-                console.log(`FFmpeg exited with code ${code}`);
-                // If ffmpeg exits before playlist is ready, fail the request
-                if (code !== 0 && !res.headersSent) {
-                    clearInterval(checkPlaylist);
-                    res.writeHead(500);
-                    res.end(JSON.stringify({ error: `FFmpeg exited early with code ${code}` }));
+            probe.on('close', (code) => {
+                let codecName = 'unknown';
+                if (code === 0) {
+                    try {
+                        const pd = JSON.parse(probeData);
+                        if (pd.streams && pd.streams.length > 0) {
+                            codecName = pd.streams[0].codec_name;
+                        }
+                    } catch (e) {
+                        console.log("Probe JSON Parse Error");
+                    }
                 }
-            });
+                console.log(`Detected Codec: ${codecName}`);
 
-            // Poll for playlist availability
-            let attempts = 0;
-            const maxAttempts = 240; // 120 seconds timeout
+                // Detect Client Type
+                const userAgent = req.headers['user-agent'] || '';
+                const isLGTV = /Web0S|NetCast|SmartTV/i.test(userAgent);
+                console.log(`Client Detected: ${isLGTV ? 'LG Smart TV' : 'PC/Mobile Browser'} (${userAgent})`);
 
-            const checkPlaylist = setInterval(() => {
-                attempts++;
-                if (fs.existsSync(path.join(hlsDir, 'stream.m3u8'))) {
-                    clearInterval(checkPlaylist);
-                    res.writeHead(200, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ status: 'started' }));
-                    // Reset Watchdog after success
-                    resetWatchdog();
-                } else if (attempts >= maxAttempts) {
-                    clearInterval(checkPlaylist);
-                    if (ffmpegProcess) ffmpegProcess.kill('SIGKILL');
-                    res.writeHead(500);
-                    res.end(JSON.stringify({ error: 'Timeout waiting for stream' }));
+                // Transcoding Strategy
+                let videoCodec = 'libx264';
+                let videoOpts = ['-preset', 'ultrafast', '-tune', 'zerolatency', '-crf', '18', '-pix_fmt', 'yuv420p'];
+
+                if (isLGTV) {
+                    if (codecName === 'h264') {
+                        videoCodec = 'copy';
+                        videoOpts = ['-bsf:v', 'h264_mp4toannexb'];
+                    } else if (codecName === 'hevc') {
+                        videoCodec = 'copy';
+                        videoOpts = ['-bsf:v', 'hevc_mp4toannexb'];
+                    } else {
+                        // Fallback: Transcode required for other formats on HLS
+                        console.log("LG TV detected but codec not H264/HEVC -> Falling back to Transcode");
+                    }
                 }
-            }, 500);
 
-        } else if (parsedUrl.pathname === '/stop') {
-            if (ffmpegProcess) {
-                ffmpegProcess.kill('SIGKILL');
-                ffmpegProcess = null;
+                console.log(`Selected Video Codec: ${videoCodec}`);
+
+                // Base Args
+                const ffmpegArgs = [
+                    '-user_agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                    '-i', videoUrl,
+                    '-map', '0:v:0',
+                    '-map', '[outa]',
+                ];
+
+                // Subtitles are handled via /subtitles endpoint (Sidecar)
+                ffmpegArgs.push('-sn');
+
+                ffmpegArgs.push(
+                    // --- Video Strategy ---
+                    '-c:v', videoCodec,
+                    ...videoOpts,
+
+                    // --- Audio: Complex Filter (Selected Track) ---
+                    '-filter_complex',
+                    `[0:a:${audioIndex}]aformat=channel_layouts=5.1[a51];` +
+                    `[a51]channelsplit=channel_layout=5.1[FL][FR][FC][LFE][SL][SR];` +
+                    // EQ Processing
+                    `[FC]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_orig];` +
+                    `[FL]equalizer=f=6000:t=q:w=1:g=4[eFL];` +
+                    `[FR]equalizer=f=6000:t=q:w=1:g=4[eFR];` +
+                    // Power Split Center Channel (Need 3 copies: To Left, To Right, To Center)
+                    `[eFC_orig]asplit=3[eFC1][eFC2][eFC3];` +
+                    // Mixing
+                    `[eFL][eFC1]amix=inputs=2:weights='0.70 0.30'[nFL];` +
+                    `[eFR][eFC2]amix=inputs=2:weights='0.70 0.30'[nFR];` +
+                    `[eFC3]volume=1.5[nFC];` +
+                    // Merge back to 5.1
+                    `[nFL][nFR][nFC][LFE][SL][SR]join=inputs=6:channel_layout=5.1[outa]`,
+
+                    // --- Audio Encoding ---
+                    '-c:a', 'aac',
+                    '-b:a', '640k',
+                    '-ac', '6',
+
+                    // --- Resilience Settings ---
+                    '-max_muxing_queue_size', '4096',
+
+                    // --- HLS Settings ---
+                    '-f', 'hls',
+                    '-hls_time', '4',
+                    '-hls_list_size', '20',
+                    '-hls_flags', 'delete_segments',
+                    '-start_number', '0',
+                    path.join(hlsDir, 'stream.m3u8')
+                );
+
+                // Force overwrite output
+                ffmpegArgs.unshift('-y');
+
+                console.log("DEBUG: AudioIdx:", audioIndex);
+                console.log("DEBUG: Full Command:", "ffmpeg " + ffmpegArgs.map(a => a.includes(' ') ? `"${a}"` : a).join(' '));
+
+                ffmpegProcess = spawn('ffmpeg', ffmpegArgs);
+
+                ffmpegProcess.stderr.on('data', (data) => {
+                    console.log(`ffmpeg: ${data}`);
+                });
+
+                ffmpegProcess.on('close', (code) => {
+                    console.log(`FFmpeg exited with code ${code}`);
+                    // If ffmpeg exits before playlist is ready, fail the request
+                    if (code !== 0 && !res.headersSent) {
+                        clearInterval(checkPlaylist);
+                        res.writeHead(500);
+                        res.end(JSON.stringify({ error: `FFmpeg exited early with code ${code}` }));
+                    }
+                });
+
+                // Poll for playlist availability
+                let attempts = 0;
+                const maxAttempts = 240; // 120 seconds timeout
+
+                const checkPlaylist = setInterval(() => {
+                    attempts++;
+                    if (fs.existsSync(path.join(hlsDir, 'stream.m3u8'))) {
+                        clearInterval(checkPlaylist);
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ status: 'started' }));
+                        // Reset Watchdog after success
+                        resetWatchdog();
+                    } else if (attempts >= maxAttempts) {
+                        clearInterval(checkPlaylist);
+                        if (ffmpegProcess) ffmpegProcess.kill('SIGKILL');
+                        res.writeHead(500);
+                        res.end(JSON.stringify({ error: 'Timeout waiting for stream' }));
+                    }
+                }, 500);
+
+            } else if (parsedUrl.pathname === '/stop') {
+                if (ffmpegProcess) {
+                    ffmpegProcess.kill('SIGKILL');
+                    ffmpegProcess = null;
+                }
+                res.writeHead(200);
+                res.end('Stopped');
+
+            } else if (parsedUrl.pathname === '/ping') {
+                // Client keeps connection alive
+                resetWatchdog();
+                res.writeHead(200);
+                res.end('Pong');
+
+            } else {
+                // Not Found
+                res.writeHead(404);
+                res.end('Not Found');
             }
-            res.writeHead(200);
-            res.end('Stopped');
-
-        } else if (parsedUrl.pathname === '/ping') {
-            // Client keeps connection alive
-            resetWatchdog();
-            res.writeHead(200);
-            res.end('Pong');
-
-        } else {
-            // Not Found
-            res.writeHead(404);
-            res.end('Not Found');
-        }
-    });
+        }); // End Probe Callback
+});
 });
 
 const PORT = process.env.PORT || 3000;
