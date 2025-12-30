@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player by Raghav</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- HLS.js -->
+    <script src="hls.min.js"></script>
+    <!-- Ionicons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</head>
+
+<body>
+    <div class="background-globes">
+        <div class="globe g1"></div>
+        <div class="globe g2"></div>
+    </div>
+
+    <div class="glass-container">
+        <header>
+            <h1>StreamLine</h1>
+            <p>Direct Stream Player</p>
+        </header>
+
+        <div class="input-group">
+            <input type="text" id="urlInput" placeholder="Enter Direct Video URL..." spellcheck="false">
+            <div class="controls-row">
+                <select id="audioSelect" class="track-select">
+                    <option value="0">Loading Tracks...</option>
+                </select>
+            </div>
+            <button id="playBtn">Play Stream</button>
+        </div>
+
+        <div class="video-wrapper" id="videoContainer">
+            <video id="videoPlayer" controls playsinline>
+                Your browser does not support the video tag.
+            </video>
+
+            <div class="placeholder-overlay" id="placeholder">
+                <span>Ready to Stream</span>
+            </div>
+
+            <!-- Custom Overlay Controls (visible when hovering) -->
+            <div class="custom-controls">
+                <button id="fullscreenBtn" class="icon-btn" title="Fullscreen">
+                    <ion-icon name="resize-outline"></ion-icon>
+                </button>
+            </div>
+        </div>
+
+        <div id="statusMessage"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
