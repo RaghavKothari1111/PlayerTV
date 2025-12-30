@@ -21,12 +21,12 @@ document.addEventListener('DOMContentLoaded', () => {
     urlInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             fetchMetadata();
-            startStream();
+            startStream('enterKey');
         }
     });
 
     playBtn.addEventListener('click', () => {
-        startStream();
+        startStream('playBtn');
     });
 
     // Auto-fetch metadata if URL pasted
@@ -42,8 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(`Switching Audio Track to Index: ${newIndex}`);
             hls.audioTrack = newIndex;
         } else {
-            // Fallback for native or single track (requires restart if using old method, but we want seamless)
-            // If native, safari handles it via system controls usually.
             console.log("Audio switch requested but HLS not controlling multiple tracks.");
         }
     });
@@ -51,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Subtitle Change -> Restart Stream (Sidecar)
     subSelect.addEventListener('change', () => {
         if (!videoPlayer.paused || hls) {
-            startStream();
+            startStream('subSelect');
         }
     });
 
@@ -117,13 +115,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function startStream() {
+    let isStreamStarting = false;
+
+    async function startStream(source = 'unknown') {
+        if (isStreamStarting) {
+            console.log(`startStream blocked: already starting (source: ${source})`);
+            return;
+        }
+
+        console.log(`startStream called from: ${source}`);
+        isStreamStarting = true;
+
         const rawUrl = urlInput.value.trim();
         const audioIdx = audioSelect.value || 0;
         const subIdx = subSelect.value || -1;
 
         if (!rawUrl) {
             showStatus('Please enter a valid URL', 'error');
+            isStreamStarting = false;
             return;
         }
 
@@ -140,6 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (err) {
             console.error(err);
             showStatus('Server Error: ' + err.message, 'error');
+            isStreamStarting = false;
             return;
         }
 
@@ -245,8 +255,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 showStatus('Playing (Native)', 'success');
                 placeholder.style.opacity = '0';
                 startHeartbeat();
+                isStreamStarting = false;
             });
         }
+
+        // Safety timeout in case everything hangs
+        setTimeout(() => { isStreamStarting = false; }, 10000);
     }
 
     function startHeartbeat() {

@@ -257,7 +257,9 @@ const server = http.createServer((req, res) => {
                             '-f', 'hls',
                             '-hls_time', '4',
                             '-hls_list_size', '0',
-                            '-hls_flags', 'program_date_time',
+                            '-hls_playlist_type', 'event', // Important: Tells player playlist will grow
+                            '-hls_flags', 'program_date_time', // Removed delete_segments for VOD-style history
+                            '-hls_allow_cache', '1',
                             '-start_number', '0',
                             '-master_pl_name', 'main.m3u8', // FFmpeg generates the MASTER playlist linking all variants
                             '-var_stream_map', varStreamMap,
