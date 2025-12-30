@@ -406,7 +406,7 @@ const server = http.createServer((req, res) => {
 
                 const checkPlaylist = setInterval(() => {
                     attempts++;
-                    if (fs.existsSync(path.join(hlsDir, 'stream.m3u8'))) {
+                    if (fs.existsSync(path.join(hlsDir, 'main.m3u8'))) {
                         clearInterval(checkPlaylist);
                         res.writeHead(200, { 'Content-Type': 'application/json' });
                         res.end(JSON.stringify({ status: 'started' }));
