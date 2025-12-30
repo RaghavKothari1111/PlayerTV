@@ -381,8 +381,8 @@ const server = http.createServer((req, res) => {
                     // --- HLS Settings ---
                     '-f', 'hls',
                     '-hls_time', '4',
-                    '-hls_list_size', '45', // 3 minutes buffer (Users request: Save space, keep last ~2 mins)
-                    '-hls_flags', 'delete_segments+program_date_time', // Sliding window: Delete old segments
+                    '-hls_list_size', '0', // 0 = Keep all segments (VOD style, fixes jumping)
+                    '-hls_flags', 'program_date_time', // Standard flags only, NO delete_segments
                     '-start_number', '0',
                     path.join(hlsDir, 'stream.m3u8')
                 );
