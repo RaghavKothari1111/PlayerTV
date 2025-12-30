@@ -144,8 +144,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 debug: false,
                 enableWorker: true,
                 lowLatencyMode: false,
-                maxBufferLength: 30, // Increased to 30s as requested
-                maxMaxBufferLength: 40,
+                maxBufferLength: 45, // Increased to 45s as requested
+                maxMaxBufferLength: 60,
                 backBufferLength: 0,
                 capLevelToPlayerSize: true,
                 subtitleDisplay: true
