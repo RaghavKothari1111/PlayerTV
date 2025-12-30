@@ -238,6 +238,7 @@ const server = http.createServer((req, res) => {
 
         } else if (parsedUrl.pathname === '/start') {
             const videoUrl = parsedUrl.query.url;
+            const audioIndex = parseInt(parsedUrl.query.audioIndex) || 0;
             const subIndex = parseInt(parsedUrl.query.subIndex) || -1; // -1 = No Subs
 
             if (!videoUrl) {
