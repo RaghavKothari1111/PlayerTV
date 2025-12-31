@@ -196,96 +196,85 @@ const server = http.createServer((req, res) => {
                             }
                         }
 
-                        if (audioStreams.length === 0) {
-                            audioStreams.push({ index: 1, streamIndex: 0, lang: 'und', title: 'Default' });
-                        }
-
-                        // START CHANGE: Use libx264 for compatibility
-                        // const isLGTV = true; 
-                        // Force transcoding to ensure video plays on all devices (solves "audio only" black screen)
-                        let videoCodec = 'libx264';
-                        let videoOpts = ['-preset', 'ultrafast', '-tune', 'zerolatency', '-crf', '23', '-pix_fmt', 'yuv420p'];
-
-                        // If you want to re-enable copy mode for specific devices, implementation logic should go here.
-                        // For now, robustness > raw performance for this fix.
-                        /*
-                        if (isLGTV && (codecName === 'h264' || codecName === 'hevc')) {
-                            videoCodec = 'copy';
-                            videoOpts = ['-bsf:v', `${codecName}_mp4toannexb`];
-                        }
-                        */
-                        // END CHANGE
-
                         // --- Build Dynamic Filter Complex & Maps ---
                         let filterComplex = '';
                         let audioMaps = [];
-                        // We will use ONE video stream (v:0) and MULTIPLE audio streams (a:0, a:1...)
-                        // var_stream_map: "v:0,agroup:audio a:0,agroup:audio,language:eng a:1,agroup:audio,language:hin"
-                        let varStreamMap = 'v:0,agroup:audio';
+                        let varStreamMap = '';
 
-                        audioStreams.forEach((audio, i) => {
-                            // Unique Filter Chain for EACH audio track
-                            // We construct unique IDs for the filter nodes to ensure no collision
-                            const fc =
-                                `[0:${audio.index}]aformat=channel_layouts=5.1[a51_${i}];` +
-                                `[a51_${i}]channelsplit=channel_layout=5.1[FL_${i}][FR_${i}][FC_${i}][LFE_${i}][SL_${i}][SR_${i}];` +
-                                `[FC_${i}]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_orig_${i}];` +
-                                `[FL_${i}]equalizer=f=6000:t=q:w=1:g=4[eFL_${i}];` +
-                                `[FR_${i}]equalizer=f=6000:t=q:w=1:g=4[eFR_${i}];` +
-                                `[eFC_orig_${i}]asplit=3[eFC1_${i}][eFC2_${i}][eFC3_${i}];` +
-                                `[eFL_${i}][eFC1_${i}]amix=inputs=2:weights='0.70 0.30'[nFL_${i}];` +
-                                `[eFR_${i}][eFC2_${i}]amix=inputs=2:weights='0.70 0.30'[nFR_${i}];` +
-                                `[eFC3_${i}]volume=1.5[nFC_${i}];` +
-                                `[nFL_${i}][nFR_${i}][nFC_${i}][LFE_${i}][SL_${i}][SR_${i}]join=inputs=6:channel_layout=5.1[outa${i}];`;
+                        // If Audio Exists, Process it (5.1 Upmix etc.)
+                        if (audioStreams.length > 0) {
+                            varStreamMap = 'v:0,agroup:audio'; // Link Video to Audio Group
 
-                            filterComplex += fc;
+                            audioStreams.forEach((audio, i) => {
+                                // Unique Filter Chain for EACH audio track
+                                const fc =
+                                    `[0:${audio.index}]aformat=channel_layouts=5.1[a51_${i}];` +
+                                    `[a51_${i}]channelsplit=channel_layout=5.1[FL_${i}][FR_${i}][FC_${i}][LFE_${i}][SL_${i}][SR_${i}];` +
+                                    `[FC_${i}]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_orig_${i}];` +
+                                    `[FL_${i}]equalizer=f=6000:t=q:w=1:g=4[eFL_${i}];` +
+                                    `[FR_${i}]equalizer=f=6000:t=q:w=1:g=4[eFR_${i}];` +
+                                    `[eFC_orig_${i}]asplit=3[eFC1_${i}][eFC2_${i}][eFC3_${i}];` +
+                                    `[eFL_${i}][eFC1_${i}]amix=inputs=2:weights='0.70 0.30'[nFL_${i}];` +
+                                    `[eFR_${i}][eFC2_${i}]amix=inputs=2:weights='0.70 0.30'[nFR_${i}];` +
+                                    `[eFC3_${i}]volume=1.5[nFC_${i}];` +
+                                    `[nFL_${i}][nFR_${i}][nFC_${i}][LFE_${i}][SL_${i}][SR_${i}]join=inputs=6:channel_layout=5.1[outa${i}];`;
 
-                            // Map the output of the filter
-                            audioMaps.push('-map', `[outa${i}]`);
+                                filterComplex += fc;
 
-                            // Add to HLS Stream Map
-                            // Use sanitize title for NAME
-                            // Fix: Replace spaces with underscores because var_stream_map uses space as delimiter
-                            // Also remove quotes as they seem to break the keyval parser
-                            const safeTitle = (audio.title || `Audio_${i + 1}`).replace(/[^a-zA-Z0-9]/g, '_').replace(/^_+|_+$/g, '') || `Audio_${i + 1}`;
-                            varStreamMap += ` a:${i},agroup:audio,language:${audio.lang},name:${safeTitle}`;
-                        });
+                                // Map the output of the filter
+                                audioMaps.push('-map', `[outa${i}]`);
 
-                        // Fix: Remove trailing semicolon from filterComplex to avoid "No such filter: ''" error
+                                // Add to HLS Stream Map
+                                const safeTitle = (audio.title || `Audio_${i + 1}`).replace(/[^a-zA-Z0-9]/g, '_').replace(/^_+|_+$/g, '') || `Audio_${i + 1}`;
+                                varStreamMap += ` a:${i},agroup:audio,language:${audio.lang},name:${safeTitle}`;
+                            });
+                        } else {
+                            // Video Only Mode
+                            varStreamMap = 'v:0'; // Only video
+                            console.log("No audio streams found. Encoding Video Only.");
+                        }
+
+                        // Fix: Remove trailing semicolon from filterComplex
                         if (filterComplex.endsWith(';')) {
                             filterComplex = filterComplex.slice(0, -1);
                         }
 
-                        // Standard Args
+                        // Base Args
                         const ffmpegArgs = [
                             '-y',
                             '-user_agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
                             '-i', videoUrl,
-                            '-map', '0:v:0', // Output Stream #0 implies the FIRST mapped stream -> Video
-                            ...audioMaps,    // Output Stream #1..N -> Audios
+                            '-map', '0:v:0', // Play Video
+                            ...audioMaps,    // Play Audio (if any)
 
                             '-c:v', videoCodec,
                             ...videoOpts,
+                        ];
 
-                            '-filter_complex', filterComplex,
+                        // Add Audio Args ONLY if audio exists
+                        if (audioStreams.length > 0) {
+                            ffmpegArgs.push(
+                                '-filter_complex', filterComplex,
+                                '-c:a', 'aac',
+                                '-b:a', '640k',
+                                '-ac', '6'
+                            );
+                        }
 
-                            '-c:a', 'aac',
-                            '-b:a', '640k',
-                            '-ac', '6',
-
+                        // Final logic
+                        ffmpegArgs.push(
                             '-max_muxing_queue_size', '4096',
                             '-f', 'hls',
-                            '-hls_time', '6', // Increased to 6s for stability
+                            '-hls_time', '6',
                             '-hls_list_size', '0',
                             '-hls_playlist_type', 'event',
-                            // Removed program_date_time to avoid timeline reset issues
                             '-hls_allow_cache', '1',
                             '-start_number', '0',
                             '-master_pl_name', 'main.m3u8',
                             '-var_stream_map', varStreamMap,
                             '-hls_segment_filename', path.join(hlsDir, 'stream_%v_%d.ts'),
                             path.join(hlsDir, 'stream_%v.m3u8')
-                        ];
+                        );
 
                         console.log("DEBUG: Launching FFmpeg Multi-Audio");
                         currentStreamUrl = videoUrl; // Track the active URL for persistence
