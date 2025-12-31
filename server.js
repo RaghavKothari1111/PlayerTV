@@ -228,21 +228,31 @@ const server = http.createServer((req, res) => {
                     }
                 } catch (e) { }
 
+                // User Agent to impersonate a standard browser (Fixes 400 Bad Request)
+                const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
+
                 const startEncodingProcess = () => {
                     console.log(`Starting HLS for Session ${sessionId}: ${videoUrl}`);
 
                     // 1. Probe (Independent of session, just probing URL)
-                    const probe = spawn('ffprobe', ['-v', 'quiet', '-print_format', 'json', '-show_streams', videoUrl]);
+                    const probe = spawn('ffprobe', [
+                        '-user_agent', USER_AGENT,
+                        '-v', 'quiet',
+                        '-print_format', 'json',
+                        '-show_streams',
+                        videoUrl
+                    ]);
                     let probeData = '';
                     probe.stdout.on('data', d => probeData += d);
 
                     probe.on('close', (code) => {
                         let audioStreams = [];
+                        let pd = null;
 
                         // 1. AUDIO & PROBE PARSING (Restored)
                         if (code === 0) {
                             try {
-                                const pd = JSON.parse(probeData);
+                                pd = JSON.parse(probeData);
                                 audioStreams = pd.streams
                                     .filter(s => s.codec_type === 'audio')
                                     .map((s, i) => ({
@@ -303,30 +313,32 @@ const server = http.createServer((req, res) => {
                             console.log(`[Smart] Session ${sessionId} is in FALLBACK mode. Forcing Transcode.`);
                             videoCodec = 'libx264';
                         } else {
-                            try {
-                                // Re-parsing for video codec is fine/cheap
-                                const pd = JSON.parse(probeData);
-                                codecName = pd.streams.find(s => s.codec_type === 'video')?.codec_name || 'unknown';
+                            if (pd && pd.streams) {
+                                try {
+                                    codecName = pd.streams.find(s => s.codec_type === 'video')?.codec_name || 'unknown';
 
-                                if (codecName === 'h264') {
-                                    videoCodec = 'copy';
-                                    console.log("[Smart] Source is H.264. Using Direct Copy.");
-                                }
-                                else if (codecName === 'hevc' || codecName === 'h265') {
-                                    if (isTV) {
+                                    if (codecName === 'h264') {
                                         videoCodec = 'copy';
-                                        console.log("[Smart] Source is HEVC & Device is TV. Using Direct Copy.");
-                                    } else {
-                                        videoCodec = 'libx264';
-                                        console.log("[Smart] Source is HEVC but Device is Not TV. Transcoding.");
+                                        console.log("[Smart] Source is H.264. Using Direct Copy.");
                                     }
-                                }
-                                else {
-                                    console.log(`[Smart] Source is ${codecName}. Transcoding.`);
-                                }
+                                    else if (codecName === 'hevc' || codecName === 'h265') {
+                                        if (isTV) {
+                                            videoCodec = 'copy';
+                                            console.log("[Smart] Source is HEVC & Device is TV. Using Direct Copy.");
+                                        } else {
+                                            videoCodec = 'libx264';
+                                            console.log("[Smart] Source is HEVC but Device is Not TV. Transcoding.");
+                                        }
+                                    }
+                                    else {
+                                        console.log(`[Smart] Source is ${codecName}. Transcoding.`);
+                                    }
 
-                            } catch (e) {
-                                console.error("Probe parse error (video)", e);
+                                } catch (e) {
+                                    console.error("Probe parse error (video)", e);
+                                }
+                            } else {
+                                console.log("[Smart] Probe failed or no data. Defaulting to Transcode.");
                             }
                         }
 
@@ -339,6 +351,7 @@ const server = http.createServer((req, res) => {
 
                         // Base Args
                         const ffmpegArgs = [
+                            '-user_agent', USER_AGENT,
                             '-y',
                             '-i', videoUrl,
                             '-map', '0:v:0',
