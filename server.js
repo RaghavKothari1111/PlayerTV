@@ -137,13 +137,26 @@ const server = http.createServer((req, res) => {
                     return;
                 }
 
-                // Cleanup previous stream
+                // SMART CHECK: If same URL is already playing, Reuse it!
+                if (ffmpegProcess && currentStreamUrl === videoUrl) {
+                    console.log(`Stream already active for: ${videoUrl}. Reusing existing process.`);
+                    resetWatchdog(); // Extend lifecycle
+
+                    // Respond immediately with Success
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ status: 'resumed' }));
+                    return;
+                }
+
+                // Cleanup previous stream (Different URL provided)
                 if (ffmpegProcess) {
+                    console.log("Stopping previous stream...");
                     try {
                         ffmpegProcess.stdin.write('q');
                         ffmpegProcess.kill('SIGKILL');
                     } catch (e) { }
                     ffmpegProcess = null;
+                    currentStreamUrl = null;
                 }
 
                 // Clear HLS directory
@@ -275,6 +288,7 @@ const server = http.createServer((req, res) => {
                         ];
 
                         console.log("DEBUG: Launching FFmpeg Multi-Audio");
+                        currentStreamUrl = videoUrl; // Track the active URL for persistence
                         ffmpegProcess = spawn('ffmpeg', ffmpegArgs);
 
                         ffmpegProcess.stderr.on('data', (data) => console.log(`ffmpeg: ${data}`));

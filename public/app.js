@@ -25,6 +25,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initially show subtitle select
     // subSelect.style.display = 'none'; // REMOVED
 
+    // --- Auto-Resume from LocalStorage ---
+    const savedUrl = localStorage.getItem('lastVideoUrl');
+    if (savedUrl) {
+        urlInput.value = savedUrl;
+        console.log("Found saved URL, attempting auto-resume...");
+        // Delay slightly to allow UI to render
+        setTimeout(() => {
+            // We trigger metadata fetch first to populate dropdowns, then start stream
+            fetchMetadata().then(() => {
+                startStream('auto-resume');
+            });
+        }, 500);
+    }
+
     // Fetch Metadata when URL changes
     urlInput.addEventListener('blur', fetchMetadata);
     urlInput.addEventListener('keypress', (e) => {
@@ -140,9 +154,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function formatTime(s) {
         if (isNaN(s)) return "0:00";
-        const mins = Math.floor(s / 60);
-        const secs = Math.floor(s % 60);
-        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        const totalSeconds = Math.floor(s);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = Math.floor(totalSeconds % 60);
+
+        if (hours > 0) {
+            return `${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        } else {
+            return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
     }
 
     // Audio Change -> Seamless Switch (Netflix Style)
@@ -282,6 +303,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Save to LocalStorage for persistence
+        if (source !== 'auto-resume') {
+            localStorage.setItem('lastVideoUrl', rawUrl);
+        }
+
         showStatus(`Initializing Stream...`, 'info');
 
         // 1. Tell Server to Start Transcoding
@@ -320,9 +346,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 debug: false,
                 enableWorker: true,
                 lowLatencyMode: false,
-                maxBufferLength: 45, // Increased to 45s as requested
-                maxMaxBufferLength: 60,
-                backBufferLength: 0,
+                // MEMORY OPTIMIZATION FOR TV BROWSERS
+                maxBufferLength: 20, // Reduced from 45s to 20s to save RAM
+                maxMaxBufferLength: 30, // Reduced from 60s
+                backBufferLength: 30, // Limit back buffer to 30s (aggressively flush old segments)
                 capLevelToPlayerSize: true,
                 subtitleDisplay: true
             });
