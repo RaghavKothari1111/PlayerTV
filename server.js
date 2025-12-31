@@ -17,6 +17,17 @@ let watchdogTimer = null;
 const hlsDir = path.join(PUBLIC_DIR, HLS_DIR_NAME);
 if (!fs.existsSync(hlsDir)) {
     fs.mkdirSync(hlsDir, { recursive: true });
+} else {
+    // Cleanup stale HLS files on startup
+    try {
+        const files = fs.readdirSync(hlsDir);
+        for (const file of files) {
+            fs.unlinkSync(path.join(hlsDir, file));
+        }
+        console.log('Cleaned HLS directory on startup.');
+    } catch (e) {
+        console.error('Error cleaning HLS directory:', e);
+    }
 }
 
 // --- Watchdog Logic (Auto-Stop on Inactivity) ---
@@ -238,6 +249,10 @@ const server = http.createServer((req, res) => {
                         if (filterComplex.endsWith(';')) {
                             filterComplex = filterComplex.slice(0, -1);
                         }
+
+                        // Force transcoding to ensure video plays on all devices (solves "audio only" black screen)
+                        let videoCodec = 'libx264';
+                        let videoOpts = ['-preset', 'ultrafast', '-tune', 'zerolatency', '-crf', '23', '-pix_fmt', 'yuv420p'];
 
                         // Base Args
                         const ffmpegArgs = [
