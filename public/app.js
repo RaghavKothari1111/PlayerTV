@@ -25,25 +25,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initially show subtitle select
     // subSelect.style.display = 'none'; // REMOVED
 
+    // --- Session Management ---
+    let sessionId = localStorage.getItem('sessionId');
+    if (!sessionId) {
+        sessionId = 'sess-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('sessionId', sessionId);
+    }
+    console.log("Client Session ID:", sessionId);
+
     // --- Auto-Resume from LocalStorage ---
     const savedUrl = localStorage.getItem('lastVideoUrl');
     const savedTime = localStorage.getItem('lastVideoTime');
 
     if (savedUrl) {
         urlInput.value = savedUrl;
-        console.log("Found saved URL, attempting auto-resume...");
-        // Delay slightly to allow UI to render
-        setTimeout(() => {
-            // We trigger metadata fetch first to populate dropdowns, then start stream
-            fetchMetadata().then(() => {
-                startStream('auto-resume').then(() => {
-                    if (savedTime) {
-                        console.log(`Restoring playback position: ${savedTime}`);
-                        videoPlayer.currentTime = parseFloat(savedTime);
-                    }
-                });
-            });
-        }, 500);
+        console.log("Found saved URL. Waiting for user to play.");
+        // OPTIONAL: Fetch metadata so options are ready, but DO NOT start stream.
+        fetchMetadata();
     }
 
     // Fetch Metadata when URL changes
@@ -62,7 +60,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Auto-fetch metadata if URL pasted
     urlInput.addEventListener('paste', () => {
-        setTimeout(fetchMetadata, 100);
+        // User requested NO server process on paste. 
+        // We will skip fetchMetadata too, or keep it? 
+        // "only play stream option runs the stream"
+        // Metadata is lightweight (ffprobe) but technicaly a server process.
+        // I will keep it commented out to be safe. User can click or blur.
+        // setTimeout(fetchMetadata, 100); 
     });
 
     // --- Custom Control Logic ---
@@ -310,6 +313,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Check for Resume Condition (Before overwriting storage)
+        const storedUrl = localStorage.getItem('lastVideoUrl');
+        const storedTime = parseFloat(localStorage.getItem('lastVideoTime'));
+        let shouldResume = (storedUrl === rawUrl && storedTime > 0);
+
         // Save to LocalStorage for persistence
         if (source !== 'auto-resume') {
             localStorage.setItem('lastVideoUrl', rawUrl);
@@ -319,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 1. Tell Server to Start Transcoding
         try {
-            const startRes = await fetch(`/start?url=${encodeURIComponent(rawUrl)}&audioIndex=${audioIdx}&subIndex=${subIdx}`);
+            const startRes = await fetch(`/start?url=${encodeURIComponent(rawUrl)}&audioIndex=${audioIdx}&subIndex=${subIdx}&session=${sessionId}`);
             if (!startRes.ok) throw new Error('Failed to start stream server');
         } catch (err) {
             console.error(err);
@@ -336,7 +344,8 @@ document.addEventListener('DOMContentLoaded', () => {
         startHeartbeat();
 
         // 2. Initialize HLS Player with Master Playlist
-        const streamSrc = `/hls/main.m3u8?t=${Date.now()}`;
+        // POINT TO SESSION SPECIFIC HLS
+        const streamSrc = `/hls/${sessionId}/main.m3u8?t=${Date.now()}`;
 
 
         if (typeof Hls === 'undefined') {
@@ -367,6 +376,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             hls.on(Hls.Events.MANIFEST_PARSED, function () {
                 videoPlayer.play().catch(e => console.log("Autoplay blocked"));
+
+                if (shouldResume) {
+                    console.log(`Resuming from ${storedTime}`);
+                    videoPlayer.currentTime = storedTime;
+                    shouldResume = false; // Reset
+                }
+
                 showStatus('Playing (HLS)', 'success');
                 placeholder.style.opacity = '0';
 
@@ -438,7 +454,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (heartbeatInterval) clearInterval(heartbeatInterval);
         // Ping every 5 seconds
         heartbeatInterval = setInterval(() => {
-            fetch('/ping').catch(e => console.log("Ping failed"));
+            fetch(`/ping?session=${sessionId}`).catch(e => console.log("Ping failed"));
         }, 5000);
     }
 
