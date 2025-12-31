@@ -27,6 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Auto-Resume from LocalStorage ---
     const savedUrl = localStorage.getItem('lastVideoUrl');
+    const savedTime = localStorage.getItem('lastVideoTime');
+
     if (savedUrl) {
         urlInput.value = savedUrl;
         console.log("Found saved URL, attempting auto-resume...");
@@ -34,7 +36,12 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             // We trigger metadata fetch first to populate dropdowns, then start stream
             fetchMetadata().then(() => {
-                startStream('auto-resume');
+                startStream('auto-resume').then(() => {
+                    if (savedTime) {
+                        console.log(`Restoring playback position: ${savedTime}`);
+                        videoPlayer.currentTime = parseFloat(savedTime);
+                    }
+                });
             });
         }, 500);
     }
@@ -438,8 +445,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Stop heartbeat on unload
     window.addEventListener('beforeunload', () => {
         if (heartbeatInterval) clearInterval(heartbeatInterval);
-        // Try to stop immediately
-        navigator.sendBeacon('/stop');
+        // DO NOT send /stop. Let the server watchdog handle cleanup.
+        // This allows persistence on reload.
     });
 
     function logToServer(msg) {
@@ -448,6 +455,13 @@ document.addEventListener('DOMContentLoaded', () => {
             body: msg
         }).catch(e => { });
     }
+
+    // Save playback position periodically
+    videoPlayer.addEventListener('timeupdate', () => {
+        if (videoPlayer.currentTime > 5) {
+            localStorage.setItem('lastVideoTime', videoPlayer.currentTime);
+        }
+    });
 
     function showStatus(msg, type) {
         statusMessage.textContent = msg;
