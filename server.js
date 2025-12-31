@@ -187,7 +187,8 @@ const server = http.createServer((req, res) => {
                         process: null,
                         url: null,
                         lastPing: Date.now(),
-                        dir: path.join(hlsBaseDir, sessionId)
+                        dir: path.join(hlsBaseDir, sessionId),
+                        forceTranscode: false // New Flag for Smart Fallback
                     };
                     sessions.set(sessionId, session);
 
@@ -237,59 +238,65 @@ const server = http.createServer((req, res) => {
 
                     probe.on('close', (code) => {
                         let audioStreams = [];
+                        // --- Device Detection ---
+                        // We trust the User-Agent sent by the client (app.js passes it or browser sends it)
+                        // Note: For /start, we rely on the browser's request headers if possible, 
+                        // but better to pass it from Client if the API call is fetch.
+                        // Actually, req.headers['user-agent'] is available.
+                        const userAgent = req.headers['user-agent'] || '';
+
+                        const isTV = /Web0S|Tizen|SMART-TV|SmartTV|Large Screen|GoogleTV|AndroidTV|HbbTV|Bravia/i.test(userAgent);
+                        const isMobile = /Android|iPhone|iPad|Mobile/i.test(userAgent) && !isTV;
+                        const isDesktop = !isTV && !isMobile;
+
+                        console.log(`[Smart] Device: ${isTV ? 'TV' : isMobile ? 'Mobile' : 'Desktop'} (${userAgent.substring(0, 30)}...)`);
+
+                        // --- Smart Codec Selection ---
+                        let videoCodec = 'libx264'; // Default Safe
                         let codecName = 'unknown';
 
-                        if (code === 0) {
+                        // Check if session has FORCED Transcoding (Fallback Mode)
+                        if (session.forceTranscode) {
+                            console.log(`[Smart] Session ${sessionId} is in FALLBACK mode. Forcing Transcode.`);
+                            videoCodec = 'libx264';
+                        } else {
                             try {
                                 const pd = JSON.parse(probeData);
                                 codecName = pd.streams.find(s => s.codec_type === 'video')?.codec_name || 'unknown';
-                                audioStreams = pd.streams
-                                    .filter(s => s.codec_type === 'audio')
-                                    .map((s, i) => ({
-                                        index: s.index,
-                                        streamIndex: i,
-                                        lang: s.tags?.language || 'und',
-                                        title: s.tags?.title || `Track ${i + 1}`
-                                    }));
+
+                                // Logic:
+                                // 1. H.264 is generally safe for Direct Copy on ALL devices.
+                                if (codecName === 'h264') {
+                                    videoCodec = 'copy';
+                                    console.log("[Smart] Source is H.264. Using Direct Copy.");
+                                }
+                                // 2. HEVC (H.265) is safe for TVs, but risky for Chrome/Desktop.
+                                else if (codecName === 'hevc' || codecName === 'h265') {
+                                    if (isTV) {
+                                        videoCodec = 'copy';
+                                        console.log("[Smart] Source is HEVC & Device is TV. Using Direct Copy.");
+                                    } else {
+                                        videoCodec = 'libx264';
+                                        console.log("[Smart] Source is HEVC but Device is Not TV. Transcoding.");
+                                    }
+                                }
+                                // 3. Others (VP9, AV1, MPEG4) -> Transcode to be safe
+                                else {
+                                    console.log(`[Smart] Source is ${codecName}. Transcoding.`);
+                                }
+
                             } catch (e) {
-                                console.error("Probe parse error", e);
+                                console.error("Probe parse error, defaulting to transcode", e);
                             }
                         }
 
-                        // --- Build Dynamic Filter Complex & Maps ---
-                        let filterComplex = '';
-                        let audioMaps = [];
-                        let varStreamMap = '';
-
-                        if (audioStreams.length > 0) {
-                            varStreamMap = 'v:0,agroup:audio';
-                            audioStreams.forEach((audio, i) => {
-                                const fc =
-                                    `[0:${audio.index}]aformat=channel_layouts=5.1[a51_${i}];` +
-                                    `[a51_${i}]channelsplit=channel_layout=5.1[FL_${i}][FR_${i}][FC_${i}][LFE_${i}][SL_${i}][SR_${i}];` +
-                                    `[FC_${i}]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_orig_${i}];` +
-                                    `[FL_${i}]equalizer=f=6000:t=q:w=1:g=4[eFL_${i}];` +
-                                    `[FR_${i}]equalizer=f=6000:t=q:w=1:g=4[eFR_${i}];` +
-                                    `[eFC_orig_${i}]asplit=3[eFC1_${i}][eFC2_${i}][eFC3_${i}];` +
-                                    `[eFL_${i}][eFC1_${i}]amix=inputs=2:weights='0.70 0.30'[nFL_${i}];` +
-                                    `[eFR_${i}][eFC2_${i}]amix=inputs=2:weights='0.70 0.30'[nFR_${i}];` +
-                                    `[eFC3_${i}]volume=1.5[nFC_${i}];` +
-                                    `[nFL_${i}][nFR_${i}][nFC_${i}][LFE_${i}][SL_${i}][SR_${i}]join=inputs=6:channel_layout=5.1[outa${i}];`;
-
-                                filterComplex += fc;
-                                audioMaps.push('-map', `[outa${i}]`);
-                                const safeTitle = (audio.title || `Audio_${i + 1}`).replace(/[^a-zA-Z0-9]/g, '_').replace(/^_+|_+$/g, '') || `Audio_${i + 1}`;
-                                varStreamMap += ` a:${i},agroup:audio,language:${audio.lang},name:${safeTitle}`;
-                            });
+                        let videoOpts = [];
+                        if (videoCodec === 'libx264') {
+                            videoOpts = ['-preset', 'ultrafast', '-tune', 'zerolatency', '-crf', '23', '-pix_fmt', 'yuv420p'];
                         } else {
-                            varStreamMap = 'v:0';
-                            console.log("No audio streams found. Encoding Video Only.");
+                            // Copy mode needs simpler opts (mostly none)
+                            videoOpts = [];
                         }
-
-                        if (filterComplex.endsWith(';')) filterComplex = filterComplex.slice(0, -1);
-
-                        let videoCodec = 'libx264';
-                        let videoOpts = ['-preset', 'ultrafast', '-tune', 'zerolatency', '-crf', '23', '-pix_fmt', 'yuv420p'];
 
                         // Base Args
                         const ffmpegArgs = [
@@ -406,6 +413,35 @@ const server = http.createServer((req, res) => {
                 }
                 res.writeHead(200);
                 res.end('Stopped');
+
+            } else if (parsedUrl.pathname === '/fallback') {
+                const sessionId = parsedUrl.query.session;
+
+                if (sessionId && sessions.has(sessionId)) {
+                    const s = sessions.get(sessionId);
+                    console.log(`[Fallback] Received error from Session ${sessionId}. Switching to Transcode Mode.`);
+
+                    // 1. Set Flag
+                    s.forceTranscode = true;
+
+                    // 2. Kill current process (if any)
+                    if (s.process) {
+                        s.process.kill('SIGKILL');
+                        s.process = null;
+                        s.url = null; // Clearing URL forces /start to re-run the logic
+                    }
+                    // 3. Clear Files
+                    try {
+                        const files = fs.readdirSync(s.dir);
+                        for (const file of files) fs.unlinkSync(path.join(s.dir, file));
+                    } catch (e) { }
+
+                    res.writeHead(200);
+                    res.end('Fallback Enabled');
+                } else {
+                    res.writeHead(404);
+                    res.end('Session Not Found');
+                }
 
             } else if (parsedUrl.pathname === '/ping') {
                 const sessionId = parsedUrl.query.session;

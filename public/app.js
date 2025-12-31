@@ -424,8 +424,22 @@ document.addEventListener('DOMContentLoaded', () => {
                             hls.startLoad();
                             break;
                         case Hls.ErrorTypes.MEDIA_ERROR:
-                            console.log('fatal media error encountered, try to recover');
-                            hls.recoverMediaError();
+                            console.log('fatal media error encountered, trying Fallback (Transcode)...');
+                            showStatus('Incompatible Format. Optimizing for device...', 'info');
+
+                            // Trigger Server Fallback
+                            fetch(`/fallback?session=${sessionId}`)
+                                .then(() => {
+                                    // Restart Stream (Server will now force transcode)
+                                    hls.destroy();
+                                    isStreamStarting = false;
+                                    // Slight delay to let server cleanup
+                                    setTimeout(() => startStream('fallback'), 1000);
+                                })
+                                .catch(e => {
+                                    showStatus('Optimization failed. Please reload.', 'error');
+                                    hls.destroy();
+                                });
                             break;
                         default:
                             hls.destroy();
