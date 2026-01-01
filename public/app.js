@@ -162,7 +162,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const rect = progressContainer.getBoundingClientRect();
         const pos = (e.clientX - rect.left) / rect.width;
-        videoPlayer.currentTime = pos * duration;
+        let targetTime = pos * duration;
+
+        // Clamp to Server Encoded Time
+        if (serverEncodedTime > 0 && targetTime > serverEncodedTime) {
+            targetTime = serverEncodedTime;
+            showStatus('Buffering... (Waiting for Server)', 'info');
+        }
+
+        videoPlayer.currentTime = targetTime;
     });
 
     // Volume
@@ -589,19 +597,35 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { isStreamStarting = false; }, 10000);
     }
 
+    let serverEncodedTime = 0; // Tracks how much video is ready on server
+    const progressServer = document.getElementById('progressServer');
+
     function startHeartbeat() {
         if (heartbeatInterval) clearInterval(heartbeatInterval);
-        // Ping every 5 seconds
+        // Ping every 2 seconds for faster updates
         heartbeatInterval = setInterval(() => {
-            fetch(`/ping?session=${sessionId}`).catch(e => console.log("Ping failed"));
-        }, 5000);
+            fetch(`/ping?session=${sessionId}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.encodedDuration) {
+                        serverEncodedTime = data.encodedDuration;
+                        updateServerProgress();
+                    }
+                })
+                .catch(e => console.log("Ping failed"));
+        }, 2000);
+    }
+
+    function updateServerProgress() {
+        const duration = getDuration();
+        if (!duration) return;
+        const percent = (serverEncodedTime / duration) * 100;
+        progressServer.style.width = `${Math.min(percent, 100)}%`;
     }
 
     // Stop heartbeat on unload
     window.addEventListener('beforeunload', () => {
         if (heartbeatInterval) clearInterval(heartbeatInterval);
-        // DO NOT send /stop. Let the server watchdog handle cleanup.
-        // This allows persistence on reload.
     });
 
     function logToServer(msg) {
@@ -681,7 +705,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             case 'ArrowRight': // Forward 10s
                 e.preventDefault();
-                videoPlayer.currentTime = Math.min(videoPlayer.currentTime + 10, getDuration());
+                const targetFwd = Math.min(videoPlayer.currentTime + 10, getDuration());
+                // Clamp to Server Encoded Time (Seek Limit)
+                if (targetFwd > serverEncodedTime) {
+                    showStatus('Buffering... (Waiting for Server)', 'info');
+                    videoPlayer.currentTime = serverEncodedTime;
+                } else {
+                    videoPlayer.currentTime = targetFwd;
+                }
                 startInactivityTimer();
                 break;
             case 'ArrowLeft': // Rewind 10s

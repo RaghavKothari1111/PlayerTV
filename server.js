@@ -487,9 +487,29 @@ const server = http.createServer((req, res) => {
                 const sessionId = parsedUrl.query.session;
                 if (sessionId && sessions.has(sessionId)) {
                     sessions.get(sessionId).lastPing = Date.now();
+
+                    // --- Calculate Real-Time HLS Duration ---
+                    let encodedDuration = 0;
+                    try {
+                        const m3u8Path = path.join(sessions.get(sessionId).dir, 'main.m3u8');
+                        if (fs.existsSync(m3u8Path)) {
+                            const content = fs.readFileSync(m3u8Path, 'utf8');
+                            // Sum all #EXTINF:duration, lines
+                            const matches = content.match(/#EXTINF:([\d.]+),/g);
+                            if (matches) {
+                                encodedDuration = matches.reduce((acc, val) => {
+                                    return acc + parseFloat(val.split(':')[1].replace(',', ''));
+                                }, 0);
+                            }
+                        }
+                    } catch (e) { }
+
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ status: 'active', encodedDuration }));
+                } else {
+                    res.writeHead(404);
+                    res.end(JSON.stringify({ status: 'invalid_session' }));
                 }
-                res.writeHead(200);
-                res.end('Pong');
 
             } else if (parsedUrl.pathname === '/client-log' && req.method === 'POST') {
                 let body = '';

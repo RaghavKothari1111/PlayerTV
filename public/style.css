@@ -228,6 +228,19 @@ video:focus,
     transition: width 0.2s;
 }
 
+.progress-server {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    z-index: 0;
+    /* Behind everything */
+    transition: width 0.5s linear;
+}
+
 /* Controls Layout */
 .controls-main {
     display: flex;
