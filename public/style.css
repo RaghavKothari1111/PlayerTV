@@ -297,7 +297,63 @@ video:focus,
     display: flex;
     align-items: center;
     gap: 8px;
-    group: volume-hover;
+}
+
+/* YouTube-Style Center Controls */
+.center-controls {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    z-index: 15;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
+.video-wrapper.user-active .center-controls,
+.video-wrapper.is-paused .center-controls {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.center-btn {
+    background: rgba(0, 0, 0, 0.6);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    color: white;
+    font-size: 1.3rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, background 0.2s;
+    position: relative;
+}
+
+.center-btn:hover {
+    transform: scale(1.1);
+    background: rgba(99, 102, 241, 0.7);
+}
+
+.center-btn.center-play {
+    width: 70px;
+    height: 70px;
+    font-size: 2rem;
+}
+
+.skip-label {
+    position: absolute;
+    bottom: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.8);
 }
 
 #volumeSlider {
@@ -359,9 +415,24 @@ video::cue {
     background-color: rgba(0, 0, 0, 0.75);
     color: #ffffff;
     font-size: 1.5rem;
-    line-height: 1.5;
+    line-height: 1.2;
+    /* Tighter line spacing */
     font-family: 'Outfit', sans-serif;
     text-shadow: 2px 2px 1px rgba(0, 0, 0, 0.8);
+    padding: 2px 6px;
+    /* Consistent padding */
+}
+
+/* Fullscreen subtitle fixes */
+video:fullscreen::cue,
+video:-webkit-full-screen::cue,
+video:-moz-full-screen::cue,
+video:-ms-fullscreen::cue {
+    font-size: clamp(1.2rem, 2.5vw, 2rem);
+    /* Scale with viewport */
+    line-height: 1.2;
+    /* Keep tight line spacing in fullscreen */
+    padding: 4px 8px;
 }
 
 /* Controls Row */

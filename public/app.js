@@ -22,6 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressBuffer = document.getElementById('progressBuffer');
     const timeDisplay = document.getElementById('timeDisplay');
 
+    // --- Center Controls (YouTube-style) ---
+    const rewindBtn = document.getElementById('rewindBtn');
+    const forwardBtn = document.getElementById('forwardBtn');
+    const centerPlayPauseBtn = document.getElementById('centerPlayPauseBtn');
+
     // Initially show subtitle select
     // subSelect.style.display = 'none'; // REMOVED
 
@@ -78,24 +83,53 @@ document.addEventListener('DOMContentLoaded', () => {
         if (videoPlayer.paused) {
             videoPlayer.play();
             playPauseBtn.innerHTML = '<ion-icon name="pause"></ion-icon>';
+            if (centerPlayPauseBtn) centerPlayPauseBtn.innerHTML = '<ion-icon name="pause"></ion-icon>';
             videoContainer.classList.remove('is-paused'); // Remove paused class
             startInactivityTimer(); // Start hiding logic
         } else {
             videoPlayer.pause();
             playPauseBtn.innerHTML = '<ion-icon name="play"></ion-icon>';
+            if (centerPlayPauseBtn) centerPlayPauseBtn.innerHTML = '<ion-icon name="play"></ion-icon>';
             videoContainer.classList.add('is-paused'); // Keep controls visible
             clearTimeout(inactivityTimeout); // Stop hiding logic
             videoContainer.classList.add('user-active'); // Ensure visible
         }
     }
 
+    // --- Center Controls Event Handlers (YouTube-style) ---
+    if (centerPlayPauseBtn) {
+        centerPlayPauseBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent double-triggering from video click
+            togglePlay();
+        });
+    }
+
+    if (rewindBtn) {
+        rewindBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            videoPlayer.currentTime = Math.max(videoPlayer.currentTime - 5, 0);
+            startInactivityTimer();
+        });
+    }
+
+    if (forwardBtn) {
+        forwardBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const targetFwd = Math.min(videoPlayer.currentTime + 5, getDuration());
+            videoPlayer.currentTime = targetFwd;
+            startInactivityTimer();
+        });
+    }
+
     videoPlayer.addEventListener('play', () => {
         playPauseBtn.innerHTML = '<ion-icon name="pause"></ion-icon>';
+        if (centerPlayPauseBtn) centerPlayPauseBtn.innerHTML = '<ion-icon name="pause"></ion-icon>';
         logToServer('[Event] Video Play');
     });
 
     videoPlayer.addEventListener('pause', () => {
         playPauseBtn.innerHTML = '<ion-icon name="play"></ion-icon>';
+        if (centerPlayPauseBtn) centerPlayPauseBtn.innerHTML = '<ion-icon name="play"></ion-icon>';
         logToServer('[Event] Video Pause');
     });
 
@@ -178,11 +212,13 @@ document.addEventListener('DOMContentLoaded', () => {
         videoPlayer.volume = e.target.value;
         videoPlayer.muted = false;
         updateVolumeIcon();
+        startInactivityTimer(); // Auto-hide controls after volume change
     });
 
     muteBtn.addEventListener('click', () => {
         videoPlayer.muted = !videoPlayer.muted;
         updateVolumeIcon();
+        startInactivityTimer(); // Auto-hide controls after mute toggle
     });
 
     function updateVolumeIcon() {
@@ -237,6 +273,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             console.log("Audio switch requested but no compatible API found.");
         }
+        // Auto-hide controls after audio change
+        startInactivityTimer();
     });
 
     // Subtitle Change -> Seamless Update (No stream restart needed)
@@ -244,6 +282,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const rawUrl = urlInput.value.trim();
         const subIdx = subSelect.value;
         updateSubtitle(rawUrl, subIdx);
+        // Auto-hide controls after subtitle change
+        startInactivityTimer();
     });
 
     function updateSubtitle(videoUrl, subIndex) {
@@ -343,6 +383,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.webkitExitFullscreen();
             }
         }
+        // Auto-hide controls after fullscreen toggle
+        startInactivityTimer();
     }
 
     let isStreamStarting = false;
@@ -753,15 +795,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             case 'ArrowRight': // Forward 10s
                 e.preventDefault();
-                // Simple Seek. getDuration() is already dynamic, so we can't seek past it.
-                // Math.min ensures we don't go past the "end" (which is the live edge).
-                const targetFwd = Math.min(videoPlayer.currentTime + 10, getDuration());
+                // Skip forward 5 seconds (was 10s)
+                const targetFwd = Math.min(videoPlayer.currentTime + 5, getDuration());
                 videoPlayer.currentTime = targetFwd;
                 startInactivityTimer();
                 break;
-            case 'ArrowLeft': // Rewind 10s
+            case 'ArrowLeft': // Rewind 5s
                 e.preventDefault();
-                videoPlayer.currentTime = Math.max(videoPlayer.currentTime - 10, 0);
+                videoPlayer.currentTime = Math.max(videoPlayer.currentTime - 5, 0);
                 startInactivityTimer();
                 break;
             case 'f': // Fullscreen
