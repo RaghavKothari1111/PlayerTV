@@ -293,7 +293,7 @@ const server = http.createServer((req, res) => {
                                     `[eFL_${i}][eFC1_${i}]amix=inputs=2:weights='0.70 0.30'[nFL_${i}];` +
                                     `[eFR_${i}][eFC2_${i}]amix=inputs=2:weights='0.70 0.30'[nFR_${i}];` +
                                     `[eFC3_${i}]volume=1.5[nFC_${i}];` +
-                                    `[nFL_${i}][nFR_${i}][nFC_${i}][LFE_${i}][SL_${i}][SR_${i}]join=inputs=6:channel_layout=5.1[outa${i}];`;
+                                    `[nFL_${i}][nFR_${i}][nFC_${i}][LFE_${i}][SL_${i}][SR_${i}]join=inputs=6:channel_layout=5.1,aformat=channel_layouts=5.1[outa${i}];`; // Fixed with explicit format
 
                                 filterComplex += fc;
                                 audioMaps.push('-map', `[outa${i}]`);
