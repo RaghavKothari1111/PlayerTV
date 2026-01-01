@@ -360,6 +360,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const audioIdx = audioSelect.value || 0;
         const subIdx = subSelect.value || -1;
         const forceTranscode = document.getElementById('transcodeCheckbox').checked;
+        const enhancedAudio = document.getElementById('enhancedAudioCheckbox').checked;
 
         if (!rawUrl) {
             showStatus('Please enter a valid URL', 'error');
@@ -379,10 +380,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         showStatus(`Initializing Stream... (Stability: ${forceTranscode ? 'ON' : 'OFF'})`, 'info');
 
-        // 1. Tell Server to Start Transcoding
+        // 1. Tell Server to Start Transcoding / Direct Mode
+        let startData = {};
         try {
-            const startRes = await fetch(`/start?url=${encodeURIComponent(rawUrl)}&audioIndex=${audioIdx}&subIndex=${subIdx}&session=${sessionId}&transcode=${forceTranscode}`);
+            const startRes = await fetch(`/start?url=${encodeURIComponent(rawUrl)}&audioIndex=${audioIdx}&subIndex=${subIdx}&session=${sessionId}&transcode=${forceTranscode}&enhancedAudio=${enhancedAudio}`);
             if (!startRes.ok) throw new Error('Failed to start stream server');
+            startData = await startRes.json();
+            logToServer(`[Init] Server Mode: ${startData.mode}`);
         } catch (err) {
             console.error(err);
             showStatus('Server Error: ' + err.message, 'error');
@@ -393,9 +397,47 @@ document.addEventListener('DOMContentLoaded', () => {
         // Add Subtitle Track manually (Sidecar)
         updateSubtitle(rawUrl, subIdx);
 
-
         // Start Heartbeat
         startHeartbeat();
+
+        // --- MODE SELECTION ---
+        if (startData.mode === 'NATIVE_DIRECT') {
+            console.log("Starting Native Direct Stream...");
+            showStatus('Playing (Native Direct Mode)', 'success');
+
+            // Clean up HLS if exists
+            if (hls) {
+                hls.destroy();
+                hls = null;
+            }
+
+            videoPlayer.src = startData.streamUrl;
+            videoPlayer.load();
+
+            // FALLBACK LOGIC: If Direct Mode fails (network/codec), retry with Transcode
+            const directErrorHandler = (e) => {
+                console.error("Direct Mode Failed", e);
+                videoPlayer.removeEventListener('error', directErrorHandler);
+
+                // Only retry if we haven't already
+                if (!forceTranscode) {
+                    logToServer('[Fallback] Direct Mode failed. Retrying with Force Transcode...');
+                    showStatus('Direct Play Failed. Switching to Transcode...', 'error');
+
+                    // Force Transcode next time
+                    document.getElementById('transcodeCheckbox').checked = true;
+                    // Restart
+                    isStreamStarting = false;
+                    setTimeout(() => startStream('fallback'), 1000);
+                }
+            };
+            videoPlayer.addEventListener('error', directErrorHandler);
+
+            videoPlayer.play().catch(e => console.log("Autoplay blocked"));
+            placeholder.style.opacity = '0';
+            isStreamStarting = false;
+            return; // DONE
+        }
 
         // 2. Initialize HLS Player with Master Playlist
         // POINT TO SESSION SPECIFIC HLS

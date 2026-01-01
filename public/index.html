@@ -27,8 +27,19 @@
 
         <div class="input-group">
             <input type="text" id="urlInput" placeholder="Enter Direct Video URL..." spellcheck="false">
-            <!-- Controls moved to overlay -->
             <button id="playBtn">Play Stream</button>
+        </div>
+
+        <div class="settings-row"
+            style="margin-bottom: 20px; display: flex; gap: 15px; justify-content: center; color: rgba(255,255,255,0.8);">
+            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                <input type="checkbox" id="enhancedAudioCheckbox" checked>
+                <span>Enhanced Audio (TV)</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                <input type="checkbox" id="transcodeCheckbox">
+                <span>Force Transcode</span>
+            </label>
         </div>
 
         <div class="video-wrapper" id="videoContainer">
