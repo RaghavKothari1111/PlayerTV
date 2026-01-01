@@ -297,7 +297,7 @@ video:focus,
     display: flex;
     align-items: center;
     gap: 8px;
-    group: volume-hover;
+
 }
 
 #volumeSlider {

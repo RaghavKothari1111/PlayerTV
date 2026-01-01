@@ -177,7 +177,11 @@ const server = http.createServer((req, res) => {
                     return;
                 }
 
-                console.log(`[Start] Request from Session: ${sessionId}`);
+                // --- Device Detection ---
+                const userAgent = req.headers['user-agent'] || '';
+                const isTV = /Tizen|WebOS|SmartTV|BRAVIA|Android TV|TV|AppleTV|CrKey|Roku|Viera|Philips|Toshiba|LG|Samsung/i.test(userAgent) || parsedUrl.query.device === 'tv';
+
+                console.log(`[Start] Request from Session: ${sessionId} | User-Agent: ${userAgent} | isTV: ${isTV}`);
 
                 // 1. Get or Create Session
                 let session = sessions.get(sessionId);
@@ -227,8 +231,9 @@ const server = http.createServer((req, res) => {
                     }
                 } catch (e) { }
 
-                const startEncodingProcess = () => {
-                    console.log(`Starting HLS for Session ${sessionId}: ${videoUrl}`);
+                const startEncodingProcess = (tryDirectMode = false) => {
+                    const mode = tryDirectMode ? "DIRECT (Copy)" : "TRANSCODE";
+                    console.log(`Starting HLS for Session ${sessionId}: ${videoUrl} | Mode: ${mode}`);
 
                     // 1. Probe (Independent of session, just probing URL)
                     const probe = spawn('ffprobe', ['-v', 'quiet', '-print_format', 'json', '-show_streams', videoUrl]);
@@ -291,6 +296,12 @@ const server = http.createServer((req, res) => {
                         let videoCodec = 'libx264';
                         let videoOpts = ['-preset', 'ultrafast', '-tune', 'zerolatency', '-crf', '23', '-pix_fmt', 'yuv420p'];
 
+                        // OVERRIDE FOR DIRECT MODE
+                        if (tryDirectMode) {
+                            videoCodec = 'copy';
+                            videoOpts = []; // Copy mode doesn't accept encode params like preset/crf
+                        }
+
                         // Base Args
                         const ffmpegArgs = [
                             '-y',
@@ -328,11 +339,25 @@ const server = http.createServer((req, res) => {
                         session.url = videoUrl; // Track URL
                         session.process = spawn('ffmpeg', ffmpegArgs); // Store process
 
-                        session.process.stderr.on('data', (data) => console.log(`[ffmpeg-${sessionId}]: ${data}`));
+                        // Error Detection Logic
+                        let hasError = false;
+
+                        session.process.stderr.on('data', (data) => {
+                            // console.log(`[ffmpeg-${sessionId}]: ${data}`); // Optional: Check for specific Direct Mode errors here?
+                        });
+
                         session.process.on('close', (code) => {
-                            console.log(`[ffmpeg-${sessionId}] Exited with code ${code}`);
+                            console.log(`[ffmpeg-${sessionId}] [${mode}] Exited with code ${code}`);
                             session.process = null;
                             session.url = null;
+
+                            // IF Direct Mode Failed unexpectedly (non-zero code), TRY FALLBACK if we haven't responded yet
+                            if (tryDirectMode && code !== 0 && !res.headersSent) {
+                                console.warn(`[Fallback] Direct Mode failed with code ${code}. Switching to Transcode...`);
+                                // Recursive call with false
+                                startEncodingProcess(false);
+                                return;
+                            }
 
                             if (code !== 0 && !res.headersSent) {
                                 res.writeHead(500);
@@ -343,29 +368,44 @@ const server = http.createServer((req, res) => {
 
                         // Poll for MAIN playlist in SESSION DIR
                         let attempts = 0;
-                        const maxAttempts = 240;
+                        const maxAttempts = tryDirectMode ? 20 : 240; // Shorter timeout for Direct Mode check (approx 10s)
+
                         const checkPlaylist = setInterval(() => {
                             attempts++;
                             if (fs.existsSync(path.join(hlsDir, 'main.m3u8'))) {
-                                console.log(`Stream Ready for Session ${sessionId}!`);
+                                console.log(`Stream Ready for Session ${sessionId} [${mode}]!`);
                                 clearInterval(checkPlaylist);
                                 if (!res.headersSent) {
                                     res.writeHead(200, { 'Content-Type': 'application/json' });
-                                    res.end(JSON.stringify({ status: 'started' }));
+                                    res.end(JSON.stringify({ status: 'started', mode: mode }));
                                 }
                             } else if (attempts >= maxAttempts) {
                                 clearInterval(checkPlaylist);
-                                if (session.process) session.process.kill('SIGKILL');
-                                if (!res.headersSent) {
-                                    res.writeHead(500);
-                                    res.end(JSON.stringify({ error: 'Timeout waiting for stream' }));
+
+                                // Kill current process
+                                if (session.process) {
+                                    try {
+                                        session.process.kill('SIGKILL');
+                                    } catch (e) { }
+                                    session.process = null;
+                                }
+
+                                if (tryDirectMode) {
+                                    console.warn(`[Fallback] Direct Mode Timed Out. Switching to Transcode...`);
+                                    if (!res.headersSent) startEncodingProcess(false);
+                                } else {
+                                    if (!res.headersSent) {
+                                        res.writeHead(500);
+                                        res.end(JSON.stringify({ error: 'Timeout waiting for stream' }));
+                                    }
                                 }
                             }
                         }, 500);
                     });
                 };
 
-                startEncodingProcess();
+                // Determine initial mode based on Device
+                startEncodingProcess(isTV); // If TV, tryDirectMode = true
 
             } else if (parsedUrl.pathname === '/subtitle') {
                 // ... Subtitle can stay global-ish or use session if needed, 
