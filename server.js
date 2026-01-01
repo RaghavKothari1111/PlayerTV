@@ -418,7 +418,9 @@ const server = http.createServer((req, res) => {
                         }
 
                         // --- DECISION LOGIC ---
-                        const userEnhancedAudio = parsedUrl.query.enhancedAudio !== 'false';
+                        // SIMPLIFIED FOR TV: Enhanced Audio is ALWAYS ON (treble boost mandatory)
+                        // TV Default: AUDIO_ONLY (video copy + treble-boosted AC3)
+                        // TV + Force Transcode: FULL_TRANSCODE (transcode video + treble-boosted AC3)
                         const userForceTranscode = parsedUrl.query.transcode === 'true';
 
                         let selectedMode = MODE.FULL_TRANSCODE; // Default
@@ -426,24 +428,23 @@ const server = http.createServer((req, res) => {
                         if (fallbackMode) {
                             selectedMode = fallbackMode;
                             log(`[Decision] Using Fallback Mode: ${selectedMode}`);
-                        } else if (userForceTranscode) {
-                            selectedMode = MODE.FULL_TRANSCODE;
                         } else if (isTV) {
-                            if (userEnhancedAudio) {
-                                // TV + Enhanced Audio -> Try AUDIO_ONLY (Copy Video)
-                                if (isVideoCompatible) selectedMode = MODE.AUDIO_ONLY;
-                                else selectedMode = MODE.FULL_TRANSCODE;
+                            // TV MODE: Enhanced Audio is COMPULSORY
+                            // Default: Video Copy + Treble-Boosted Audio
+                            // Force Transcode: Full Transcode + Treble-Boosted Audio
+                            if (userForceTranscode) {
+                                selectedMode = MODE.FULL_TRANSCODE;
+                            } else if (isVideoCompatible) {
+                                selectedMode = MODE.AUDIO_ONLY; // Video Copy + Audio Transcode
                             } else {
-                                // TV + Native -> Try NATIVE_DIRECT
-                                if (isNativeCompatible) selectedMode = MODE.NATIVE_DIRECT;
-                                else selectedMode = MODE.FULL_TRANSCODE;
+                                selectedMode = MODE.FULL_TRANSCODE; // Incompatible video, must transcode
                             }
                         } else {
-                            // Non-TV -> FULL_TRANSCODE
+                            // Non-TV: Always full transcode for browser compatibility
                             selectedMode = MODE.FULL_TRANSCODE;
                         }
 
-                        log(`[Decision] TV: ${isTV} | Enhanced: ${userEnhancedAudio} | VideoCompat: ${isVideoCompatible} -> ${selectedMode}`);
+                        log(`[Decision] TV: ${isTV} | ForceTranscode: ${userForceTranscode} | VideoCompat: ${isVideoCompatible} -> ${selectedMode}`);
 
                         // 1. NATIVE DIRECT
                         if (selectedMode === MODE.NATIVE_DIRECT) {

@@ -360,7 +360,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const audioIdx = audioSelect.value || 0;
         const subIdx = subSelect.value || -1;
         const forceTranscode = document.getElementById('transcodeCheckbox').checked;
-        const enhancedAudio = document.getElementById('enhancedAudioCheckbox').checked;
 
         if (!rawUrl) {
             showStatus('Please enter a valid URL', 'error');
@@ -383,7 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 1. Tell Server to Start Transcoding / Direct Mode
         let startData = {};
         try {
-            const startRes = await fetch(`/start?url=${encodeURIComponent(rawUrl)}&audioIndex=${audioIdx}&subIndex=${subIdx}&session=${sessionId}&transcode=${forceTranscode}&enhancedAudio=${enhancedAudio}`);
+            const startRes = await fetch(`/start?url=${encodeURIComponent(rawUrl)}&audioIndex=${audioIdx}&subIndex=${subIdx}&session=${sessionId}&transcode=${forceTranscode}`);
             if (!startRes.ok) throw new Error('Failed to start stream server');
             startData = await startRes.json();
             logToServer(`[Init] Server Mode: ${startData.mode}`);
