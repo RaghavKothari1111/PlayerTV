@@ -72,6 +72,19 @@ setInterval(() => {
     }
 }, 5 * 60 * 1000); // Check every 5 mins
 
+// --- Logging Helper ---
+const logFile = path.join(__dirname, 'server.log');
+function log(msg) {
+    const timestamp = new Date().toISOString();
+    const logMsg = `[${timestamp}] ${msg}`;
+    console.log(logMsg);
+    try {
+        fs.appendFileSync(logFile, logMsg + '\n');
+    } catch (e) {
+        console.error("Failed to write to log file:", e);
+    }
+}
+
 const server = http.createServer((req, res) => {
     // Enable CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -113,7 +126,7 @@ const server = http.createServer((req, res) => {
                     return;
                 }
 
-                console.log(`Fetching metadata for: ${videoUrl}`);
+                log(`Fetching metadata for: ${videoUrl}`);
                 const ffprobe = spawn('ffprobe', [
                     '-v', 'quiet',
                     '-print_format', 'json',
@@ -123,7 +136,7 @@ const server = http.createServer((req, res) => {
 
                 let output = '';
                 ffprobe.stdout.on('data', (data) => output += data);
-                ffprobe.stderr.on('data', (data) => console.error(`ffprobe error: ${data}`));
+                ffprobe.stderr.on('data', (data) => log(`[ffprobe] ${data.toString().trim()}`));
 
                 ffprobe.on('close', async (code) => {
                     if (code === 0) {
@@ -152,7 +165,7 @@ const server = http.createServer((req, res) => {
                                     codec: s.codec_name
                                 }));
 
-                            console.log("Audio Metadata:", JSON.stringify(audio, null, 2));
+                            log(`Audio Metadata: ${JSON.stringify(audio, null, 2)}`);
 
                             res.writeHead(200, { 'Content-Type': 'application/json' });
                             res.end(JSON.stringify({ audio, subs }));
@@ -181,7 +194,7 @@ const server = http.createServer((req, res) => {
                 const userAgent = req.headers['user-agent'] || '';
                 const isTV = /Tizen|WebOS|SmartTV|BRAVIA|Android TV|TV|AppleTV|CrKey|Roku|Viera|Philips|Toshiba|LG|Samsung/i.test(userAgent) || parsedUrl.query.device === 'tv';
 
-                console.log(`[Start] Request from Session: ${sessionId} | User-Agent: ${userAgent} | isTV: ${isTV}`);
+                log(`[Start] Request from Session: ${sessionId} | User-Agent: ${userAgent} | isTV: ${isTV}`);
 
                 // 1. Get or Create Session
                 let session = sessions.get(sessionId);
@@ -207,7 +220,7 @@ const server = http.createServer((req, res) => {
 
                 // SMART CHECK: If same URL is already playing IN THIS SESSION
                 if (session.process && session.url === videoUrl) {
-                    console.log(`Stream already active for session ${sessionId}. Reusing.`);
+                    log(`Stream already active for session ${sessionId}. Reusing.`);
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ status: 'resumed' }));
                     return;
@@ -215,7 +228,7 @@ const server = http.createServer((req, res) => {
 
                 // Cleanup previous stream (Different URL provided for this session)
                 if (session.process) {
-                    console.log(`Stopping previous stream for session ${sessionId}...`);
+                    log(`Stopping previous stream for session ${sessionId}...`);
                     try {
                         session.process.kill('SIGKILL');
                     } catch (e) { }
@@ -233,7 +246,7 @@ const server = http.createServer((req, res) => {
 
                 const startEncodingProcess = (tryDirectMode = false) => {
                     const mode = tryDirectMode ? "DIRECT (Copy)" : "TRANSCODE";
-                    console.log(`Starting HLS for Session ${sessionId}: ${videoUrl} | Mode: ${mode}`);
+                    log(`Starting HLS for Session ${sessionId}: ${videoUrl} | Mode: ${mode}`);
 
                     // 1. Probe (Independent of session, just probing URL)
                     const probe = spawn('ffprobe', ['-v', 'quiet', '-print_format', 'json', '-show_streams', videoUrl]);
@@ -288,7 +301,7 @@ const server = http.createServer((req, res) => {
                             });
                         } else {
                             varStreamMap = 'v:0';
-                            console.log("No audio streams found. Encoding Video Only.");
+                            log("No audio streams found. Encoding Video Only.");
                         }
 
                         if (filterComplex.endsWith(';')) filterComplex = filterComplex.slice(0, -1);
@@ -301,6 +314,16 @@ const server = http.createServer((req, res) => {
                             videoCodec = 'copy';
                             videoOpts = []; // Copy mode doesn't accept encode params like preset/crf
                         }
+
+                        // AUDIO CODEC SELECTION (TVs need AC3)
+                        let audioCodec = 'aac';
+                        if (isTV) {
+                            audioCodec = 'ac3';
+                            log('Device is TV. Switching audio codec to AC3.');
+                        } else {
+                            log('Device is not TV. Using AAC audio codec.');
+                        }
+
 
                         // Base Args
                         const ffmpegArgs = [
@@ -316,7 +339,7 @@ const server = http.createServer((req, res) => {
                         if (audioStreams.length > 0) {
                             ffmpegArgs.push(
                                 '-filter_complex', filterComplex,
-                                '-c:a', 'aac',
+                                '-c:a', audioCodec,
                                 '-b:a', '640k',
                                 '-ac', '6'
                             );
@@ -343,17 +366,21 @@ const server = http.createServer((req, res) => {
                         let hasError = false;
 
                         session.process.stderr.on('data', (data) => {
-                            // console.log(`[ffmpeg-${sessionId}]: ${data}`); // Optional: Check for specific Direct Mode errors here?
+                            const msg = data.toString();
+                            // Log only errors or warnings to keep log size manageable, or all for debugging
+                            if (msg.toLowerCase().includes('error') || msg.toLowerCase().includes('fail')) {
+                                log(`[ffmpeg-${sessionId}] [ERR] ${msg.trim()}`);
+                            }
                         });
 
                         session.process.on('close', (code) => {
-                            console.log(`[ffmpeg-${sessionId}] [${mode}] Exited with code ${code}`);
+                            log(`[ffmpeg-${sessionId}] [${mode}] Exited with code ${code}`);
                             session.process = null;
                             session.url = null;
 
                             // IF Direct Mode Failed unexpectedly (non-zero code), TRY FALLBACK if we haven't responded yet
                             if (tryDirectMode && code !== 0 && !res.headersSent) {
-                                console.warn(`[Fallback] Direct Mode failed with code ${code}. Switching to Transcode...`);
+                                log(`[Fallback] Direct Mode failed with code ${code}. Switching to Transcode...`);
                                 // Recursive call with false
                                 startEncodingProcess(false);
                                 return;
@@ -373,7 +400,7 @@ const server = http.createServer((req, res) => {
                         const checkPlaylist = setInterval(() => {
                             attempts++;
                             if (fs.existsSync(path.join(hlsDir, 'main.m3u8'))) {
-                                console.log(`Stream Ready for Session ${sessionId} [${mode}]!`);
+                                log(`Stream Ready for Session ${sessionId} [${mode}]!`);
                                 clearInterval(checkPlaylist);
                                 if (!res.headersSent) {
                                     res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -391,7 +418,7 @@ const server = http.createServer((req, res) => {
                                 }
 
                                 if (tryDirectMode) {
-                                    console.warn(`[Fallback] Direct Mode Timed Out. Switching to Transcode...`);
+                                    log(`[Fallback] Direct Mode Timed Out. Switching to Transcode...`);
                                     if (!res.headersSent) startEncodingProcess(false);
                                 } else {
                                     if (!res.headersSent) {
@@ -421,7 +448,7 @@ const server = http.createServer((req, res) => {
                     return;
                 }
                 // ... (Original Code for Subtitle) ...
-                console.log(`Streaming Subtitles: ${videoUrl} (Track ${subIndex})`);
+                log(`Streaming Subtitles: ${videoUrl} (Track ${subIndex})`);
                 res.writeHead(200, {
                     'Content-Type': 'text/vtt',
                     'Access-Control-Allow-Origin': '*'
