@@ -317,9 +317,12 @@ const server = http.createServer((req, res) => {
 
                         // AUDIO CODEC SELECTION (TVs need AC3)
                         let audioCodec = 'aac';
+                        let audioSampleRate = []; // Default (keep original)
+
                         if (isTV) {
-                            audioCodec = 'ac3';
-                            log('Device is TV. Switching audio codec to AC3.');
+                            audioCodec = 'ac3'; // or 'eac3' for DD+
+                            audioSampleRate = ['-ar', '48000']; // Enforce 48kHz for AC3
+                            log('Device is TV. Switching audio codec to AC3 (48kHz).');
                         } else {
                             log('Device is not TV. Using AAC audio codec.');
                         }
@@ -340,6 +343,7 @@ const server = http.createServer((req, res) => {
                             ffmpegArgs.push(
                                 '-filter_complex', filterComplex,
                                 '-c:a', audioCodec,
+                                ...audioSampleRate,
                                 '-b:a', '640k',
                                 '-ac', '6'
                             );
@@ -481,6 +485,17 @@ const server = http.createServer((req, res) => {
                 }
                 res.writeHead(200);
                 res.end('Pong');
+
+            } else if (parsedUrl.pathname === '/client-log' && req.method === 'POST') {
+                let body = '';
+                req.on('data', chunk => {
+                    body += chunk.toString();
+                });
+                req.on('end', () => {
+                    log(`[CLIENT] ${body.trim()}`);
+                    res.writeHead(200);
+                    res.end('Logged');
+                });
             }
 
         }
