@@ -599,29 +599,83 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let serverEncodedTime = 0; // Tracks how much video is ready on server
-    const progressServer = document.getElementById('progressServer');
+    // const progressServer = document.getElementById('progressServer'); // Removed for Dynamic Mode
 
     function startHeartbeat() {
         if (heartbeatInterval) clearInterval(heartbeatInterval);
-        // Ping every 2 seconds for faster updates
+        // Ping every 1 second for smoother UI growth
         heartbeatInterval = setInterval(() => {
             fetch(`/ping?session=${sessionId}`)
                 .then(r => r.json())
                 .then(data => {
                     if (data.encodedDuration) {
                         serverEncodedTime = data.encodedDuration;
-                        updateServerProgress();
+                        updateServerProgress(); // Update UI immediately
                     }
                 })
                 .catch(e => console.log("Ping failed"));
-        }, 2000);
+        }, 1000);
     }
 
     function updateServerProgress() {
+        // In "Growing Timeline" mode, the duration *IS* the server progress.
+        // So triggering updateProgress() is enough to resize the bar if the duration changed.
+        updateProgress();
+    }
+
+    // Helper: Get Dynamic Duration (The "Loaded" Length)
+    function getDuration() {
+        // If serverEncodedTime is populated, THAT is our world.
+        if (serverEncodedTime > 0) {
+            // Ensure we don't report less than current time (just in case)
+            return Math.max(serverEncodedTime, videoPlayer.currentTime);
+        }
+
+        // Fallback: If native player has a duration (and it's not Infinity), use it.
+        if (videoPlayer.duration && isFinite(videoPlayer.duration) && videoPlayer.duration > 0) {
+            return videoPlayer.duration;
+        }
+
+        // Fallback 2: Server metadata total duration (if we somehow have it but no heartbeats yet)
+        if (serverDuration > 0) return serverDuration;
+
+        return 0; // Unknown
+    }
+
+    function updateProgress() {
+        // "Growing Timeline" Logic:
+        // Width is percentage of currently loaded content.
+        const duration = getDuration();
+        if (!duration) {
+            progressBar.style.width = '0%';
+            timeDisplay.textContent = '0:00 / 0:00';
+            return;
+        }
+
+        const percent = (videoPlayer.currentTime / duration) * 100;
+        progressBar.style.width = `${Math.min(percent, 100)}%`;
+        timeDisplay.textContent = `${formatTime(videoPlayer.currentTime)} / ${formatTime(duration)}`;
+    }
+
+    function updateBuffer() {
         const duration = getDuration();
         if (!duration) return;
-        const percent = (serverEncodedTime / duration) * 100;
-        progressServer.style.width = `${Math.min(percent, 100)}%`;
+
+        if (videoPlayer.buffered.length > 0) {
+            const currentTime = videoPlayer.currentTime;
+            let bufferedEnd = 0;
+
+            for (let i = 0; i < videoPlayer.buffered.length; i++) {
+                const checkStart = videoPlayer.buffered.start(i);
+                const checkEnd = videoPlayer.buffered.end(i);
+                if (currentTime >= checkStart && currentTime <= checkEnd + 0.5) {
+                    bufferedEnd = checkEnd;
+                    break;
+                }
+            }
+            const percent = (bufferedEnd / duration) * 100;
+            progressBuffer.style.width = `${Math.min(percent, 100)}%`;
+        }
     }
 
     // Stop heartbeat on unload
@@ -706,14 +760,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             case 'ArrowRight': // Forward 10s
                 e.preventDefault();
+                // Simple Seek. getDuration() is already dynamic, so we can't seek past it.
+                // Math.min ensures we don't go past the "end" (which is the live edge).
                 const targetFwd = Math.min(videoPlayer.currentTime + 10, getDuration());
-                // Clamp to Server Encoded Time (Seek Limit)
-                if (targetFwd > serverEncodedTime) {
-                    showStatus('Buffering... (Waiting for Server)', 'info');
-                    videoPlayer.currentTime = serverEncodedTime;
-                } else {
-                    videoPlayer.currentTime = targetFwd;
-                }
+                videoPlayer.currentTime = targetFwd;
                 startInactivityTimer();
                 break;
             case 'ArrowLeft': // Rewind 10s
