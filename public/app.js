@@ -462,16 +462,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 debug: false,
                 enableWorker: true,
                 lowLatencyMode: false,
-                // DYNAMIC BUFFER OPTIMIZATION
-                // TVs have very limited MSE buffer (often < 30MB).
-                // We must keep buffers tiny to avoid 'bufferAppendError'.
-                maxBufferLength: isTV ? 10 : 30,      // Keep only 10s ahead on TV
-                maxMaxBufferLength: isTV ? 15 : 60,   // Max cap
-                backBufferLength: isTV ? 5 : 30,      // Aggressively flush passed content
-                maxBufferSize: isTV ? 20 * 1024 * 1024 : 60 * 1024 * 1024, // Limit to 20MB on TV
+                // EXTREME BUFFER OPTIMIZATION FOR TV
+                // TVs with 4+ audio tracks exhaust MSE buffer quickly.
+                // Keep buffers extremely tiny to avoid 'bufferAppendError'.
+                maxBufferLength: isTV ? 6 : 30,       // Only 6s ahead on TV (was 10)
+                maxMaxBufferLength: isTV ? 10 : 60,   // Max cap (was 15)
+                backBufferLength: isTV ? 3 : 30,     // Aggressively flush (was 5)
+                maxBufferSize: isTV ? 10 * 1024 * 1024 : 60 * 1024 * 1024, // 10MB on TV (was 20)
                 capLevelToPlayerSize: true,
                 subtitleDisplay: true,
-                // appendErrorMaxRetry: 3, // Retry a few times
+                appendErrorMaxRetry: 5, // Retry more aggressively on buffer errors
             });
 
             showStatus('Loading HLS Playlist...', 'info');

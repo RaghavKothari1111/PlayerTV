@@ -273,6 +273,8 @@ const server = http.createServer((req, res) => {
                         id: sessionId,
                         process: null,
                         url: null,
+                        mode: null,           // Track current mode
+                        forceTranscode: false, // Track transcode preference
                         lastPing: Date.now(),
                         dir: path.join(hlsBaseDir, sessionId)
                     };
@@ -287,16 +289,18 @@ const server = http.createServer((req, res) => {
                 }
 
                 const hlsDir = session.dir; // Use SESSION SPECIFIC dir
+                const userForceTranscode = parsedUrl.query.transcode === 'true';
 
-                // SMART CHECK: If same URL is already playing IN THIS SESSION
-                if (session.process && session.url === videoUrl) {
+                // SMART CHECK: If same URL AND same transcode setting
+                // If transcode preference changed, we MUST restart
+                if (session.process && session.url === videoUrl && session.forceTranscode === userForceTranscode) {
                     log(`Stream already active for session ${sessionId}. Reusing.`);
                     res.writeHead(200, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ status: 'resumed' }));
+                    res.end(JSON.stringify({ status: 'resumed', mode: session.mode || 'AUDIO_PROCESS_ONLY' }));
                     return;
                 }
 
-                // Cleanup previous stream (Different URL provided for this session)
+                // Cleanup previous stream (Different URL or transcode preference changed)
                 if (session.process) {
                     log(`Stopping previous stream for session ${sessionId}...`);
                     try {
@@ -436,7 +440,7 @@ const server = http.createServer((req, res) => {
                         // SIMPLIFIED FOR TV: Enhanced Audio is ALWAYS ON (treble boost mandatory)
                         // TV Default: AUDIO_ONLY (video copy + treble-boosted AC3)
                         // TV + Force Transcode: FULL_TRANSCODE (transcode video + treble-boosted AC3)
-                        const userForceTranscode = parsedUrl.query.transcode === 'true';
+                        // NOTE: userForceTranscode is already defined in outer scope
 
                         let selectedMode = MODE.FULL_TRANSCODE; // Default
 
@@ -458,6 +462,10 @@ const server = http.createServer((req, res) => {
                             // Non-TV: Always full transcode for browser compatibility
                             selectedMode = MODE.FULL_TRANSCODE;
                         }
+
+                        // Store mode and preference in session for future reuse check
+                        session.mode = selectedMode;
+                        session.forceTranscode = userForceTranscode;
 
                         log(`[Decision] TV: ${isTV} | ForceTranscode: ${userForceTranscode} | VideoCompat: ${isVideoCompatible} -> ${selectedMode}`);
 
@@ -494,16 +502,21 @@ const server = http.createServer((req, res) => {
                         if (audioStreams.length > 0) {
                             varStreamMap = 'v:0,agroup:audio';
                             audioStreams.forEach((audio, i) => {
+                                // SIMPLIFIED TREBLE BOOST FILTER (per user spec)
+                                // 1. Split 5.1 channels
+                                // 2. EQ boost on FC (center/dialog) and FL/FR
+                                // 3. Mix boosted FC into FL/FR for wider dialog
+                                // 4. Boost FC volume
+                                // 5. Rejoin to 5.1
                                 const fc =
-                                    `[0:${audio.index}]aformat=channel_layouts=5.1[a51_${i}];` +
-                                    `[a51_${i}]channelsplit=channel_layout=5.1[FL_${i}][FR_${i}][FC_${i}][LFE_${i}][SL_${i}][SR_${i}];` +
-                                    `[FC_${i}]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_orig_${i}];` +
+                                    `[0:${audio.index}]channelsplit=channel_layout=5.1[FL_${i}][FR_${i}][FC_${i}][LFE_${i}][SL_${i}][SR_${i}];` +
+                                    `[FC_${i}]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_${i}];` +
                                     `[FL_${i}]equalizer=f=6000:t=q:w=1:g=4[eFL_${i}];` +
                                     `[FR_${i}]equalizer=f=6000:t=q:w=1:g=4[eFR_${i}];` +
-                                    `[eFC_orig_${i}]asplit=3[eFC1_${i}][eFC2_${i}][eFC3_${i}];` +
-                                    `[eFL_${i}][eFC1_${i}]amix=inputs=2:weights='0.70 0.30'[nFL_${i}];` +
-                                    `[eFR_${i}][eFC2_${i}]amix=inputs=2:weights='0.70 0.30'[nFR_${i}];` +
-                                    `[eFC3_${i}]volume=1.5[nFC_${i}];` +
+                                    `[eFC_${i}]asplit=3[eFC_L_${i}][eFC_R_${i}][eFC_C_${i}];` +
+                                    `[eFL_${i}][eFC_L_${i}]amix=inputs=2:weights='0.70 0.30'[nFL_${i}];` +
+                                    `[eFR_${i}][eFC_R_${i}]amix=inputs=2:weights='0.70 0.30'[nFR_${i}];` +
+                                    `[eFC_C_${i}]volume=1.5[nFC_${i}];` +
                                     `[nFL_${i}][nFR_${i}][nFC_${i}][LFE_${i}][SL_${i}][SR_${i}]join=inputs=6:channel_layout=5.1[outa${i}];`;
 
                                 filterComplex += fc;
