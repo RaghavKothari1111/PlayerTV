@@ -389,3 +389,119 @@ video::cue {
     border-color: var(--primary);
     box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
 }
+
+/* Double Tap Feedback */
+.dt-feedback {
+    position: absolute;
+    top: 0;
+    width: 35%;
+    height: 100%;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    /* Let clicks pass through to container listener */
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.dt-left {
+    left: 0;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.3), transparent);
+}
+
+.dt-right {
+    right: 0;
+    background: linear-gradient(to left, rgba(0, 0, 0, 0.3), transparent);
+}
+
+.dt-icon-bg {
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 1.5rem;
+    backdrop-filter: blur(4px);
+    transform: scale(0.8);
+    transition: transform 0.2s;
+}
+
+.dt-icon-bg span {
+    font-size: 0.7rem;
+    margin-top: -2px;
+}
+
+.dt-feedback.active {
+    opacity: 1;
+}
+
+.dt-feedback.active .dt-icon-bg {
+    transform: scale(1.2);
+}
+
+/* Mobile Tweaks */
+@media (max-width: 768px) {
+    .glass-container {
+        width: 100%;
+        height: 100vh;
+        /* Fullscreen feel */
+        border-radius: 0;
+        border: none;
+        padding: 0;
+        background: black;
+        /* Darker for video focus */
+    }
+
+    header {
+        display: none;
+        /* Hide header on mobile for immersion */
+    }
+
+    .input-group {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        z-index: 50;
+        opacity: 0;
+        /* Hide by default, show on tap? Or just use minimal UI */
+        pointer-events: none;
+    }
+
+    .input-group:focus-within {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .video-wrapper {
+        height: 100vh;
+        border: none;
+        border-radius: 0;
+    }
+
+    .player-controls-area {
+        padding-bottom: 40px;
+        /* Space for home bar */
+    }
+
+    .volume-container {
+        display: none;
+        /* Hide volume slider on mobile, use physical buttons */
+    }
+
+    .time-display {
+        font-size: 0.75rem;
+    }
+
+    .control-btn {
+        font-size: 1.8rem;
+        /* Bigger touch targets */
+        padding: 10px;
+    }
+}

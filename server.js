@@ -284,7 +284,7 @@ const server = http.createServer((req, res) => {
                             varStreamMap = 'v:0,agroup:audio';
                             audioStreams.forEach((audio, i) => {
                                 const fc =
-                                    `[0:${audio.index}]aformat=channel_layouts=5.1[a51_${i}];` +
+                                    `[0:${audio.index}]aformat=channel_layouts=5.1:sample_rates=48000[a51_${i}];` +
                                     `[a51_${i}]channelsplit=channel_layout=5.1[FL_${i}][FR_${i}][FC_${i}][LFE_${i}][SL_${i}][SR_${i}];` +
                                     `[FC_${i}]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_orig_${i}];` +
                                     `[FL_${i}]equalizer=f=6000:t=q:w=1:g=4[eFL_${i}];` +
@@ -293,7 +293,7 @@ const server = http.createServer((req, res) => {
                                     `[eFL_${i}][eFC1_${i}]amix=inputs=2:weights='0.70 0.30'[nFL_${i}];` +
                                     `[eFR_${i}][eFC2_${i}]amix=inputs=2:weights='0.70 0.30'[nFR_${i}];` +
                                     `[eFC3_${i}]volume=1.5[nFC_${i}];` +
-                                    `[nFL_${i}][nFR_${i}][nFC_${i}][LFE_${i}][SL_${i}][SR_${i}]join=inputs=6:channel_layout=5.1,aformat=channel_layouts=5.1[outa${i}];`; // Fixed with explicit format
+                                    `[nFL_${i}][nFR_${i}][nFC_${i}][LFE_${i}][SL_${i}][SR_${i}]join=inputs=6:channel_layout=5.1,aformat=channel_layouts=5.1:sample_rates=48000[outa${i}];`; // Fixed with explicit format & rate
 
                                 filterComplex += fc;
                                 audioMaps.push('-map', `[outa${i}]`);
@@ -373,7 +373,7 @@ const server = http.createServer((req, res) => {
                         if (audioStreams.length > 0) {
                             ffmpegArgs.push(
                                 '-filter_complex', filterComplex,
-                                '-c:a', 'aac',
+                                '-c:a', isTV ? 'ac3' : 'aac',
                                 '-b:a', '640k',
                                 '-ac', '6'
                             );
