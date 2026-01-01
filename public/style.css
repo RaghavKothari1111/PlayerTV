@@ -355,13 +355,28 @@ video:focus,
 }
 
 /* Subtitle Styling */
+/* Subtitle Styling */
 video::cue {
     background-color: rgba(0, 0, 0, 0.75);
     color: #ffffff;
     font-size: 1.5rem;
-    line-height: 1.5;
+    line-height: 1.2 !important;
+    /* Reduced from 1.5 to fix spacing gap */
     font-family: 'Outfit', sans-serif;
     text-shadow: 2px 2px 1px rgba(0, 0, 0, 0.8);
+}
+
+/* Dynamic Subtitle Positioning (Netflix Style) */
+/* Targets Chrome/Safari/Webkit/Engine-Based TVs */
+video::-webkit-media-text-track-container {
+    transition: transform 0.3s ease-out;
+    transform: translateY(0);
+}
+
+/* When controls are active (class on parent), shift subtitles up */
+.video-wrapper.user-active video::-webkit-media-text-track-container {
+    transform: translateY(-80px);
+    /* Clear the control bar */
 }
 
 /* Controls Row */

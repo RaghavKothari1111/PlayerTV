@@ -151,6 +151,7 @@ const server = http.createServer((req, res) => {
                             const subs = data.streams
                                 .filter(s => s.codec_type === 'subtitle')
                                 .filter(s => textSubtitleCodecs.includes(s.codec_name))
+                                .sort((a, b) => a.index - b.index) // Ensure consistent order
                                 .map((s, i) => ({
                                     index: s.index,
                                     lang: s.tags?.language || 'und',
@@ -160,6 +161,7 @@ const server = http.createServer((req, res) => {
 
                             const audio = data.streams
                                 .filter(s => s.codec_type === 'audio')
+                                .sort((a, b) => a.index - b.index) // Ensure consistent order
                                 .map((s, i) => ({
                                     index: i,
                                     lang: s.tags?.language || 'und',

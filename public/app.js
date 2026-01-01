@@ -427,21 +427,65 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Native AudioTrackList is often live.
 
                     const populateNativeTracks = () => {
-                        const tracks = [];
+                        // Check if we need to rebuild (Optimization)
+                        if (audioSelect.options.length === videoPlayer.audioTracks.length) {
+                            let activeIndex = 0;
+                            for (let i = 0; i < videoPlayer.audioTracks.length; i++) {
+                                if (videoPlayer.audioTracks[i].enabled) {
+                                    activeIndex = i;
+                                    break;
+                                }
+                            }
+                            // Only update if value changed to avoid UI flickering
+                            if (audioSelect.value != activeIndex) {
+                                audioSelect.value = activeIndex;
+                            }
+                            return;
+                        }
+
+                        // Map to array for sorting
+                        const trackList = [];
+                        let activeIndex = 0;
+
                         for (let i = 0; i < videoPlayer.audioTracks.length; i++) {
                             const t = videoPlayer.audioTracks[i];
-                            tracks.push(`<option value="${i}">Audio ${i + 1} (${t.language || 'und'})</option>`);
+                            trackList.push({ index: i, track: t });
+                            if (t.enabled) activeIndex = i;
                         }
-                        if (tracks.length > 0) {
-                            audioSelect.innerHTML = tracks.join('');
-                            logToServer('[Audio] Native Tracks Populated in UI');
+
+                        // Sort by ID (to match Metadata/FFmpeg order)
+                        // Native players might load tracks out of order.
+                        trackList.sort((a, b) => {
+                            const idA = parseInt(a.track.id);
+                            const idB = parseInt(b.track.id);
+                            if (!isNaN(idA) && !isNaN(idB)) return idA - idB;
+                            return a.index - b.index; // Fallback to load order
+                        });
+
+                        const optionsHtml = trackList.map(item => {
+                            const t = item.track;
+                            // Use ID for label numbering if valid, else sequential
+                            const labelNum = (parseInt(t.id) !== undefined && !isNaN(parseInt(t.id))) ? parseInt(t.id) + 1 : item.index + 1;
+                            return `<option value="${item.index}">Audio ${labelNum} (${t.language || 'und'})</option>`;
+                        }).join('');
+
+                        if (optionsHtml.length > 0) {
+                            audioSelect.innerHTML = optionsHtml;
+                            audioSelect.value = activeIndex; // Set initial selection
+                            logToServer('[Audio] Native Tracks Sorted & Populated');
                         }
                     };
 
                     populateNativeTracks(); // Try immediately
-                    // Also listen for changes?
+
+                    // ON CHANGE: Just update the selection UI, DO NOT Rebuild
                     videoPlayer.audioTracks.addEventListener('change', populateNativeTracks);
-                    videoPlayer.audioTracks.addEventListener('addtrack', populateNativeTracks);
+
+                    // ON ADD TRACK: Rebuild might be needed
+                    videoPlayer.audioTracks.addEventListener('addtrack', () => {
+                        audioSelect.innerHTML = ''; // Force rebuild
+                        populateNativeTracks();
+                    });
                 }
             });
 
