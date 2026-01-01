@@ -170,10 +170,11 @@ const server = http.createServer((req, res) => {
 
                             log(`Audio Metadata: ${JSON.stringify(audio, null, 2)}`);
 
-                            const duration = data.format ? parseFloat(data.format.duration || 0) : 0;
+                            // REMOVED: duration to prevent VOD detection on Client
+                            // const duration = data.format ? parseFloat(data.format.duration || 0) : 0;
 
                             res.writeHead(200, { 'Content-Type': 'application/json' });
-                            res.end(JSON.stringify({ audio, subs, duration }));
+                            res.end(JSON.stringify({ audio, subs, duration: 0 })); // Send 0 to force Live Mode
 
                         } catch (e) {
                             res.writeHead(500);
@@ -361,7 +362,7 @@ const server = http.createServer((req, res) => {
                             '-f', 'hls',
                             '-hls_time', '6',
                             '-hls_list_size', '0',
-                            '-hls_playlist_type', 'event',
+                            '-hls_playlist_type', 'event', // Force Event Mode (Growing Playlist)
                             '-hls_allow_cache', '1',
                             '-start_number', '0',
                             '-master_pl_name', 'main.m3u8',
