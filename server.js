@@ -170,6 +170,7 @@ const server = http.createServer((req, res) => {
             } else if (parsedUrl.pathname === '/start') {
                 const videoUrl = parsedUrl.query.url;
                 const sessionId = parsedUrl.query.session; // Mandatory
+                const forceTranscode = parsedUrl.query.force === 'true'; // New UI Flag
 
                 if (!videoUrl || !sessionId) {
                     res.writeHead(400);
@@ -177,7 +178,7 @@ const server = http.createServer((req, res) => {
                     return;
                 }
 
-                console.log(`[Start] Request from Session: ${sessionId}`);
+                console.log(`[Start] Request from Session: ${sessionId} (Force Transcode: ${forceTranscode})`);
 
                 // 1. Get or Create Session
                 let session = sessions.get(sessionId);
@@ -188,7 +189,7 @@ const server = http.createServer((req, res) => {
                         url: null,
                         lastPing: Date.now(),
                         dir: path.join(hlsBaseDir, sessionId),
-                        forceTranscode: false // New Flag for Smart Fallback
+                        forceTranscode: false
                     };
                     sessions.set(sessionId, session);
 
@@ -200,9 +201,13 @@ const server = http.createServer((req, res) => {
                     session.lastPing = Date.now(); // Update activity
                 }
 
+                if (forceTranscode) {
+                    session.forceTranscode = true;
+                    console.log(`[Smart] User forced transcoding for session ${sessionId}`);
+                }
+
                 // If this is a NEW request (url mismatch), we must reset the Fallback flag.
-                // (The block above handles running processes, but what if it was stopped?)
-                if (session.url !== videoUrl) {
+                if (session.url !== videoUrl && !forceTranscode) {
                     session.forceTranscode = false;
                 }
 
@@ -226,8 +231,11 @@ const server = http.createServer((req, res) => {
                     session.url = null;
                 }
 
-                // Reset Fallback Flag for NEW video
-                session.forceTranscode = false;
+                // Reset Fallback Flag for NEW video if not forced
+                if (!forceTranscode) {
+                    session.forceTranscode = false;
+                }
+
 
                 // Clear Session Directory (Fresh Start)
                 try {
@@ -363,7 +371,8 @@ const server = http.createServer((req, res) => {
                         const ffmpegArgs = [
                             '-user_agent', USER_AGENT,
                             '-y',
-                            '-copyts', // Copy original timestamps (Sync Fix for TV)
+                            '-fflags', '+genpts',          // Generate Presentation Timestamps
+                            '-avoid_negative_ts', 'make_zero', // Fix negative timestamps by resetting to 0
                             '-i', videoUrl,
                             '-map', '0:v:0',
                             ...audioMaps,
@@ -378,6 +387,7 @@ const server = http.createServer((req, res) => {
                                 '-af', audioFilterGraph,
                                 '-c:a', isTV ? 'ac3' : 'aac',
                                 '-b:a', '640k',
+                                '-ar', '48000', // Force 48kHz for stability
                                 '-ac', '6'
                             );
                         }
@@ -439,10 +449,6 @@ const server = http.createServer((req, res) => {
                 startEncodingProcess();
 
             } else if (parsedUrl.pathname === '/subtitle') {
-                // ... Subtitle can stay global-ish or use session if needed, 
-                // but usually subtitles are direct FFMPEG extracts.
-                // It's cleaner to keep it stateless as it pipes directly.
-                // Logic below is fine.
                 const videoUrl = parsedUrl.query.url;
                 const subIndex = parsedUrl.query.index;
 
@@ -451,13 +457,15 @@ const server = http.createServer((req, res) => {
                     res.end('Missing URL or Index');
                     return;
                 }
-                // ... (Original Code for Subtitle) ...
+                const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
+
                 console.log(`Streaming Subtitles: ${videoUrl} (Track ${subIndex})`);
                 res.writeHead(200, {
                     'Content-Type': 'text/vtt',
                     'Access-Control-Allow-Origin': '*'
                 });
                 const ffmpegSub = spawn('ffmpeg', [
+                    '-user_agent', USER_AGENT, // Fix: Add User Agent
                     '-y',
                     '-i', videoUrl,
                     '-map', `0:${subIndex}`,

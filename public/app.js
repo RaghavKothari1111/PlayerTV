@@ -380,8 +380,17 @@ document.addEventListener('DOMContentLoaded', () => {
         showStatus(`Initializing Stream...`, 'info');
 
         // 1. Tell Server to Start Transcoding
+        // Force Transcode Check
+        const forceTranscode = document.getElementById('forceTranscode').checked;
+
+        // Auto-show for TV
+        const userAgent = navigator.userAgent;
+        if (/Web0S|Tizen|SMART-TV|SmartTV|Large Screen|GoogleTV|AndroidTV|HbbTV|Bravia|NetCast/i.test(userAgent)) {
+            document.getElementById('tvOptions').style.display = 'flex';
+        }
+
         try {
-            const startRes = await fetch(`/start?url=${encodeURIComponent(rawUrl)}&audioIndex=${audioIdx}&subIndex=${subIdx}&session=${sessionId}`);
+            const startRes = await fetch(`/start?url=${encodeURIComponent(rawUrl)}&audioIndex=${audioIdx}&subIndex=${subIdx}&session=${sessionId}&force=${forceTranscode}`);
             if (!startRes.ok) throw new Error('Failed to start stream server');
         } catch (err) {
             console.error(err);

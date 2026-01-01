@@ -29,6 +29,12 @@
             <input type="text" id="urlInput" placeholder="Enter Direct Video URL..." spellcheck="false">
             <!-- Controls moved to overlay -->
             <button id="playBtn">Play Stream</button>
+            <div id="tvOptions"
+                style="display: none; margin-top: 10px; color: white; display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="forceTranscode">
+                <label for="forceTranscode" style="font-size: 0.9em; cursor: pointer;">Optimize for TV (Force
+                    Transcode)</label>
+            </div>
         </div>
 
         <div class="video-wrapper" id="videoContainer">
