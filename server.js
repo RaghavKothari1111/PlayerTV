@@ -282,40 +282,19 @@ const server = http.createServer((req, res) => {
                         }
 
                         // 2. BUILD AUDIO FILTER COMPLEX
-                        let filterComplex = '';
+                        // 2. BUILD AUDIO MAPS (Simplified for Stability)
                         let audioMaps = [];
                         let varStreamMap = '';
+                        // Simple Audio Filter Chain (Applied via -af)
+                        // Treble Boost (5kHz & 6kHz) + Volume Boost
+                        let audioFilterGraph = 'volume=1.5,treble=g=5:f=5000:w=0.5,treble=g=5:f=6000:w=0.5';
 
                         if (audioStreams.length > 0) {
                             varStreamMap = 'v:0,agroup:audio';
                             audioStreams.forEach((audio, i) => {
-                                // Hybrid Audio Logic: Advanced Vocal Boost (TV) vs Safe Linear Boost (PC)
-                                let fc = '';
-                                if (isTV) {
-                                    // COMPLEX VOCAL BOOST (TV Only - uses AC3)
-                                    // Split -> EQ -> Mix -> Join
-                                    fc = `[0:${audio.index}]aformat=channel_layouts=5.1:sample_rates=48000[a51_${i}];` +
-                                        `[a51_${i}]channelsplit=channel_layout=5.1[FL_${i}][FR_${i}][FC_${i}][LFE_${i}][SL_${i}][SR_${i}];` +
-                                        `[FC_${i}]equalizer=f=5000:width_type=q:width=1:g=4,equalizer=f=8000:width_type=q:width=1:g=3[eFC_orig_${i}];` +
-                                        `[FL_${i}]equalizer=f=6000:width_type=q:width=1:g=4[eFL_${i}];` +
-                                        `[FR_${i}]equalizer=f=6000:width_type=q:width=1:g=4[eFR_${i}];` +
-                                        `[eFC_orig_${i}]asplit=3[eFC1_${i}][eFC2_${i}][eFC3_${i}];` +
-                                        `[eFL_${i}][eFC1_${i}]amix=inputs=2:weights='0.70 0.30'[nFL_${i}];` +
-                                        `[eFR_${i}][eFC2_${i}]amix=inputs=2:weights='0.70 0.30'[nFR_${i}];` +
-                                        `[eFC3_${i}]volume=1.5[nFC_${i}];` +
-                                        `[nFL_${i}][nFR_${i}][nFC_${i}][LFE_${i}][SL_${i}][SR_${i}]join=inputs=6:channel_layout=5.1,aformat=channel_layouts=5.1:sample_rates=48000[outa${i}];`;
-                                } else {
-                                    // SIMPLE LINEAR EQ (PC/Mobile - uses AAC)
-                                    // Direct EQ on stream, No Join
-                                    fc = `[0:${audio.index}]aformat=channel_layouts=5.1:sample_rates=48000,` +
-                                        `equalizer=f=5000:width_type=q:width=1:g=4,` +
-                                        `equalizer=f=6000:width_type=q:width=1:g=4,` +
-                                        `volume=1.5,` +
-                                        `aformat=channel_layouts=5.1:sample_rates=48000[outa${i}];`;
-                                }
+                                // Direct Map (Filter applied globally via -af)
+                                audioMaps.push('-map', `0:${audio.index}`);
 
-                                filterComplex += fc;
-                                audioMaps.push('-map', `[outa${i}]`);
                                 const safeTitle = (audio.title || `Audio_${i + 1}`).replace(/[^a-zA-Z0-9]/g, '_').replace(/^_+|_+$/g, '') || `Audio_${i + 1}`;
                                 varStreamMap += ` a:${i},agroup:audio,language:${audio.lang},name:${safeTitle}`;
                             });
@@ -323,7 +302,6 @@ const server = http.createServer((req, res) => {
                             varStreamMap = 'v:0';
                             console.log("No audio streams found. Encoding Video Only.");
                         }
-                        if (filterComplex.endsWith(';')) filterComplex = filterComplex.slice(0, -1);
 
                         // 3. DEVICE & CODEC LOGIC (Variables already defined above)
                         // const userAgent ... (Moved up)
@@ -386,7 +364,7 @@ const server = http.createServer((req, res) => {
 
                         if (audioStreams.length > 0) {
                             ffmpegArgs.push(
-                                '-filter_complex', filterComplex,
+                                '-af', audioFilterGraph,
                                 '-c:a', isTV ? 'ac3' : 'aac',
                                 '-b:a', '640k',
                                 '-ac', '6'
