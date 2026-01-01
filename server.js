@@ -323,30 +323,38 @@ const server = http.createServer((req, res) => {
 
                 // --- PART D: Device Capability Matrix ---
                 // Different TV platforms have different codec support
+                // NOTE: HEVC uses different level numbering than H.264:
+                //   - H.264 Level 5.1 = 51
+                //   - HEVC Level 4.0 = 120, Level 5.1 = 153
+                // So we use codec-specific max levels
                 const TV_CAPABILITIES = {
                     samsung: {
                         video: ['h264', 'hevc'],
-                        maxLevel: 41,   // H.264 Level 4.1 (1080p60)
+                        maxH264Level: 51,   // H.264 Level 5.1 (4K)
+                        maxHevcLevel: 153,  // HEVC Level 5.1 (4K HDR)
                         audio: ['aac', 'ac3', 'eac3', 'mp3'],
-                        profiles: ['baseline', 'main', 'high']
+                        profiles: ['baseline', 'main', 'high', 'main 10']
                     },
                     lg: {
                         video: ['h264', 'hevc'],
-                        maxLevel: 51,   // H.264 Level 5.1 (4K)
+                        maxH264Level: 51,   // H.264 Level 5.1 (4K)
+                        maxHevcLevel: 153,  // HEVC Level 5.1 (4K HDR)
                         audio: ['aac', 'ac3', 'eac3', 'mp3'],
-                        profiles: ['baseline', 'main', 'high']
+                        profiles: ['baseline', 'main', 'high', 'main 10']
                     },
                     android_tv: {
                         video: ['h264', 'hevc', 'vp9'],
-                        maxLevel: 51,
+                        maxH264Level: 52,   // H.264 Level 5.2
+                        maxHevcLevel: 156,  // HEVC Level 5.2
                         audio: ['aac', 'ac3', 'eac3', 'opus', 'mp3'],
-                        profiles: ['baseline', 'main', 'high', 'high10']
+                        profiles: ['baseline', 'main', 'high', 'main 10', 'high10']
                     },
                     generic: {
-                        video: ['h264'],
-                        maxLevel: 41,   // Conservative default
-                        audio: ['aac', 'mp3'],
-                        profiles: ['baseline', 'main']
+                        video: ['h264', 'hevc'],  // Be lenient for generic
+                        maxH264Level: 51,
+                        maxHevcLevel: 153,
+                        audio: ['aac', 'ac3', 'eac3', 'mp3'],
+                        profiles: ['baseline', 'main', 'high', 'main 10']
                     }
                 };
 
@@ -371,16 +379,23 @@ const server = http.createServer((req, res) => {
 
                         // Check codec is supported by this device
                         const codecOk = tvCaps.video.includes(video.codec_name);
+                        if (!codecOk) {
+                            log(`[Compat] Codec ${video.codec_name} not in ${tvCaps.video}`);
+                            return false;
+                        }
 
-                        // Check profile (if available)
+                        // Check profile (if available) - be lenient
                         const profile = (video.profile || '').toLowerCase();
                         const profileOk = !profile || tvCaps.profiles.some(p => profile.includes(p));
 
-                        // Check level (if available) - H.264 level is stored as "41" for 4.1
+                        // Check level using codec-specific limits
+                        // HEVC levels: 4.0=120, 4.1=123, 5.0=150, 5.1=153, 5.2=156
+                        // H.264 levels: 4.0=40, 4.1=41, 5.0=50, 5.1=51, 5.2=52
                         const level = parseInt(video.level) || 0;
-                        const levelOk = level <= tvCaps.maxLevel;
+                        const maxLevel = (video.codec_name === 'hevc') ? tvCaps.maxHevcLevel : tvCaps.maxH264Level;
+                        const levelOk = (level === 0) || (level <= maxLevel); // 0 = unknown, be lenient
 
-                        log(`[Compat] Video: ${video.codec_name} Profile:${profile} Level:${level} -> Codec:${codecOk} Profile:${profileOk} Level:${levelOk}`);
+                        log(`[Compat] Video: ${video.codec_name} Profile:${profile} Level:${level} MaxLevel:${maxLevel} -> Codec:${codecOk} Profile:${profileOk} Level:${levelOk}`);
                         return codecOk && profileOk && levelOk;
                     } catch (e) { return false; }
                 };
