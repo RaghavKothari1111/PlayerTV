@@ -462,16 +462,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 debug: false,
                 enableWorker: true,
                 lowLatencyMode: false,
-                // EXTREME BUFFER OPTIMIZATION FOR TV
-                // TVs with 4+ audio tracks exhaust MSE buffer quickly.
-                // Keep buffers extremely tiny to avoid 'bufferAppendError'.
-                maxBufferLength: isTV ? 6 : 30,       // Only 6s ahead on TV (was 10)
-                maxMaxBufferLength: isTV ? 10 : 60,   // Max cap (was 15)
-                backBufferLength: isTV ? 3 : 30,     // Aggressively flush (was 5)
-                maxBufferSize: isTV ? 10 * 1024 * 1024 : 60 * 1024 * 1024, // 10MB on TV (was 20)
+                // TV BUFFER OPTIMIZATION
+                // Balance between memory usage and playback smoothness.
+                // Too small = audio starvation, too large = bufferAppendError
+                maxBufferLength: isTV ? 15 : 30,      // 15s ahead on TV
+                maxMaxBufferLength: isTV ? 30 : 60,   // Allow more headroom
+                backBufferLength: isTV ? 10 : 30,    // Keep some back buffer
+                maxBufferSize: isTV ? 30 * 1024 * 1024 : 60 * 1024 * 1024, // 30MB on TV
                 capLevelToPlayerSize: true,
                 subtitleDisplay: true,
-                appendErrorMaxRetry: 5, // Retry more aggressively on buffer errors
+                appendErrorMaxRetry: 5, // Retry on buffer errors
             });
 
             showStatus('Loading HLS Playlist...', 'info');

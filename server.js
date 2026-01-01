@@ -533,11 +533,15 @@ const server = http.createServer((req, res) => {
                         // --- VIDEO CODEC SELECTION ---
                         let videoCodec = 'libx264';
                         let videoOpts = ['-preset', 'ultrafast', '-tune', 'zerolatency', '-crf', '23', '-pix_fmt', 'yuv420p'];
+                        let videoBsf = []; // Bitstream filter for video
 
                         if (selectedMode === MODE.AUDIO_ONLY) {
                             videoCodec = 'copy';
                             videoOpts = [];
-                            log('[FFmpeg] Video Copy Mode Enabled');
+                            // CRITICAL: When copying H.264 to HLS, we need this bitstream filter
+                            // for proper NAL unit conversion. Without it, audio/video may desync.
+                            videoBsf = ['-bsf:v', 'h264_mp4toannexb'];
+                            log('[FFmpeg] Video Copy Mode Enabled (with h264_mp4toannexb BSF)');
                         }
 
                         // --- AUDIO CODEC SELECTION (TVs need AC3) ---
@@ -581,6 +585,11 @@ const server = http.createServer((req, res) => {
 
                         // STEP 4: Video codec settings
                         ffmpegArgs.push('-c:v', videoCodec, ...videoOpts);
+
+                        // STEP 4b: Add bitstream filter for video copy mode (H.264 to HLS)
+                        if (videoBsf.length > 0) {
+                            ffmpegArgs.push(...videoBsf);
+                        }
 
                         // STEP 5: Audio codec settings (only if we have audio)
                         if (audioStreams.length > 0) {
