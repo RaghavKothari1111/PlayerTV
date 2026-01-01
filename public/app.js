@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function formatTime(s) {
-        if (isNaN(s)) return "0:00";
+        if (isNaN(s) || !isFinite(s)) return "0:00"; // Handle Infinity/NaN
         const totalSeconds = Math.floor(s);
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -193,16 +193,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Audio Change -> Seamless Switch (Netflix Style)
     // HLS.js handles switching without restart if manifest has multiple audio tracks
+    // NATIVE PLAYER: uses videoPlayer.audioTracks API
     audioSelect.addEventListener('change', () => {
         // Prevent focus stealing from video
         videoPlayer.focus();
 
-        if (hls && hls.audioTracks.length > 1) {
-            const newIndex = parseInt(audioSelect.value);
-            console.log(`Switching Audio Track to Index: ${newIndex}`);
+        const newIndex = parseInt(audioSelect.value);
+        console.log(`Switching Audio Track to Index: ${newIndex}`);
+
+        if (hls && hls.audioTracks && hls.audioTracks.length > 1) {
             hls.audioTrack = newIndex;
+        } else if (videoPlayer.audioTracks) {
+            // NATIVE SWITCHING Logic
+            // Standard spec: audioTracks is a list. Set 'enabled' on the one we want.
+            // Some browsers use index access, others might need iteration.
+
+            for (let i = 0; i < videoPlayer.audioTracks.length; i++) {
+                if (i === newIndex) {
+                    videoPlayer.audioTracks[i].enabled = true;
+                    logToServer(`[Audio] Native Track ${i} ENABLED`);
+                } else {
+                    videoPlayer.audioTracks[i].enabled = false;
+                }
+            }
         } else {
-            console.log("Audio switch requested but HLS not controlling multiple tracks.");
+            console.log("Audio switch requested but no compatible API found.");
         }
     });
 
@@ -391,8 +406,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 isStreamStarting = false;
 
                 // Try to populate tracks if native player exposes them (WebOS 4+ might)
-                if (videoPlayer.audioTracks) {
-                    // ... logic for native tracks is browser specific, usually it handles it via UI
+                if (videoPlayer.audioTracks && videoPlayer.audioTracks.length > 0) {
+                    logToServer(`[Audio] Native Audio Tracks found: ${videoPlayer.audioTracks.length}`);
+                    // Wait a bit or populate immediately?
+                    // Native AudioTrackList is often live.
+
+                    const populateNativeTracks = () => {
+                        const tracks = [];
+                        for (let i = 0; i < videoPlayer.audioTracks.length; i++) {
+                            const t = videoPlayer.audioTracks[i];
+                            tracks.push(`<option value="${i}">Audio ${i + 1} (${t.language || 'und'})</option>`);
+                        }
+                        if (tracks.length > 0) {
+                            audioSelect.innerHTML = tracks.join('');
+                            logToServer('[Audio] Native Tracks Populated in UI');
+                        }
+                    };
+
+                    populateNativeTracks(); // Try immediately
+                    // Also listen for changes?
+                    videoPlayer.audioTracks.addEventListener('change', populateNativeTracks);
+                    videoPlayer.audioTracks.addEventListener('addtrack', populateNativeTracks);
                 }
             });
 
