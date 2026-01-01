@@ -450,42 +450,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Check if device is TV to prefer Native HLS (Better for AC3/Passthrough)
-        const ua = navigator.userAgent;
-        const isTV = /Tizen|WebOS|SmartTV|BRAVIA|Android TV|TV|AppleTV|CrKey|Roku|Viera|Philips|Toshiba|LG|Samsung/i.test(ua);
-
-        // Native HLS Check (Prioritize for TV or Safari)
-        const supportsNativeHLS = videoPlayer.canPlayType('application/vnd.apple.mpegurl');
-
-        if (isTV && supportsNativeHLS) {
-            console.log("TV detected. Using Native HLS for better Audio/Video support.");
-            logToServer(`[Detection] TV User-Agent detected: ${ua}`);
-            logToServer(`[Player] Using Native HLS Player (Supports Native HLS: ${supportsNativeHLS})`);
-
-            // Fallthrough to Native Logic
-            videoPlayer.src = streamSrc;
-            videoPlayer.addEventListener('loadedmetadata', function () {
-                videoPlayer.play().catch(e => console.log("Autoplay blocked"));
-                showStatus('Playing (Native TV)', 'success');
-                logToServer('[Event] Native Player: Metadata Loaded & Playing');
-                placeholder.style.opacity = '0';
-                startHeartbeat();
-                isStreamStarting = false;
-
-                // Try to populate tracks if native player exposes them (WebOS 4+ might)
-                if (videoPlayer.audioTracks && videoPlayer.audioTracks.length > 0) {
-                    logToServer(`[Audio] Native Audio Tracks found: ${videoPlayer.audioTracks.length}`);
-
-                    // FIXED: We DO NOT populate from Native Player anymore.
-                    // We rely strictly on the Server Metadata (fetched via /metadata).
-                    // This prevents the TV from overwriting the clean list with jumbled track orders.
-
-                    // We only verify that the indices align.
-                    // "Audio 1" in Dropdown (Index 0) -> videoPlayer.audioTracks[0]
-                }
-            });
-
-        } else if (Hls.isSupported()) {
-            logToServer(`[Detection] Standard Browser User-Agent: ${ua}`);
+        if (Hls.isSupported()) {
+            logToServer(`[Detection] Standard Browser User-Agent: ${navigator.userAgent}`);
             logToServer(`[Player] Using Hls.js Player`);
 
             if (hls) {
