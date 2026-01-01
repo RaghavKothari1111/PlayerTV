@@ -131,6 +131,7 @@ const server = http.createServer((req, res) => {
                     '-v', 'quiet',
                     '-print_format', 'json',
                     '-show_streams',
+                    '-show_format',
                     videoUrl
                 ]);
 
@@ -167,8 +168,10 @@ const server = http.createServer((req, res) => {
 
                             log(`Audio Metadata: ${JSON.stringify(audio, null, 2)}`);
 
+                            const duration = data.format ? parseFloat(data.format.duration || 0) : 0;
+
                             res.writeHead(200, { 'Content-Type': 'application/json' });
-                            res.end(JSON.stringify({ audio, subs }));
+                            res.end(JSON.stringify({ audio, subs, duration }));
 
                         } catch (e) {
                             res.writeHead(500);

@@ -111,15 +111,29 @@ document.addEventListener('DOMContentLoaded', () => {
     videoPlayer.addEventListener('timeupdate', updateProgress);
     videoPlayer.addEventListener('progress', updateBuffer); // Listen for buffer updates
 
+    let serverDuration = 0; // Store duration from metadata
+
+    // Helper: Get best available duration
+    function getDuration() {
+        // Native HLS often reports Infinity
+        if (videoPlayer.duration && isFinite(videoPlayer.duration) && videoPlayer.duration > 0) {
+            return videoPlayer.duration;
+        }
+        return serverDuration;
+    }
+
     function updateProgress() {
-        if (!videoPlayer.duration) return;
-        const percent = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+        const duration = getDuration();
+        if (!duration) return;
+        const percent = (videoPlayer.currentTime / duration) * 100;
         progressBar.style.width = `${percent}%`;
-        timeDisplay.textContent = `${formatTime(videoPlayer.currentTime)} / ${formatTime(videoPlayer.duration)}`;
+        timeDisplay.textContent = `${formatTime(videoPlayer.currentTime)} / ${formatTime(duration)}`;
     }
 
     function updateBuffer() {
-        if (!videoPlayer.duration) return;
+        const duration = getDuration();
+        if (!duration) return;
+
         if (videoPlayer.buffered.length > 0) {
             // Find the buffered range that covers the current time
             const currentTime = videoPlayer.currentTime;
@@ -135,24 +149,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     break;
                 }
             }
-            // If we didn't find a direct match, maybe just show the last buffered chunk?
-            // Usually, showing what's buffered AHEAD of current time is most useful.
-            // If nothing found relative to current, default to the furthest buffered point 
-            // but usually players prioritize the contiguous buffer from current head.
 
-            // Common simple logic: just use the end of the LAST buffer range strictly?
-            // Better: use the end of the range surrounding the playhead.
-
-            const percent = (bufferedEnd / videoPlayer.duration) * 100;
+            const percent = (bufferedEnd / duration) * 100;
             progressBuffer.style.width = `${percent}%`;
         }
     }
 
     // Seek
     progressContainer.addEventListener('click', (e) => {
+        const duration = getDuration();
+        if (!duration) return;
+
         const rect = progressContainer.getBoundingClientRect();
         const pos = (e.clientX - rect.left) / rect.width;
-        videoPlayer.currentTime = pos * videoPlayer.duration;
+        videoPlayer.currentTime = pos * duration;
     });
 
     // Volume
@@ -275,6 +285,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const res = await fetch(`/metadata?url=${encodeURIComponent(rawUrl)}`);
             const data = await res.json();
+
+            if (data.duration) {
+                serverDuration = data.duration;
+                logToServer(`[Metadata] Server Duration: ${serverDuration}s`);
+            }
 
             // Audio Options (Preview from Metadata)
             if (data.audio && data.audio.length > 0) {
@@ -622,7 +637,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             case 'ArrowRight': // Forward 10s
                 e.preventDefault();
-                videoPlayer.currentTime = Math.min(videoPlayer.currentTime + 10, videoPlayer.duration);
+                videoPlayer.currentTime = Math.min(videoPlayer.currentTime + 10, getDuration());
                 startInactivityTimer();
                 break;
             case 'ArrowLeft': // Rewind 10s
