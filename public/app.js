@@ -359,6 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rawUrl = urlInput.value.trim();
         const audioIdx = audioSelect.value || 0;
         const subIdx = subSelect.value || -1;
+        const forceTranscode = document.getElementById('transcodeCheckbox').checked;
 
         if (!rawUrl) {
             showStatus('Please enter a valid URL', 'error');
@@ -376,11 +377,11 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('lastVideoUrl', rawUrl);
         }
 
-        showStatus(`Initializing Stream...`, 'info');
+        showStatus(`Initializing Stream... (Stability: ${forceTranscode ? 'ON' : 'OFF'})`, 'info');
 
         // 1. Tell Server to Start Transcoding
         try {
-            const startRes = await fetch(`/start?url=${encodeURIComponent(rawUrl)}&audioIndex=${audioIdx}&subIndex=${subIdx}&session=${sessionId}`);
+            const startRes = await fetch(`/start?url=${encodeURIComponent(rawUrl)}&audioIndex=${audioIdx}&subIndex=${subIdx}&session=${sessionId}&transcode=${forceTranscode}`);
             if (!startRes.ok) throw new Error('Failed to start stream server');
         } catch (err) {
             console.error(err);

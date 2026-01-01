@@ -270,10 +270,12 @@ const server = http.createServer((req, res) => {
                                     .filter(s => s.codec_type === 'audio')
                                     .map((s, i) => ({
                                         index: s.index,
-                                        streamIndex: i,
+                                        streamIndex: i, // Use 'i' here? No, 'i' in map is array index.
                                         lang: s.tags?.language || 'und',
-                                        title: s.tags?.title || `Track ${i + 1}`
-                                    }));
+                                        title: s.tags?.title || `Track ${i + 1}`,
+                                        codec: s.codec_name
+                                    }))
+                                    .sort((a, b) => a.index - b.index); // CRITICAL: Sort by Stream Index
                             } catch (e) {
                                 console.error("Probe parse error", e);
                             }
@@ -441,7 +443,20 @@ const server = http.createServer((req, res) => {
                 };
 
                 // Determine initial mode based on Device
-                startEncodingProcess(isTV); // If TV, tryDirectMode = true
+                const forceTranscode = parsedUrl.query.transcode === 'true';
+
+                // Determine initial mode based on Device AND User Preference
+                let initialMode = isTV; // Default: TV uses Direct Mode (isTV=true -> tryDirectMode=true)
+
+                if (forceTranscode) {
+                    initialMode = false; // User requested Stability -> Force Transcode (tryDirectMode=false)
+                    log(`[Override] User requested Force Transcode (Stability Mode).`);
+                } else {
+                    // Default TV Logic: Try Direct First
+                    initialMode = isTV;
+                }
+
+                startEncodingProcess(initialMode);
 
             } else if (parsedUrl.pathname === '/subtitle') {
                 // ... Subtitle can stay global-ish or use session if needed, 
