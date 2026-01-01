@@ -200,6 +200,12 @@ const server = http.createServer((req, res) => {
                     session.lastPing = Date.now(); // Update activity
                 }
 
+                // If this is a NEW request (url mismatch), we must reset the Fallback flag.
+                // (The block above handles running processes, but what if it was stopped?)
+                if (session.url !== videoUrl) {
+                    session.forceTranscode = false;
+                }
+
                 const hlsDir = session.dir; // Use SESSION SPECIFIC dir
 
                 // SMART CHECK: If same URL is already playing IN THIS SESSION
@@ -219,6 +225,9 @@ const server = http.createServer((req, res) => {
                     session.process = null;
                     session.url = null;
                 }
+
+                // Reset Fallback Flag for NEW video
+                session.forceTranscode = false;
 
                 // Clear Session Directory (Fresh Start)
                 try {
