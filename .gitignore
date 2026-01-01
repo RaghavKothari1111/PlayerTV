@@ -1,6 +1,0 @@
-node_modules/
-public/hls/
-.env
-.DS_Store
-*.log
-VideoPlayer2 (copy 1)/

@@ -1,0 +1,68 @@
+[2026-01-01T09:16:07.628Z] [Start] Request from Session: test_tv_ac3 | User-Agent: Mozilla/5.0 (SMART-TV; Linux; Tizen 5.0) AppleWebKit/537.3 (KHTML, like Gecko) SamsungBrowser/3.0 TV Safari/537.3 | isTV: true
+[2026-01-01T09:16:07.629Z] Starting HLS for Session test_tv_ac3: /home/kali/Desktop/VideoPlayer2/test.mp4 | Mode: DIRECT (Copy)
+[2026-01-01T09:16:07.682Z] No audio streams found. Encoding Video Only.
+[2026-01-01T09:16:07.683Z] Device is TV. Switching audio codec to AC3.
+[2026-01-01T09:16:07.733Z] [ffmpeg-test_tv_ac3] [DIRECT (Copy)] Exited with code 0
+[2026-01-01T09:16:08.185Z] Stream Ready for Session test_tv_ac3 [DIRECT (Copy)]!
+[2026-01-01T09:16:08.482Z] [Start] Request from Session: test_pc_aac | User-Agent: curl/8.17.0 | isTV: false
+[2026-01-01T09:16:08.483Z] Starting HLS for Session test_pc_aac: /home/kali/Desktop/VideoPlayer2/test.mp4 | Mode: TRANSCODE
+[2026-01-01T09:16:08.560Z] No audio streams found. Encoding Video Only.
+[2026-01-01T09:16:08.561Z] Device is not TV. Using AAC audio codec.
+[2026-01-01T09:16:10.569Z] Stream Ready for Session test_pc_aac [TRANSCODE]!
+[2026-01-01T09:16:10.627Z] [ffmpeg-test_pc_aac] [TRANSCODE] Exited with code 0
+[2026-01-01T09:16:57.807Z] [Start] Request from Session: test_tv_ac3_audio | User-Agent: Mozilla/5.0 (SMART-TV; Linux; Tizen 5.0) AppleWebKit/537.3 (KHTML, like Gecko) SamsungBrowser/3.0 TV Safari/537.3 | isTV: true
+[2026-01-01T09:16:57.807Z] Starting HLS for Session test_tv_ac3_audio: /home/kali/Desktop/VideoPlayer2/test_audio.mp4 | Mode: DIRECT (Copy)
+[2026-01-01T09:16:57.904Z] Device is TV. Switching audio codec to AC3.
+[2026-01-01T09:16:58.082Z] [ffmpeg-test_tv_ac3_audio] [DIRECT (Copy)] Exited with code 0
+[2026-01-01T09:16:58.405Z] Stream Ready for Session test_tv_ac3_audio [DIRECT (Copy)]!
+[2026-01-01T09:16:58.604Z] [Start] Request from Session: test_pc_aac_audio | User-Agent: curl/8.17.0 | isTV: false
+[2026-01-01T09:16:58.604Z] Starting HLS for Session test_pc_aac_audio: /home/kali/Desktop/VideoPlayer2/test_audio.mp4 | Mode: TRANSCODE
+[2026-01-01T09:16:58.684Z] Device is not TV. Using AAC audio codec.
+[2026-01-01T09:17:02.710Z] Stream Ready for Session test_pc_aac_audio [TRANSCODE]!
+[2026-01-01T09:17:03.061Z] [ffmpeg-test_pc_aac_audio] [TRANSCODE] Exited with code 0
+[2026-01-01T09:28:57.170Z] [Start] Request from Session: test_tv_ac3_48k | User-Agent: Mozilla/5.0 (SMART-TV; Linux; Tizen 5.0) AppleWebKit/537.3 (KHTML, like Gecko) SamsungBrowser/3.0 TV Safari/537.3 | isTV: true
+[2026-01-01T09:28:57.171Z] Starting HLS for Session test_tv_ac3_48k: /home/kali/Desktop/VideoPlayer2/test_audio.mp4 | Mode: DIRECT (Copy)
+[2026-01-01T09:28:57.221Z] Device is TV. Switching audio codec to AC3 (48kHz).
+[2026-01-01T09:28:57.328Z] [ffmpeg-test_tv_ac3_48k] [DIRECT (Copy)] Exited with code 0
+[2026-01-01T09:28:57.723Z] Stream Ready for Session test_tv_ac3_48k [DIRECT (Copy)]!
+[2026-01-01T09:28:57.940Z] [Start] Request from Session: test_pc_aac_48k | User-Agent: curl/8.17.0 | isTV: false
+[2026-01-01T09:28:57.941Z] Starting HLS for Session test_pc_aac_48k: /home/kali/Desktop/VideoPlayer2/test_audio.mp4 | Mode: TRANSCODE
+[2026-01-01T09:28:58.021Z] Device is not TV. Using AAC audio codec.
+[2026-01-01T09:28:58.995Z] [ffmpeg-test_pc_aac_48k] [TRANSCODE] Exited with code 0
+[2026-01-01T09:28:59.024Z] Stream Ready for Session test_pc_aac_48k [TRANSCODE]!
+[2026-01-01T09:35:58.684Z] [CLIENT] Browser Info: User-Agent Test
+[2026-01-01T10:04:55.547Z] Fetching metadata for: /home/kali/Desktop/VideoPlayer2/test_metadata.mp4
+[2026-01-01T10:04:55.745Z] Audio Metadata: [
+  {
+    "index": 0,
+    "lang": "und",
+    "codec": "aac"
+  }
+]
+[2026-01-01T10:05:23.881Z] Fetching metadata for: /home/kali/Desktop/VideoPlayer2/test_metadata.mp4
+[2026-01-01T10:05:23.941Z] Audio Metadata: [
+  {
+    "index": 0,
+    "lang": "und",
+    "codec": "aac"
+  }
+]
+[2026-01-01T10:05:35.219Z] Fetching metadata for: /home/kali/Desktop/VideoPlayer2/test_metadata.mp4
+[2026-01-01T10:05:35.283Z] [ffprobe] Output Keys: streams,format
+[2026-01-01T10:05:35.284Z] [ffprobe] Format: {"filename":"/home/kali/Desktop/VideoPlayer2/test_metadata.mp4","nb_streams":2,"nb_programs":0,"nb_stream_groups":0,"format_name":"mov,mp4,m4a,3gp,3g2,mj2","format_long_name":"QuickTime / MOV","start_time":"0.000000","duration":"10.000000","size":"215888","bit_rate":"172710","probe_score":100,"tags":{"major_brand":"isom","minor_version":"512","compatible_brands":"isomiso2avc1mp41","encoder":"Lavf61.7.100"}}
+[2026-01-01T10:05:35.284Z] Audio Metadata: [
+  {
+    "index": 0,
+    "lang": "und",
+    "codec": "aac"
+  }
+]
+[2026-01-01T10:32:25.172Z] Fetching metadata for: /home/kali/Desktop/VideoPlayer2/test_metadata.mp4
+[2026-01-01T10:32:38.712Z] Fetching metadata for: /home/kali/Desktop/VideoPlayer2/test_metadata.mp4
+[2026-01-01T10:32:38.835Z] Audio Metadata: [
+  {
+    "index": 0,
+    "lang": "und",
+    "codec": "aac"
+  }
+]

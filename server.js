@@ -72,6 +72,19 @@ setInterval(() => {
     }
 }, 5 * 60 * 1000); // Check every 5 mins
 
+// --- Logging Helper ---
+const logFile = path.join(__dirname, 'server.log');
+function log(msg) {
+    const timestamp = new Date().toISOString();
+    const logMsg = `[${timestamp}] ${msg}`;
+    console.log(logMsg);
+    try {
+        fs.appendFileSync(logFile, logMsg + '\n');
+    } catch (e) {
+        console.error("Failed to write to log file:", e);
+    }
+}
+
 const server = http.createServer((req, res) => {
     // Enable CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -113,17 +126,18 @@ const server = http.createServer((req, res) => {
                     return;
                 }
 
-                console.log(`Fetching metadata for: ${videoUrl}`);
+                log(`Fetching metadata for: ${videoUrl}`);
                 const ffprobe = spawn('ffprobe', [
                     '-v', 'quiet',
                     '-print_format', 'json',
                     '-show_streams',
+                    '-show_format',
                     videoUrl
                 ]);
 
                 let output = '';
                 ffprobe.stdout.on('data', (data) => output += data);
-                ffprobe.stderr.on('data', (data) => console.error(`ffprobe error: ${data}`));
+                ffprobe.stderr.on('data', (data) => log(`[ffprobe] ${data.toString().trim()}`));
 
                 ffprobe.on('close', async (code) => {
                     if (code === 0) {
@@ -137,6 +151,7 @@ const server = http.createServer((req, res) => {
                             const subs = data.streams
                                 .filter(s => s.codec_type === 'subtitle')
                                 .filter(s => textSubtitleCodecs.includes(s.codec_name))
+                                .sort((a, b) => a.index - b.index) // Ensure consistent order
                                 .map((s, i) => ({
                                     index: s.index,
                                     lang: s.tags?.language || 'und',
@@ -153,10 +168,12 @@ const server = http.createServer((req, res) => {
                                     codec: s.codec_name
                                 }));
 
-                            console.log("Audio Metadata:", JSON.stringify(audio, null, 2));
+                            log(`Audio Metadata: ${JSON.stringify(audio, null, 2)}`);
+
+                            const duration = data.format ? parseFloat(data.format.duration || 0) : 0;
 
                             res.writeHead(200, { 'Content-Type': 'application/json' });
-                            res.end(JSON.stringify({ audio, subs }));
+                            res.end(JSON.stringify({ audio, subs, duration }));
 
                         } catch (e) {
                             res.writeHead(500);
@@ -178,7 +195,11 @@ const server = http.createServer((req, res) => {
                     return;
                 }
 
-                console.log(`[Start] Request from Session: ${sessionId}`);
+                // --- Device Detection ---
+                const userAgent = req.headers['user-agent'] || '';
+                const isTV = /Tizen|WebOS|SmartTV|BRAVIA|Android TV|TV|AppleTV|CrKey|Roku|Viera|Philips|Toshiba|LG|Samsung/i.test(userAgent) || parsedUrl.query.device === 'tv';
+
+                log(`[Start] Request from Session: ${sessionId} | User-Agent: ${userAgent} | isTV: ${isTV}`);
 
                 // 1. Get or Create Session
                 let session = sessions.get(sessionId);
@@ -204,7 +225,7 @@ const server = http.createServer((req, res) => {
 
                 // SMART CHECK: If same URL is already playing IN THIS SESSION
                 if (session.process && session.url === videoUrl) {
-                    console.log(`Stream already active for session ${sessionId}. Reusing.`);
+                    log(`Stream already active for session ${sessionId}. Reusing.`);
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ status: 'resumed' }));
                     return;
@@ -212,7 +233,7 @@ const server = http.createServer((req, res) => {
 
                 // Cleanup previous stream (Different URL provided for this session)
                 if (session.process) {
-                    console.log(`Stopping previous stream for session ${sessionId}...`);
+                    log(`Stopping previous stream for session ${sessionId}...`);
                     try {
                         session.process.kill('SIGKILL');
                     } catch (e) { }
@@ -228,8 +249,9 @@ const server = http.createServer((req, res) => {
                     }
                 } catch (e) { }
 
-                const startEncodingProcess = () => {
-                    console.log(`Starting HLS for Session ${sessionId}: ${videoUrl}`);
+                const startEncodingProcess = (tryDirectMode = false) => {
+                    const mode = tryDirectMode ? "DIRECT (Copy)" : "TRANSCODE";
+                    log(`Starting HLS for Session ${sessionId}: ${videoUrl} | Mode: ${mode}`);
 
                     // 1. Probe (Independent of session, just probing URL)
                     const probe = spawn('ffprobe', ['-v', 'quiet', '-print_format', 'json', '-show_streams', videoUrl]);
@@ -248,10 +270,12 @@ const server = http.createServer((req, res) => {
                                     .filter(s => s.codec_type === 'audio')
                                     .map((s, i) => ({
                                         index: s.index,
-                                        streamIndex: i,
+                                        streamIndex: i, // Use 'i' here? No, 'i' in map is array index.
                                         lang: s.tags?.language || 'und',
-                                        title: s.tags?.title || `Track ${i + 1}`
-                                    }));
+                                        title: s.tags?.title || `Track ${i + 1}`,
+                                        codec: s.codec_name
+                                    }))
+                                    .sort((a, b) => a.index - b.index); // CRITICAL: Sort by Stream Index
                             } catch (e) {
                                 console.error("Probe parse error", e);
                             }
@@ -284,22 +308,32 @@ const server = http.createServer((req, res) => {
                             });
                         } else {
                             varStreamMap = 'v:0';
-                            console.log("No audio streams found. Encoding Video Only.");
+                            log("No audio streams found. Encoding Video Only.");
                         }
 
                         if (filterComplex.endsWith(';')) filterComplex = filterComplex.slice(0, -1);
 
-                        // --- SMART VIDEO CODEC SELECTION ---
                         let videoCodec = 'libx264';
                         let videoOpts = ['-preset', 'ultrafast', '-tune', 'zerolatency', '-crf', '23', '-pix_fmt', 'yuv420p'];
 
-                        if (codecName === 'h264') {
-                            console.log(`[Direct Mode] Compatible Video Codec found: ${codecName}. Using 'copy' mode.`);
+                        // OVERRIDE FOR DIRECT MODE
+                        if (tryDirectMode) {
                             videoCodec = 'copy';
-                            videoOpts = []; // No encoding options needed for copy
-                        } else {
-                            console.log(`[Transcode Mode] Incompatible Video Codec: ${codecName}. Transcoding to h264.`);
+                            videoOpts = []; // Copy mode doesn't accept encode params like preset/crf
                         }
+
+                        // AUDIO CODEC SELECTION (TVs need AC3)
+                        let audioCodec = 'aac';
+                        let audioSampleRate = []; // Default (keep original)
+
+                        if (isTV) {
+                            audioCodec = 'ac3'; // or 'eac3' for DD+
+                            audioSampleRate = ['-ar', '48000']; // Enforce 48kHz for AC3
+                            log('Device is TV. Switching audio codec to AC3 (48kHz).');
+                        } else {
+                            log('Device is not TV. Using AAC audio codec.');
+                        }
+
 
                         // Base Args
                         const ffmpegArgs = [
@@ -315,7 +349,8 @@ const server = http.createServer((req, res) => {
                         if (audioStreams.length > 0) {
                             ffmpegArgs.push(
                                 '-filter_complex', filterComplex,
-                                '-c:a', 'aac',
+                                '-c:a', audioCodec,
+                                ...audioSampleRate,
                                 '-b:a', '640k',
                                 '-ac', '6'
                             );
@@ -326,7 +361,7 @@ const server = http.createServer((req, res) => {
                             '-f', 'hls',
                             '-hls_time', '6',
                             '-hls_list_size', '0',
-                            '-hls_playlist_type', 'event', // Force Event Mode (Growing Playlist)
+                            '-hls_playlist_type', 'event',
                             '-hls_allow_cache', '1',
                             '-start_number', '0',
                             '-master_pl_name', 'main.m3u8',
@@ -338,11 +373,29 @@ const server = http.createServer((req, res) => {
                         session.url = videoUrl; // Track URL
                         session.process = spawn('ffmpeg', ffmpegArgs); // Store process
 
-                        session.process.stderr.on('data', (data) => console.log(`[ffmpeg-${sessionId}]: ${data}`));
+                        // Error Detection Logic
+                        let hasError = false;
+
+                        session.process.stderr.on('data', (data) => {
+                            const msg = data.toString();
+                            // Log only errors or warnings to keep log size manageable, or all for debugging
+                            if (msg.toLowerCase().includes('error') || msg.toLowerCase().includes('fail')) {
+                                log(`[ffmpeg-${sessionId}] [ERR] ${msg.trim()}`);
+                            }
+                        });
+
                         session.process.on('close', (code) => {
-                            console.log(`[ffmpeg-${sessionId}] Exited with code ${code}`);
+                            log(`[ffmpeg-${sessionId}] [${mode}] Exited with code ${code}`);
                             session.process = null;
                             session.url = null;
+
+                            // IF Direct Mode Failed unexpectedly (non-zero code), TRY FALLBACK if we haven't responded yet
+                            if (tryDirectMode && code !== 0 && !res.headersSent) {
+                                log(`[Fallback] Direct Mode failed with code ${code}. Switching to Transcode...`);
+                                // Recursive call with false
+                                startEncodingProcess(false);
+                                return;
+                            }
 
                             if (code !== 0 && !res.headersSent) {
                                 res.writeHead(500);
@@ -353,29 +406,57 @@ const server = http.createServer((req, res) => {
 
                         // Poll for MAIN playlist in SESSION DIR
                         let attempts = 0;
-                        const maxAttempts = 240;
+                        const maxAttempts = tryDirectMode ? 20 : 240; // Shorter timeout for Direct Mode check (approx 10s)
+
                         const checkPlaylist = setInterval(() => {
                             attempts++;
                             if (fs.existsSync(path.join(hlsDir, 'main.m3u8'))) {
-                                console.log(`Stream Ready for Session ${sessionId}!`);
+                                log(`Stream Ready for Session ${sessionId} [${mode}]!`);
                                 clearInterval(checkPlaylist);
                                 if (!res.headersSent) {
                                     res.writeHead(200, { 'Content-Type': 'application/json' });
-                                    res.end(JSON.stringify({ status: 'started' }));
+                                    res.end(JSON.stringify({ status: 'started', mode: mode }));
                                 }
                             } else if (attempts >= maxAttempts) {
                                 clearInterval(checkPlaylist);
-                                if (session.process) session.process.kill('SIGKILL');
-                                if (!res.headersSent) {
-                                    res.writeHead(500);
-                                    res.end(JSON.stringify({ error: 'Timeout waiting for stream' }));
+
+                                // Kill current process
+                                if (session.process) {
+                                    try {
+                                        session.process.kill('SIGKILL');
+                                    } catch (e) { }
+                                    session.process = null;
+                                }
+
+                                if (tryDirectMode) {
+                                    log(`[Fallback] Direct Mode Timed Out. Switching to Transcode...`);
+                                    if (!res.headersSent) startEncodingProcess(false);
+                                } else {
+                                    if (!res.headersSent) {
+                                        res.writeHead(500);
+                                        res.end(JSON.stringify({ error: 'Timeout waiting for stream' }));
+                                    }
                                 }
                             }
                         }, 500);
                     });
                 };
 
-                startEncodingProcess();
+                // Determine initial mode based on Device
+                const forceTranscode = parsedUrl.query.transcode === 'true';
+
+                // Determine initial mode based on Device AND User Preference
+                let initialMode = isTV; // Default: TV uses Direct Mode (isTV=true -> tryDirectMode=true)
+
+                if (forceTranscode) {
+                    initialMode = false; // User requested Stability -> Force Transcode (tryDirectMode=false)
+                    log(`[Override] User requested Force Transcode (Stability Mode).`);
+                } else {
+                    // Default TV Logic: Try Direct First
+                    initialMode = isTV;
+                }
+
+                startEncodingProcess(initialMode);
 
             } else if (parsedUrl.pathname === '/subtitle') {
                 // ... Subtitle can stay global-ish or use session if needed, 
@@ -391,7 +472,7 @@ const server = http.createServer((req, res) => {
                     return;
                 }
                 // ... (Original Code for Subtitle) ...
-                console.log(`Streaming Subtitles: ${videoUrl} (Track ${subIndex})`);
+                log(`Streaming Subtitles: ${videoUrl} (Track ${subIndex})`);
                 res.writeHead(200, {
                     'Content-Type': 'text/vtt',
                     'Access-Control-Allow-Origin': '*'
@@ -444,6 +525,17 @@ const server = http.createServer((req, res) => {
                     res.writeHead(404);
                     res.end(JSON.stringify({ status: 'invalid_session' }));
                 }
+
+            } else if (parsedUrl.pathname === '/client-log' && req.method === 'POST') {
+                let body = '';
+                req.on('data', chunk => {
+                    body += chunk.toString();
+                });
+                req.on('end', () => {
+                    log(`[CLIENT] ${body.trim()}`);
+                    res.writeHead(200);
+                    res.end('Logged');
+                });
             }
 
         }
