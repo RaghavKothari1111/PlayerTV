@@ -228,19 +228,6 @@ video:focus,
     transition: width 0.2s;
 }
 
-.progress-server {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 0%;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-    z-index: 0;
-    /* Behind everything */
-    transition: width 0.5s linear;
-}
-
 /* Controls Layout */
 .controls-main {
     display: flex;
@@ -310,7 +297,7 @@ video:focus,
     display: flex;
     align-items: center;
     gap: 8px;
-
+    group: volume-hover;
 }
 
 #volumeSlider {
@@ -368,28 +355,13 @@ video:focus,
 }
 
 /* Subtitle Styling */
-/* Subtitle Styling */
 video::cue {
     background-color: rgba(0, 0, 0, 0.75);
     color: #ffffff;
     font-size: 1.5rem;
-    line-height: 1.2 !important;
-    /* Reduced from 1.5 to fix spacing gap */
+    line-height: 1.5;
     font-family: 'Outfit', sans-serif;
     text-shadow: 2px 2px 1px rgba(0, 0, 0, 0.8);
-}
-
-/* Dynamic Subtitle Positioning (Netflix Style) */
-/* Targets Chrome/Safari/Webkit/Engine-Based TVs */
-video::-webkit-media-text-track-container {
-    transition: transform 0.3s ease-out;
-    transform: translateY(0);
-}
-
-/* When controls are active (class on parent), shift subtitles up */
-.video-wrapper.user-active video::-webkit-media-text-track-container {
-    transform: translateY(-80px);
-    /* Clear the control bar */
 }
 
 /* Controls Row */

@@ -89,51 +89,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    videoPlayer.addEventListener('play', () => {
-        playPauseBtn.innerHTML = '<ion-icon name="pause"></ion-icon>';
-        logToServer('[Event] Video Play');
-    });
-
-    videoPlayer.addEventListener('pause', () => {
-        playPauseBtn.innerHTML = '<ion-icon name="play"></ion-icon>';
-        logToServer('[Event] Video Pause');
-    });
-
-    videoPlayer.addEventListener('error', (e) => {
-        logToServer(`[Error] Video Error: ${videoPlayer.error ? videoPlayer.error.message : 'Unknown'}`);
-    });
-
-    videoPlayer.addEventListener('waiting', () => logToServer('[Event] Video Waiting (Buffering)'));
-    videoPlayer.addEventListener('playing', () => logToServer('[Event] Video Playing'));
-    videoPlayer.addEventListener('ended', () => logToServer('[Event] Video Ended'));
+    videoPlayer.addEventListener('play', () => playPauseBtn.innerHTML = '<ion-icon name="pause"></ion-icon>');
+    videoPlayer.addEventListener('pause', () => playPauseBtn.innerHTML = '<ion-icon name="play"></ion-icon>');
 
     // Time Update & Progress
     videoPlayer.addEventListener('timeupdate', updateProgress);
     videoPlayer.addEventListener('progress', updateBuffer); // Listen for buffer updates
 
-    let serverDuration = 0; // Store duration from metadata
-
-    // Helper: Get best available duration
-    function getDuration() {
-        // Native HLS often reports Infinity
-        if (videoPlayer.duration && isFinite(videoPlayer.duration) && videoPlayer.duration > 0) {
-            return videoPlayer.duration;
-        }
-        return serverDuration;
-    }
-
     function updateProgress() {
-        const duration = getDuration();
-        if (!duration) return;
-        const percent = (videoPlayer.currentTime / duration) * 100;
+        if (!videoPlayer.duration) return;
+        const percent = (videoPlayer.currentTime / videoPlayer.duration) * 100;
         progressBar.style.width = `${percent}%`;
-        timeDisplay.textContent = `${formatTime(videoPlayer.currentTime)} / ${formatTime(duration)}`;
+        timeDisplay.textContent = `${formatTime(videoPlayer.currentTime)} / ${formatTime(videoPlayer.duration)}`;
     }
 
     function updateBuffer() {
-        const duration = getDuration();
-        if (!duration) return;
-
+        if (!videoPlayer.duration) return;
         if (videoPlayer.buffered.length > 0) {
             // Find the buffered range that covers the current time
             const currentTime = videoPlayer.currentTime;
@@ -149,28 +120,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     break;
                 }
             }
+            // If we didn't find a direct match, maybe just show the last buffered chunk?
+            // Usually, showing what's buffered AHEAD of current time is most useful.
+            // If nothing found relative to current, default to the furthest buffered point 
+            // but usually players prioritize the contiguous buffer from current head.
 
-            const percent = (bufferedEnd / duration) * 100;
+            // Common simple logic: just use the end of the LAST buffer range strictly?
+            // Better: use the end of the range surrounding the playhead.
+
+            const percent = (bufferedEnd / videoPlayer.duration) * 100;
             progressBuffer.style.width = `${percent}%`;
         }
     }
 
     // Seek
     progressContainer.addEventListener('click', (e) => {
-        const duration = getDuration();
-        if (!duration) return;
-
         const rect = progressContainer.getBoundingClientRect();
         const pos = (e.clientX - rect.left) / rect.width;
-        let targetTime = pos * duration;
-
-        // Clamp to Server Encoded Time
-        if (serverEncodedTime > 0 && targetTime > serverEncodedTime) {
-            targetTime = serverEncodedTime;
-            showStatus('Buffering... (Waiting for Server)', 'info');
-        }
-
-        videoPlayer.currentTime = targetTime;
+        videoPlayer.currentTime = pos * videoPlayer.duration;
     });
 
     // Volume
@@ -196,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function formatTime(s) {
-        if (isNaN(s) || !isFinite(s)) return "0:00"; // Handle Infinity/NaN
+        if (isNaN(s)) return "0:00";
         const totalSeconds = Math.floor(s);
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -211,38 +178,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Audio Change -> Seamless Switch (Netflix Style)
     // HLS.js handles switching without restart if manifest has multiple audio tracks
-    // NATIVE PLAYER: uses videoPlayer.audioTracks API
     audioSelect.addEventListener('change', () => {
         // Prevent focus stealing from video
         videoPlayer.focus();
 
-        const newIndex = parseInt(audioSelect.value);
-        console.log(`Switching Audio Track to Index: ${newIndex}`);
-
-        if (hls && hls.audioTracks && hls.audioTracks.length > 1) {
+        if (hls && hls.audioTracks.length > 1) {
+            const newIndex = parseInt(audioSelect.value);
+            console.log(`Switching Audio Track to Index: ${newIndex}`);
             hls.audioTrack = newIndex;
-        } else if (videoPlayer.audioTracks) {
-            // NATIVE SWITCHING Logic
-            // Iterate and set enabled state.
-            // We assume Index 0 in Dropdown == Index 0 in Native Player.
-            // If the TV jumbles them, this will be wrong, but "Removing Old Code" means
-            // trusting the Standard behavior and removing any fancy re-mapping.
-
-            try {
-                for (let i = 0; i < videoPlayer.audioTracks.length; i++) {
-                    if (i === newIndex) {
-                        videoPlayer.audioTracks[i].enabled = true;
-                        logToServer(`[Audio] Native Track ${i} ENABLED`);
-                    } else {
-                        videoPlayer.audioTracks[i].enabled = false;
-                    }
-                }
-            } catch (e) {
-                console.error("Native Audio Switch Error", e);
-                logToServer(`[Error] Native Audio Switch: ${e.message}`);
-            }
         } else {
-            console.log("Audio switch requested but no compatible API found.");
+            console.log("Audio switch requested but HLS not controlling multiple tracks.");
         }
     });
 
@@ -300,11 +245,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const res = await fetch(`/metadata?url=${encodeURIComponent(rawUrl)}`);
             const data = await res.json();
-
-            if (data.duration) {
-                serverDuration = data.duration;
-                logToServer(`[Metadata] Server Duration: ${serverDuration}s`);
-            }
 
             // Audio Options (Preview from Metadata)
             if (data.audio && data.audio.length > 0) {
@@ -366,7 +306,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const rawUrl = urlInput.value.trim();
         const audioIdx = audioSelect.value || 0;
         const subIdx = subSelect.value || -1;
-        const forceTranscode = document.getElementById('transcodeCheckbox').checked;
 
         if (!rawUrl) {
             showStatus('Please enter a valid URL', 'error');
@@ -384,11 +323,11 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('lastVideoUrl', rawUrl);
         }
 
-        showStatus(`Initializing Stream... (Stability: ${forceTranscode ? 'ON' : 'OFF'})`, 'info');
+        showStatus(`Initializing Stream...`, 'info');
 
         // 1. Tell Server to Start Transcoding
         try {
-            const startRes = await fetch(`/start?url=${encodeURIComponent(rawUrl)}&audioIndex=${audioIdx}&subIndex=${subIdx}&session=${sessionId}&transcode=${forceTranscode}`);
+            const startRes = await fetch(`/start?url=${encodeURIComponent(rawUrl)}&audioIndex=${audioIdx}&subIndex=${subIdx}&session=${sessionId}`);
             if (!startRes.ok) throw new Error('Failed to start stream server');
         } catch (err) {
             console.error(err);
@@ -414,45 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Check if device is TV to prefer Native HLS (Better for AC3/Passthrough)
-        const ua = navigator.userAgent;
-        const isTV = /Tizen|WebOS|SmartTV|BRAVIA|Android TV|TV|AppleTV|CrKey|Roku|Viera|Philips|Toshiba|LG|Samsung/i.test(ua);
-
-        // Native HLS Check (Prioritize for TV or Safari)
-        const supportsNativeHLS = videoPlayer.canPlayType('application/vnd.apple.mpegurl');
-
-        if (isTV && supportsNativeHLS) {
-            console.log("TV detected. Using Native HLS for better Audio/Video support.");
-            logToServer(`[Detection] TV User-Agent detected: ${ua}`);
-            logToServer(`[Player] Using Native HLS Player (Supports Native HLS: ${supportsNativeHLS})`);
-
-            // Fallthrough to Native Logic
-            videoPlayer.src = streamSrc;
-            videoPlayer.addEventListener('loadedmetadata', function () {
-                videoPlayer.play().catch(e => console.log("Autoplay blocked"));
-                showStatus('Playing (Native TV)', 'success');
-                logToServer('[Event] Native Player: Metadata Loaded & Playing');
-                placeholder.style.opacity = '0';
-                startHeartbeat();
-                isStreamStarting = false;
-
-                // Try to populate tracks if native player exposes them (WebOS 4+ might)
-                if (videoPlayer.audioTracks && videoPlayer.audioTracks.length > 0) {
-                    logToServer(`[Audio] Native Audio Tracks found: ${videoPlayer.audioTracks.length}`);
-
-                    // FIXED: We DO NOT populate from Native Player anymore.
-                    // We rely strictly on the Server Metadata (fetched via /metadata).
-                    // This prevents the TV from overwriting the clean list with jumbled track orders.
-
-                    // We only verify that the indices align.
-                    // "Audio 1" in Dropdown (Index 0) -> videoPlayer.audioTracks[0]
-                }
-            });
-
-        } else if (Hls.isSupported()) {
-            logToServer(`[Detection] Standard Browser User-Agent: ${ua}`);
-            logToServer(`[Player] Using Hls.js Player`);
-
+        if (Hls.isSupported()) {
             if (hls) {
                 hls.destroy();
             }
@@ -549,89 +450,19 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { isStreamStarting = false; }, 10000);
     }
 
-    let serverEncodedTime = 0; // Tracks how much video is ready on server
-    // const progressServer = document.getElementById('progressServer'); // Removed for Dynamic Mode
-
     function startHeartbeat() {
         if (heartbeatInterval) clearInterval(heartbeatInterval);
-        // Ping every 1 second for smoother UI growth
+        // Ping every 5 seconds
         heartbeatInterval = setInterval(() => {
-            fetch(`/ping?session=${sessionId}`)
-                .then(r => r.json())
-                .then(data => {
-                    if (data.encodedDuration) {
-                        serverEncodedTime = data.encodedDuration;
-                        updateServerProgress(); // Update UI immediately
-                    }
-                })
-                .catch(e => console.log("Ping failed"));
-        }, 1000);
-    }
-
-    function updateServerProgress() {
-        // In "Growing Timeline" mode, the duration *IS* the server progress.
-        // So triggering updateProgress() is enough to resize the bar if the duration changed.
-        updateProgress();
-    }
-
-    // Helper: Get Dynamic Duration (The "Loaded" Length)
-    function getDuration() {
-        // If serverEncodedTime is populated, THAT is our world.
-        if (serverEncodedTime > 0) {
-            // Ensure we don't report less than current time (just in case)
-            return Math.max(serverEncodedTime, videoPlayer.currentTime);
-        }
-
-        // Fallback: If native player has a duration (and it's not Infinity), use it.
-        if (videoPlayer.duration && isFinite(videoPlayer.duration) && videoPlayer.duration > 0) {
-            return videoPlayer.duration;
-        }
-
-        // Fallback 2: Server metadata total duration (if we somehow have it but no heartbeats yet)
-        if (serverDuration > 0) return serverDuration;
-
-        return 0; // Unknown
-    }
-
-    function updateProgress() {
-        // "Growing Timeline" Logic:
-        // Width is percentage of currently loaded content.
-        const duration = getDuration();
-        if (!duration) {
-            progressBar.style.width = '0%';
-            timeDisplay.textContent = '0:00 / 0:00';
-            return;
-        }
-
-        const percent = (videoPlayer.currentTime / duration) * 100;
-        progressBar.style.width = `${Math.min(percent, 100)}%`;
-        timeDisplay.textContent = `${formatTime(videoPlayer.currentTime)} / ${formatTime(duration)}`;
-    }
-
-    function updateBuffer() {
-        const duration = getDuration();
-        if (!duration) return;
-
-        if (videoPlayer.buffered.length > 0) {
-            const currentTime = videoPlayer.currentTime;
-            let bufferedEnd = 0;
-
-            for (let i = 0; i < videoPlayer.buffered.length; i++) {
-                const checkStart = videoPlayer.buffered.start(i);
-                const checkEnd = videoPlayer.buffered.end(i);
-                if (currentTime >= checkStart && currentTime <= checkEnd + 0.5) {
-                    bufferedEnd = checkEnd;
-                    break;
-                }
-            }
-            const percent = (bufferedEnd / duration) * 100;
-            progressBuffer.style.width = `${Math.min(percent, 100)}%`;
-        }
+            fetch(`/ping?session=${sessionId}`).catch(e => console.log("Ping failed"));
+        }, 5000);
     }
 
     // Stop heartbeat on unload
     window.addEventListener('beforeunload', () => {
         if (heartbeatInterval) clearInterval(heartbeatInterval);
+        // DO NOT send /stop. Let the server watchdog handle cleanup.
+        // This allows persistence on reload.
     });
 
     function logToServer(msg) {
@@ -711,10 +542,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             case 'ArrowRight': // Forward 10s
                 e.preventDefault();
-                // Simple Seek. getDuration() is already dynamic, so we can't seek past it.
-                // Math.min ensures we don't go past the "end" (which is the live edge).
-                const targetFwd = Math.min(videoPlayer.currentTime + 10, getDuration());
-                videoPlayer.currentTime = targetFwd;
+                videoPlayer.currentTime = Math.min(videoPlayer.currentTime + 10, videoPlayer.duration);
                 startInactivityTimer();
                 break;
             case 'ArrowLeft': // Rewind 10s
