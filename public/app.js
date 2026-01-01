@@ -451,7 +451,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Check if device is TV to prefer Native HLS (Better for AC3/Passthrough)
         if (Hls.isSupported()) {
-            logToServer(`[Detection] Standard Browser User-Agent: ${navigator.userAgent}`);
+            const isTV = /Tizen|WebOS|SmartTV|BRAVIA|Android TV|TV|AppleTV|CrKey|Roku|Viera|Philips|Toshiba|LG|Samsung/i.test(navigator.userAgent);
+            logToServer(`[Detection] UA: ${navigator.userAgent} | Optimization: ${isTV ? 'TV Mode (Low Buffer)' : 'Standard'}`);
             logToServer(`[Player] Using Hls.js Player`);
 
             if (hls) {
@@ -462,12 +463,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 debug: false,
                 enableWorker: true,
                 lowLatencyMode: false,
-                // MEMORY OPTIMIZATION FOR TV BROWSERS
-                maxBufferLength: 20, // Reduced from 45s to 20s to save RAM
-                maxMaxBufferLength: 30, // Reduced from 60s
-                backBufferLength: 30, // Limit back buffer to 30s (aggressively flush old segments)
+                // DYNAMIC BUFFER OPTIMIZATION
+                // TVs have very limited MSE buffer (often < 30MB).
+                // We must keep buffers tiny to avoid 'bufferAppendError'.
+                maxBufferLength: isTV ? 10 : 30,      // Keep only 10s ahead on TV
+                maxMaxBufferLength: isTV ? 15 : 60,   // Max cap
+                backBufferLength: isTV ? 5 : 30,      // Aggressively flush passed content
+                maxBufferSize: isTV ? 20 * 1024 * 1024 : 60 * 1024 * 1024, // Limit to 20MB on TV
                 capLevelToPlayerSize: true,
-                subtitleDisplay: true
+                subtitleDisplay: true,
+                // appendErrorMaxRetry: 3, // Retry a few times
             });
 
             showStatus('Loading HLS Playlist...', 'info');
@@ -517,7 +522,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             hls.on(Hls.Events.ERROR, function (event, data) {
                 if (data.fatal) {
-                    logToServer(`HLS Fatal Error: ${data.type} - ${JSON.stringify(data)}`);
+                    logToServer(`HLS Fatal Error: ${data.type} - ${data.details}`);
                     switch (data.type) {
                         case Hls.ErrorTypes.NETWORK_ERROR:
                             console.log('fatal network error encountered, try to recover');
@@ -525,11 +530,21 @@ document.addEventListener('DOMContentLoaded', () => {
                             break;
                         case Hls.ErrorTypes.MEDIA_ERROR:
                             console.log('fatal media error encountered, try to recover');
+                            // If bufferAppendError, we might need to nudge it harder
+                            if (data.details === 'bufferAppendError') {
+                                logToServer('[Error] Buffer Full. Attempting recovery...');
+                            }
                             hls.recoverMediaError();
                             break;
                         default:
                             hls.destroy();
                             break;
+                    }
+                } else {
+                    // Non-fatal errors
+                    if (data.details === 'bufferAppendError') {
+                        console.warn("Buffer Append Error (Non-Fatal) - Evicting?");
+                        // Hls.js should handle eviction if configured correctly
                     }
                 }
             });
@@ -551,6 +566,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let serverEncodedTime = 0; // Tracks how much video is ready on server
+    let serverLiveEdge = 0;     // PART B: Safe point to seek to
     // const progressServer = document.getElementById('progressServer'); // Removed for Dynamic Mode
 
     function startHeartbeat() {
@@ -563,6 +579,32 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (data.encodedDuration) {
                         serverEncodedTime = data.encodedDuration;
                         updateServerProgress(); // Update UI immediately
+                    }
+
+                    // --- PART B: Live Edge Control ---
+                    // If server provides liveEdgeTime, check if we're behind
+                    if (data.liveEdgeTime) {
+                        serverLiveEdge = data.liveEdgeTime;
+
+                        // Auto-seek if player is more than 5s behind live edge
+                        // AND we're actually playing (not paused)
+                        // AND we're not in VOD mode (VOD has finite duration from metadata)
+                        const LAG_THRESHOLD = 5;
+                        const behindBy = serverLiveEdge - videoPlayer.currentTime;
+
+                        if (!videoPlayer.paused && behindBy > LAG_THRESHOLD) {
+                            // Only seek to what's buffered
+                            const buffered = videoPlayer.buffered;
+                            if (buffered.length > 0) {
+                                const bufferedEnd = buffered.end(buffered.length - 1);
+                                const seekTarget = Math.min(serverLiveEdge, bufferedEnd - 1);
+
+                                if (seekTarget > videoPlayer.currentTime) {
+                                    console.log(`[LiveEdge] Behind by ${behindBy.toFixed(1)}s. Seeking to ${seekTarget.toFixed(1)}s`);
+                                    videoPlayer.currentTime = seekTarget;
+                                }
+                            }
+                        }
                     }
                 })
                 .catch(e => console.log("Ping failed"));

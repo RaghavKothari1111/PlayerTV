@@ -194,35 +194,57 @@ const server = http.createServer((req, res) => {
                     return;
                 }
 
-                log(`[Direct Stream] Proxying: ${videoUrl}`);
+                log(`[Direct Stream] Proxying: ${videoUrl} | Method: ${req.method}`);
 
-                // Basic Byte-Range Proxy
+                // --- PART C: Hardened Byte-Range Proxy ---
                 const lib = videoUrl.startsWith('https') ? https : http;
                 const options = url.parse(videoUrl);
+                options.method = req.method; // Support HEAD requests
                 options.headers = {};
 
-                // Forward Range Header
+                // Forward essential headers
                 if (req.headers.range) {
                     options.headers['Range'] = req.headers.range;
                 }
+                if (req.headers['user-agent']) {
+                    options.headers['User-Agent'] = req.headers['user-agent'];
+                }
 
                 const proxyReq = lib.request(options, (proxyRes) => {
-                    // Pipe status code and relevant headers
-                    const headers = {};
+                    // Build response headers
+                    const headers = {
+                        'Cache-Control': 'no-store',           // Prevent caching issues
+                        'Connection': 'keep-alive',            // Maintain connection
+                        'Access-Control-Allow-Origin': '*'
+                    };
+
+                    // Forward content headers from upstream
                     if (proxyRes.headers['content-type']) headers['Content-Type'] = proxyRes.headers['content-type'];
                     if (proxyRes.headers['content-length']) headers['Content-Length'] = proxyRes.headers['content-length'];
                     if (proxyRes.headers['content-range']) headers['Content-Range'] = proxyRes.headers['content-range'];
                     if (proxyRes.headers['accept-ranges']) headers['Accept-Ranges'] = proxyRes.headers['accept-ranges'];
 
                     res.writeHead(proxyRes.statusCode, headers);
+
+                    // For HEAD requests, don't pipe body
+                    if (req.method === 'HEAD') {
+                        res.end();
+                        return;
+                    }
+
                     proxyRes.pipe(res);
+                });
+
+                // Abort upstream if client disconnects (prevent memory leaks)
+                req.on('close', () => {
+                    proxyReq.destroy();
                 });
 
                 proxyReq.on('error', (e) => {
                     log(`[Direct Stream] Error: ${e.message}`);
                     if (!res.headersSent) {
-                        res.writeHead(500);
-                        res.end('Stream Error');
+                        res.writeHead(502); // Bad Gateway
+                        res.end('Upstream Error');
                     }
                 });
 
@@ -299,23 +321,82 @@ const server = http.createServer((req, res) => {
                     FULL_TRANSCODE: 'FULL_TRANSCODE'      // Video Transcode, Audio Transcode
                 };
 
+                // --- PART D: Device Capability Matrix ---
+                // Different TV platforms have different codec support
+                const TV_CAPABILITIES = {
+                    samsung: {
+                        video: ['h264', 'hevc'],
+                        maxLevel: 41,   // H.264 Level 4.1 (1080p60)
+                        audio: ['aac', 'ac3', 'eac3', 'mp3'],
+                        profiles: ['baseline', 'main', 'high']
+                    },
+                    lg: {
+                        video: ['h264', 'hevc'],
+                        maxLevel: 51,   // H.264 Level 5.1 (4K)
+                        audio: ['aac', 'ac3', 'eac3', 'mp3'],
+                        profiles: ['baseline', 'main', 'high']
+                    },
+                    android_tv: {
+                        video: ['h264', 'hevc', 'vp9'],
+                        maxLevel: 51,
+                        audio: ['aac', 'ac3', 'eac3', 'opus', 'mp3'],
+                        profiles: ['baseline', 'main', 'high', 'high10']
+                    },
+                    generic: {
+                        video: ['h264'],
+                        maxLevel: 41,   // Conservative default
+                        audio: ['aac', 'mp3'],
+                        profiles: ['baseline', 'main']
+                    }
+                };
+
+                // Detect TV brand from User-Agent
+                const detectTVBrand = (ua) => {
+                    if (/Tizen|Samsung/i.test(ua)) return 'samsung';
+                    if (/WebOS|LG|NetCast/i.test(ua)) return 'lg';
+                    if (/Android TV|Chromecast|CrKey|BRAVIA/i.test(ua)) return 'android_tv';
+                    return 'generic';
+                };
+
+                const tvBrand = isTV ? detectTVBrand(userAgent) : 'generic';
+                const tvCaps = TV_CAPABILITIES[tvBrand];
+                log(`[Device] Brand: ${tvBrand} | Caps: ${JSON.stringify(tvCaps)}`);
+
+                // Enhanced Video Compatibility Check (validates profile/level)
                 const checkVideoCompatibility = (probeData) => {
                     try {
                         const pd = JSON.parse(probeData);
                         const video = pd.streams.find(s => s.codec_type === 'video');
                         if (!video) return false;
-                        return ['h264', 'hevc', 'mpeg4'].includes(video.codec_name);
+
+                        // Check codec is supported by this device
+                        const codecOk = tvCaps.video.includes(video.codec_name);
+
+                        // Check profile (if available)
+                        const profile = (video.profile || '').toLowerCase();
+                        const profileOk = !profile || tvCaps.profiles.some(p => profile.includes(p));
+
+                        // Check level (if available) - H.264 level is stored as "41" for 4.1
+                        const level = parseInt(video.level) || 0;
+                        const levelOk = level <= tvCaps.maxLevel;
+
+                        log(`[Compat] Video: ${video.codec_name} Profile:${profile} Level:${level} -> Codec:${codecOk} Profile:${profileOk} Level:${levelOk}`);
+                        return codecOk && profileOk && levelOk;
                     } catch (e) { return false; }
                 };
 
+                // Full Native Compatibility (Video + Audio for direct stream)
                 const checkNativeCompatibility = (probeData) => {
                     try {
                         const pd = JSON.parse(probeData);
                         const video = pd.streams.find(s => s.codec_type === 'video');
                         const audio = pd.streams.find(s => s.codec_type === 'audio');
                         if (!video) return false;
-                        const validVideo = ['h264', 'hevc', 'mpeg4'].includes(video.codec_name);
-                        const validAudio = !audio || ['aac', 'ac3', 'eac3', 'mp3'].includes(audio.codec_name);
+
+                        const validVideo = checkVideoCompatibility(probeData);
+                        const validAudio = !audio || tvCaps.audio.includes(audio.codec_name);
+
+                        log(`[Compat] Native: Video:${validVideo} Audio:${validAudio}`);
                         return validVideo && validAudio;
                     } catch (e) { return false; }
                 };
@@ -420,6 +501,7 @@ const server = http.createServer((req, res) => {
 
                         if (filterComplex.endsWith(';')) filterComplex = filterComplex.slice(0, -1);
 
+                        // --- VIDEO CODEC SELECTION ---
                         let videoCodec = 'libx264';
                         let videoOpts = ['-preset', 'ultrafast', '-tune', 'zerolatency', '-crf', '23', '-pix_fmt', 'yuv420p'];
 
@@ -429,6 +511,7 @@ const server = http.createServer((req, res) => {
                             log('[FFmpeg] Video Copy Mode Enabled');
                         }
 
+                        // --- AUDIO CODEC SELECTION (TVs need AC3) ---
                         let audioCodec = 'aac';
                         let audioSampleRate = [];
 
@@ -437,18 +520,42 @@ const server = http.createServer((req, res) => {
                             audioSampleRate = ['-ar', '48000'];
                         }
 
-                        const ffmpegArgs = [
-                            '-y',
-                            '-i', videoUrl,
-                            '-map', '0:v:0',
-                            ...audioMaps,
-                            '-c:v', videoCodec,
-                            ...videoOpts
-                        ];
+                        // ============================================
+                        // CRITICAL FIX: FFmpeg Argument Order
+                        // ============================================
+                        // FFmpeg requires: -filter_complex BEFORE -map [label]
+                        // Previous code had: -map [outa0] BEFORE -filter_complex
+                        // This caused "Output pad not found" errors (silent failures)
+                        // ============================================
 
+                        const ffmpegArgs = ['-y', '-i', videoUrl];
+
+                        // STEP 1: Add filter_complex FIRST if audio processing is needed
+                        // WHY: Filter labels like [outa0] must exist before -map [outa0]
+                        if (audioStreams.length > 0 && filterComplex) {
+                            ffmpegArgs.push('-filter_complex', filterComplex);
+                        }
+
+                        // STEP 2: Map video stream
+                        // WHY: Video always comes from input stream 0:v:0
+                        ffmpegArgs.push('-map', '0:v:0');
+
+                        // STEP 3: Map audio outputs (NOW filter labels exist)
+                        // WHY: audioMaps contains ['-map', '[outa0]', '-map', '[outa1]', ...]
+                        if (audioMaps.length > 0) {
+                            ffmpegArgs.push(...audioMaps);
+                        } else if (audioStreams.length > 0) {
+                            // FALLBACK: If filter failed, map raw audio
+                            log('[FFmpeg] WARNING: No audio filter maps. Using raw audio.');
+                            ffmpegArgs.push('-map', '0:a:0');
+                        }
+
+                        // STEP 4: Video codec settings
+                        ffmpegArgs.push('-c:v', videoCodec, ...videoOpts);
+
+                        // STEP 5: Audio codec settings (only if we have audio)
                         if (audioStreams.length > 0) {
                             ffmpegArgs.push(
-                                '-filter_complex', filterComplex,
                                 '-c:a', audioCodec,
                                 ...audioSampleRate,
                                 '-b:a', '640k',
@@ -456,6 +563,7 @@ const server = http.createServer((req, res) => {
                             );
                         }
 
+                        // STEP 6: HLS output settings
                         ffmpegArgs.push(
                             '-max_muxing_queue_size', '4096',
                             '-f', 'hls',
@@ -469,6 +577,16 @@ const server = http.createServer((req, res) => {
                             '-hls_segment_filename', path.join(hlsDir, 'stream_%v_%d.ts'),
                             path.join(hlsDir, 'stream_%v.m3u8')
                         );
+
+                        // --- DEFENSIVE CHECK: Validate before spawn ---
+                        if (!ffmpegArgs.includes('-map')) {
+                            log('[FFmpeg] ABORT: No valid mappings. Cannot proceed.');
+                            res.writeHead(500);
+                            res.end(JSON.stringify({ error: 'No valid stream mappings' }));
+                            return;
+                        }
+
+                        log(`[FFmpeg] Args: ${ffmpegArgs.join(' ')}`);
 
                         session.url = videoUrl;
                         session.process = spawn('ffmpeg', ffmpegArgs);
@@ -586,8 +704,14 @@ const server = http.createServer((req, res) => {
                         }
                     } catch (e) { }
 
+                    // --- PART B: Live Edge Control ---
+                    // liveEdgeTime = how far the player can safely seek without buffering
+                    // Safety margin of 8 seconds ensures segments are fully written
+                    const SAFETY_MARGIN = 8;
+                    const liveEdgeTime = Math.max(0, encodedDuration - SAFETY_MARGIN);
+
                     res.writeHead(200, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ status: 'active', encodedDuration }));
+                    res.end(JSON.stringify({ status: 'active', encodedDuration, liveEdgeTime }));
                 } else {
                     res.writeHead(404);
                     res.end(JSON.stringify({ status: 'invalid_session' }));
