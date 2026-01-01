@@ -354,12 +354,14 @@ const server = http.createServer((req, res) => {
                         const ffmpegArgs = [
                             '-user_agent', USER_AGENT,
                             '-y',
+                            '-fflags', '+genpts', // Generate Presentation Timestamps (Vital for Copy)
                             '-i', videoUrl,
                             '-map', '0:v:0',
                             ...audioMaps,
 
                             '-c:v', videoCodec,
                             ...videoOpts,
+                            '-avoid_negative_ts', 'make_zero', // Fix timestamp drift
                         ];
 
                         if (audioStreams.length > 0) {
