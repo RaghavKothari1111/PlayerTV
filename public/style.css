@@ -307,7 +307,7 @@ video:focus,
     transform: translate(-50%, -50%);
     display: flex;
     align-items: center;
-    gap: 30px;
+    justify-content: center;
     z-index: 15;
     opacity: 0;
     transition: opacity 0.3s;
@@ -324,36 +324,26 @@ video:focus,
     background: rgba(0, 0, 0, 0.6);
     border: none;
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
+    width: 70px;
+    height: 70px;
     color: white;
-    font-size: 1.3rem;
+    font-size: 2rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: transform 0.2s, background 0.2s;
-    position: relative;
+}
+
+.center-btn ion-icon {
+    font-size: inherit;
+    width: 1em;
+    height: 1em;
 }
 
 .center-btn:hover {
     transform: scale(1.1);
     background: rgba(99, 102, 241, 0.7);
-}
-
-.center-btn.center-play {
-    width: 70px;
-    height: 70px;
-    font-size: 2rem;
-}
-
-.skip-label {
-    position: absolute;
-    bottom: -18px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.7rem;
-    color: rgba(255, 255, 255, 0.8);
 }
 
 #volumeSlider {
@@ -396,17 +386,127 @@ video:focus,
 }
 
 @media (max-width: 600px) {
+    body {
+        padding: 0;
+        align-items: flex-start;
+    }
+
     .glass-container {
         padding: 1rem;
-        width: 95%;
+        width: 100%;
+        max-width: 100%;
+        border-radius: 0;
+        margin: 0;
+        min-height: 100vh;
     }
 
     header h1 {
-        font-size: 2rem;
+        font-size: 1.8rem;
+    }
+
+    header p {
+        font-size: 0.8rem;
+    }
+
+    /* Input controls */
+    .input-group {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        font-size: 16px;
+        /* Prevents zoom on iOS */
+        padding: 0.9rem 1rem;
     }
 
     button {
         width: 100%;
+        padding: 0.9rem 1.5rem;
+        font-size: 1rem;
+    }
+
+    /* Settings row */
+    .settings-row {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 10px !important;
+    }
+
+    /* Video player - full width on mobile */
+    .video-wrapper {
+        border-radius: 8px;
+        width: 100%;
+    }
+
+    /* Player controls - larger touch targets */
+    .control-btn {
+        font-size: 1.8rem;
+        padding: 8px;
+        min-width: 44px;
+        /* iOS minimum touch target */
+        min-height: 44px;
+    }
+
+    .control-select {
+        font-size: 0.8rem;
+        padding: 6px 8px;
+        min-height: 36px;
+        /* Touch-friendly */
+    }
+
+    /* Time display - smaller on mobile */
+    .time-display {
+        font-size: 0.75rem;
+    }
+
+    /* Center play button - optimized for mobile */
+    .center-btn {
+        width: 60px;
+        height: 60px;
+        font-size: 1.8rem;
+    }
+
+    /* Progress bar - taller for easier tapping */
+    .progress-container {
+        height: 8px;
+    }
+
+    .progress-container:hover,
+    .progress-container:active {
+        height: 12px;
+    }
+
+    /* Volume slider - hide on mobile (use device volume) */
+    .volume-container {
+        display: none;
+    }
+
+    /* Controls layout adjustments */
+    .controls-main {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .controls-left,
+    .controls-right {
+        gap: 10px;
+    }
+
+    /* Mobile subtitle sizing */
+    video::cue {
+        font-size: 1.2rem;
+    }
+
+    /* Status message */
+    #statusMessage {
+        font-size: 0.85rem;
+    }
+
+    /* Player controls area - more padding on mobile */
+    .player-controls-area {
+        padding: 15px 10px 10px;
     }
 }
 
@@ -415,12 +515,11 @@ video::cue {
     background-color: rgba(0, 0, 0, 0.75);
     color: #ffffff;
     font-size: 1.5rem;
-    line-height: 1.2;
-    /* Tighter line spacing */
+    line-height: 1.0;
+    /* Minimal line spacing */
     font-family: 'Outfit', sans-serif;
     text-shadow: 2px 2px 1px rgba(0, 0, 0, 0.8);
     padding: 2px 6px;
-    /* Consistent padding */
 }
 
 /* Fullscreen subtitle fixes */
@@ -429,9 +528,8 @@ video:-webkit-full-screen::cue,
 video:-moz-full-screen::cue,
 video:-ms-fullscreen::cue {
     font-size: clamp(1.2rem, 2.5vw, 2rem);
-    /* Scale with viewport */
-    line-height: 1.2;
-    /* Keep tight line spacing in fullscreen */
+    line-height: 1.0;
+    /* Keep minimal line spacing in fullscreen */
     padding: 4px 8px;
 }
 

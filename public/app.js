@@ -23,8 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const timeDisplay = document.getElementById('timeDisplay');
 
     // --- Center Controls (YouTube-style) ---
-    const rewindBtn = document.getElementById('rewindBtn');
-    const forwardBtn = document.getElementById('forwardBtn');
     const centerPlayPauseBtn = document.getElementById('centerPlayPauseBtn');
 
     // Initially show subtitle select
@@ -77,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Play/Pause Toggle
     playPauseBtn.addEventListener('click', togglePlay);
-    videoPlayer.addEventListener('click', togglePlay); // Click video to toggle
+    // Note: videoPlayer click is now handled by double-tap detection below
 
     function togglePlay() {
         if (videoPlayer.paused) {
@@ -97,27 +95,65 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Center Controls Event Handlers (YouTube-style) ---
+    // Double-tap zones: left side = rewind, right side = forward, center = play/pause
+
+    let lastTapTime = 0;
+    let lastTapX = 0;
+    const DOUBLE_TAP_THRESHOLD = 300; // ms
+
+    videoPlayer.addEventListener('click', (e) => {
+        e.preventDefault();
+        const currentTime = Date.now();
+        const rect = videoPlayer.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const videoWidth = rect.width;
+        const tapPosition = clickX / videoWidth; // 0 to 1
+
+        // Check if this is a double-tap
+        const isDblTap = (currentTime - lastTapTime) < DOUBLE_TAP_THRESHOLD &&
+            Math.abs(clickX - lastTapX) < 50; // Same area
+
+        if (isDblTap) {
+            // Double-tap detected
+            if (tapPosition < 0.4) {
+                // Left 40% - Rewind 5s
+                videoPlayer.currentTime = Math.max(videoPlayer.currentTime - 5, 0);
+                startInactivityTimer();
+                console.log('Double-tap: Rewind 5s');
+            } else if (tapPosition > 0.6) {
+                // Right 40% - Forward 5s
+                const targetFwd = Math.min(videoPlayer.currentTime + 5, getDuration());
+                videoPlayer.currentTime = targetFwd;
+                startInactivityTimer();
+                console.log('Double-tap: Forward 5s');
+            } else {
+                // Center 20% - Play/Pause
+                togglePlay();
+            }
+            // Reset tap tracking
+            lastTapTime = 0;
+            lastTapX = 0;
+        } else {
+            // Single tap - save for double-tap detection
+            lastTapTime = currentTime;
+            lastTapX = clickX;
+
+            // Single tap in center still toggles play (after delay to check for double-tap)
+            setTimeout(() => {
+                if (Date.now() - lastTapTime >= DOUBLE_TAP_THRESHOLD) {
+                    if (tapPosition >= 0.4 && tapPosition <= 0.6) {
+                        togglePlay();
+                    }
+                }
+            }, DOUBLE_TAP_THRESHOLD);
+        }
+    });
+
+    // Center play button also works
     if (centerPlayPauseBtn) {
         centerPlayPauseBtn.addEventListener('click', (e) => {
             e.stopPropagation(); // Prevent double-triggering from video click
             togglePlay();
-        });
-    }
-
-    if (rewindBtn) {
-        rewindBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            videoPlayer.currentTime = Math.max(videoPlayer.currentTime - 5, 0);
-            startInactivityTimer();
-        });
-    }
-
-    if (forwardBtn) {
-        forwardBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const targetFwd = Math.min(videoPlayer.currentTime + 5, getDuration());
-            videoPlayer.currentTime = targetFwd;
-            startInactivityTimer();
         });
     }
 
