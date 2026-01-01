@@ -315,8 +315,7 @@ const server = http.createServer((req, res) => {
                         // const userAgent ... (Moved up)
                         // const isTV ... (Moved up)
 
-                        let videoCodec = 'libx264';
-                        let codecName = 'unknown';
+                        let hlsSegmentType = 'mpegts'; // Default
 
                         if (session.forceTranscode) {
                             console.log(`[Smart] Session ${sessionId} is in FALLBACK mode. Forcing Transcode.`);
@@ -333,7 +332,8 @@ const server = http.createServer((req, res) => {
                                     else if (codecName === 'hevc' || codecName === 'h265') {
                                         if (isTV) {
                                             videoCodec = 'copy';
-                                            console.log("[Smart] Source is HEVC & Device is TV. Using Direct Copy.");
+                                            hlsSegmentType = 'fmp4'; // Use fMP4 for HEVC on TV
+                                            console.log("[Smart] Source is HEVC & Device is TV. Using Direct Copy with fMP4.");
                                         } else {
                                             videoCodec = 'libx264';
                                             console.log("[Smart] Source is HEVC but Device is Not TV. Transcoding.");
@@ -355,16 +355,13 @@ const server = http.createServer((req, res) => {
                         if (videoCodec === 'libx264') {
                             videoOpts = ['-preset', 'ultrafast', '-tune', 'zerolatency', '-crf', '23', '-pix_fmt', 'yuv420p'];
                         } else if (videoCodec === 'copy') {
-                            // Critical for HLS on TV: Apply correct bitstream filter based on codec
+                            // Bitstream filter is less critical for fMP4 but good practice
                             if (codecName === 'hevc' || codecName === 'h265') {
-                                console.log("[Smart] Applying HEVC Bitstream Filter for HLS");
-                                videoOpts = ['-bsf:v', 'hevc_mp4toannexb'];
+                                // videoOpts = ['-tag:v', 'hvc1']; // Sometimes needed for Apple, but let's stick to standard first
                             } else {
                                 console.log("[Smart] Applying H.264 Bitstream Filter for HLS");
                                 videoOpts = ['-bsf:v', 'h264_mp4toannexb'];
                             }
-                        } else {
-                            videoOpts = [];
                         }
 
                         // Base Args
@@ -402,7 +399,8 @@ const server = http.createServer((req, res) => {
                             '-start_number', '0',
                             '-master_pl_name', 'main.m3u8',
                             '-var_stream_map', varStreamMap,
-                            '-hls_segment_filename', path.join(hlsDir, 'stream_%v_%d.ts'),
+                            '-hls_segment_type', hlsSegmentType, // Dynamic: mpegts or fmp4
+                            '-hls_segment_filename', path.join(hlsDir, hlsSegmentType === 'fmp4' ? 'stream_%v_%d.m4s' : 'stream_%v_%d.ts'),
                             path.join(hlsDir, 'stream_%v.m3u8')
                         );
 
@@ -467,6 +465,7 @@ const server = http.createServer((req, res) => {
                 const ffmpegSub = spawn('ffmpeg', [
                     '-user_agent', USER_AGENT, // Fix: Add User Agent
                     '-y',
+                    '-avoid_negative_ts', 'make_zero', // Fix: Sync subtitles with video
                     '-i', videoUrl,
                     '-map', `0:${subIndex}`,
                     '-c:s', 'webvtt',
