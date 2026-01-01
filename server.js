@@ -289,8 +289,17 @@ const server = http.createServer((req, res) => {
 
                         if (filterComplex.endsWith(';')) filterComplex = filterComplex.slice(0, -1);
 
+                        // --- SMART VIDEO CODEC SELECTION ---
                         let videoCodec = 'libx264';
                         let videoOpts = ['-preset', 'ultrafast', '-tune', 'zerolatency', '-crf', '23', '-pix_fmt', 'yuv420p'];
+
+                        if (codecName === 'h264') {
+                            console.log(`[Direct Mode] Compatible Video Codec found: ${codecName}. Using 'copy' mode.`);
+                            videoCodec = 'copy';
+                            videoOpts = []; // No encoding options needed for copy
+                        } else {
+                            console.log(`[Transcode Mode] Incompatible Video Codec: ${codecName}. Transcoding to h264.`);
+                        }
 
                         // Base Args
                         const ffmpegArgs = [
