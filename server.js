@@ -170,7 +170,6 @@ const server = http.createServer((req, res) => {
             } else if (parsedUrl.pathname === '/start') {
                 const videoUrl = parsedUrl.query.url;
                 const sessionId = parsedUrl.query.session; // Mandatory
-                const forceTranscode = parsedUrl.query.force === 'true'; // New UI Flag
 
                 if (!videoUrl || !sessionId) {
                     res.writeHead(400);
@@ -178,7 +177,7 @@ const server = http.createServer((req, res) => {
                     return;
                 }
 
-                console.log(`[Start] Request from Session: ${sessionId} (Force Transcode: ${forceTranscode})`);
+                console.log(`[Start] Request from Session: ${sessionId}`);
 
                 // 1. Get or Create Session
                 let session = sessions.get(sessionId);
@@ -188,8 +187,7 @@ const server = http.createServer((req, res) => {
                         process: null,
                         url: null,
                         lastPing: Date.now(),
-                        dir: path.join(hlsBaseDir, sessionId),
-                        forceTranscode: false
+                        dir: path.join(hlsBaseDir, sessionId)
                     };
                     sessions.set(sessionId, session);
 
@@ -199,16 +197,6 @@ const server = http.createServer((req, res) => {
                     }
                 } else {
                     session.lastPing = Date.now(); // Update activity
-                }
-
-                if (forceTranscode) {
-                    session.forceTranscode = true;
-                    console.log(`[Smart] User forced transcoding for session ${sessionId}`);
-                }
-
-                // If this is a NEW request (url mismatch), we must reset the Fallback flag.
-                if (session.url !== videoUrl && !forceTranscode) {
-                    session.forceTranscode = false;
                 }
 
                 const hlsDir = session.dir; // Use SESSION SPECIFIC dir
@@ -231,12 +219,6 @@ const server = http.createServer((req, res) => {
                     session.url = null;
                 }
 
-                // Reset Fallback Flag for NEW video if not forced
-                if (!forceTranscode) {
-                    session.forceTranscode = false;
-                }
-
-
                 // Clear Session Directory (Fresh Start)
                 try {
                     const files = fs.readdirSync(hlsDir);
@@ -245,37 +227,22 @@ const server = http.createServer((req, res) => {
                     }
                 } catch (e) { }
 
-                // User Agent to impersonate a standard browser (Fixes 400 Bad Request)
-                const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
-
                 const startEncodingProcess = () => {
                     console.log(`Starting HLS for Session ${sessionId}: ${videoUrl}`);
 
-                    // 1. DEVICE DETECTION (Moved Up for Hybrid Audio Logic)
-                    const userAgent = req.headers['user-agent'] || '';
-                    const isTV = /Web0S|Tizen|SMART-TV|SmartTV|Large Screen|GoogleTV|AndroidTV|HbbTV|Bravia|NetCast/i.test(userAgent);
-                    const isMobile = /Android|iPhone|iPad|Mobile/i.test(userAgent) && !isTV;
-                    console.log(`[Smart] Device: ${isTV ? 'TV' : isMobile ? 'Mobile' : 'Desktop'} (${userAgent})`);
-
                     // 1. Probe (Independent of session, just probing URL)
-                    const probe = spawn('ffprobe', [
-                        '-user_agent', USER_AGENT,
-                        '-v', 'quiet',
-                        '-print_format', 'json',
-                        '-show_streams',
-                        videoUrl
-                    ]);
+                    const probe = spawn('ffprobe', ['-v', 'quiet', '-print_format', 'json', '-show_streams', videoUrl]);
                     let probeData = '';
                     probe.stdout.on('data', d => probeData += d);
 
                     probe.on('close', (code) => {
                         let audioStreams = [];
-                        let pd = null;
+                        let codecName = 'unknown';
 
-                        // 1. AUDIO & PROBE PARSING (Restored)
                         if (code === 0) {
                             try {
-                                pd = JSON.parse(probeData);
+                                const pd = JSON.parse(probeData);
+                                codecName = pd.streams.find(s => s.codec_type === 'video')?.codec_name || 'unknown';
                                 audioStreams = pd.streams
                                     .filter(s => s.codec_type === 'audio')
                                     .map((s, i) => ({
@@ -289,20 +256,28 @@ const server = http.createServer((req, res) => {
                             }
                         }
 
-                        // 2. BUILD AUDIO FILTER COMPLEX
-                        // 2. BUILD AUDIO MAPS (Simplified for Stability)
+                        // --- Build Dynamic Filter Complex & Maps ---
+                        let filterComplex = '';
                         let audioMaps = [];
                         let varStreamMap = '';
-                        // Simple Audio Filter Chain (Applied via -af)
-                        // Treble Boost (5kHz & 6kHz) + Volume Boost
-                        let audioFilterGraph = 'volume=1.5,treble=g=5:f=5000:w=0.5,treble=g=5:f=6000:w=0.5';
 
                         if (audioStreams.length > 0) {
                             varStreamMap = 'v:0,agroup:audio';
                             audioStreams.forEach((audio, i) => {
-                                // Direct Map (Filter applied globally via -af)
-                                audioMaps.push('-map', `0:${audio.index}`);
+                                const fc =
+                                    `[0:${audio.index}]aformat=channel_layouts=5.1[a51_${i}];` +
+                                    `[a51_${i}]channelsplit=channel_layout=5.1[FL_${i}][FR_${i}][FC_${i}][LFE_${i}][SL_${i}][SR_${i}];` +
+                                    `[FC_${i}]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_orig_${i}];` +
+                                    `[FL_${i}]equalizer=f=6000:t=q:w=1:g=4[eFL_${i}];` +
+                                    `[FR_${i}]equalizer=f=6000:t=q:w=1:g=4[eFR_${i}];` +
+                                    `[eFC_orig_${i}]asplit=3[eFC1_${i}][eFC2_${i}][eFC3_${i}];` +
+                                    `[eFL_${i}][eFC1_${i}]amix=inputs=2:weights='0.70 0.30'[nFL_${i}];` +
+                                    `[eFR_${i}][eFC2_${i}]amix=inputs=2:weights='0.70 0.30'[nFR_${i}];` +
+                                    `[eFC3_${i}]volume=1.5[nFC_${i}];` +
+                                    `[nFL_${i}][nFR_${i}][nFC_${i}][LFE_${i}][SL_${i}][SR_${i}]join=inputs=6:channel_layout=5.1[outa${i}];`;
 
+                                filterComplex += fc;
+                                audioMaps.push('-map', `[outa${i}]`);
                                 const safeTitle = (audio.title || `Audio_${i + 1}`).replace(/[^a-zA-Z0-9]/g, '_').replace(/^_+|_+$/g, '') || `Audio_${i + 1}`;
                                 varStreamMap += ` a:${i},agroup:audio,language:${audio.lang},name:${safeTitle}`;
                             });
@@ -311,80 +286,27 @@ const server = http.createServer((req, res) => {
                             console.log("No audio streams found. Encoding Video Only.");
                         }
 
-                        // 3. DEVICE & CODEC LOGIC (Variables already defined above)
-                        // const userAgent ... (Moved up)
-                        // const isTV ... (Moved up)
+                        if (filterComplex.endsWith(';')) filterComplex = filterComplex.slice(0, -1);
 
-                        let hlsSegmentType = 'mpegts'; // Default
-
-                        if (session.forceTranscode) {
-                            console.log(`[Smart] Session ${sessionId} is in FALLBACK mode. Forcing Transcode.`);
-                            videoCodec = 'libx264';
-                        } else {
-                            if (pd && pd.streams) {
-                                try {
-                                    codecName = pd.streams.find(s => s.codec_type === 'video')?.codec_name || 'unknown';
-
-                                    if (codecName === 'h264') {
-                                        videoCodec = 'copy';
-                                        console.log("[Smart] Source is H.264. Using Direct Copy.");
-                                    }
-                                    else if (codecName === 'hevc' || codecName === 'h265') {
-                                        if (isTV) {
-                                            videoCodec = 'copy';
-                                            hlsSegmentType = 'fmp4'; // Use fMP4 for HEVC on TV
-                                            console.log("[Smart] Source is HEVC & Device is TV. Using Direct Copy with fMP4.");
-                                        } else {
-                                            videoCodec = 'libx264';
-                                            console.log("[Smart] Source is HEVC but Device is Not TV. Transcoding.");
-                                        }
-                                    }
-                                    else {
-                                        console.log(`[Smart] Source is ${codecName}. Transcoding.`);
-                                    }
-
-                                } catch (e) {
-                                    console.error("Probe parse error (video)", e);
-                                }
-                            } else {
-                                console.log("[Smart] Probe failed or no data. Defaulting to Transcode.");
-                            }
-                        }
-
-                        let videoOpts = [];
-                        if (videoCodec === 'libx264') {
-                            videoOpts = ['-preset', 'ultrafast', '-tune', 'zerolatency', '-crf', '23', '-pix_fmt', 'yuv420p'];
-                        } else if (videoCodec === 'copy') {
-                            // Bitstream filter is less critical for fMP4 but good practice
-                            if (codecName === 'hevc' || codecName === 'h265') {
-                                // videoOpts = ['-tag:v', 'hvc1']; // Sometimes needed for Apple, but let's stick to standard first
-                            } else {
-                                console.log("[Smart] Applying H.264 Bitstream Filter for HLS");
-                                videoOpts = ['-bsf:v', 'h264_mp4toannexb'];
-                            }
-                        }
+                        let videoCodec = 'libx264';
+                        let videoOpts = ['-preset', 'ultrafast', '-tune', 'zerolatency', '-crf', '23', '-pix_fmt', 'yuv420p'];
 
                         // Base Args
                         const ffmpegArgs = [
-                            '-user_agent', USER_AGENT,
                             '-y',
-                            '-fflags', '+genpts',          // Generate Presentation Timestamps
-                            '-avoid_negative_ts', 'make_zero', // Fix negative timestamps by resetting to 0
                             '-i', videoUrl,
                             '-map', '0:v:0',
                             ...audioMaps,
 
                             '-c:v', videoCodec,
                             ...videoOpts,
-                            '-max_interleave_delta', '0', // Force tight audio/video interleaving
                         ];
 
                         if (audioStreams.length > 0) {
                             ffmpegArgs.push(
-                                '-af', audioFilterGraph,
-                                '-c:a', isTV ? 'ac3' : 'aac',
+                                '-filter_complex', filterComplex,
+                                '-c:a', 'aac',
                                 '-b:a', '640k',
-                                '-ar', '48000', // Force 48kHz for stability
                                 '-ac', '6'
                             );
                         }
@@ -399,8 +321,7 @@ const server = http.createServer((req, res) => {
                             '-start_number', '0',
                             '-master_pl_name', 'main.m3u8',
                             '-var_stream_map', varStreamMap,
-                            '-hls_segment_type', hlsSegmentType, // Dynamic: mpegts or fmp4
-                            '-hls_segment_filename', path.join(hlsDir, hlsSegmentType === 'fmp4' ? 'stream_%v_%d.m4s' : 'stream_%v_%d.ts'),
+                            '-hls_segment_filename', path.join(hlsDir, 'stream_%v_%d.ts'),
                             path.join(hlsDir, 'stream_%v.m3u8')
                         );
 
@@ -447,6 +368,10 @@ const server = http.createServer((req, res) => {
                 startEncodingProcess();
 
             } else if (parsedUrl.pathname === '/subtitle') {
+                // ... Subtitle can stay global-ish or use session if needed, 
+                // but usually subtitles are direct FFMPEG extracts.
+                // It's cleaner to keep it stateless as it pipes directly.
+                // Logic below is fine.
                 const videoUrl = parsedUrl.query.url;
                 const subIndex = parsedUrl.query.index;
 
@@ -455,17 +380,14 @@ const server = http.createServer((req, res) => {
                     res.end('Missing URL or Index');
                     return;
                 }
-                const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
-
+                // ... (Original Code for Subtitle) ...
                 console.log(`Streaming Subtitles: ${videoUrl} (Track ${subIndex})`);
                 res.writeHead(200, {
                     'Content-Type': 'text/vtt',
                     'Access-Control-Allow-Origin': '*'
                 });
                 const ffmpegSub = spawn('ffmpeg', [
-                    '-user_agent', USER_AGENT, // Fix: Add User Agent
                     '-y',
-                    '-avoid_negative_ts', 'make_zero', // Fix: Sync subtitles with video
                     '-i', videoUrl,
                     '-map', `0:${subIndex}`,
                     '-c:s', 'webvtt',
@@ -484,35 +406,6 @@ const server = http.createServer((req, res) => {
                 }
                 res.writeHead(200);
                 res.end('Stopped');
-
-            } else if (parsedUrl.pathname === '/fallback') {
-                const sessionId = parsedUrl.query.session;
-
-                if (sessionId && sessions.has(sessionId)) {
-                    const s = sessions.get(sessionId);
-                    console.log(`[Fallback] Received error from Session ${sessionId}. Switching to Transcode Mode.`);
-
-                    // 1. Set Flag
-                    s.forceTranscode = true;
-
-                    // 2. Kill current process (if any)
-                    if (s.process) {
-                        s.process.kill('SIGKILL');
-                        s.process = null;
-                        s.url = null; // Clearing URL forces /start to re-run the logic
-                    }
-                    // 3. Clear Files
-                    try {
-                        const files = fs.readdirSync(s.dir);
-                        for (const file of files) fs.unlinkSync(path.join(s.dir, file));
-                    } catch (e) { }
-
-                    res.writeHead(200);
-                    res.end('Fallback Enabled');
-                } else {
-                    res.writeHead(404);
-                    res.end('Session Not Found');
-                }
 
             } else if (parsedUrl.pathname === '/ping') {
                 const sessionId = parsedUrl.query.session;

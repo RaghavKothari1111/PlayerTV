@@ -71,62 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Custom Control Logic ---
 
     // Play/Pause Toggle
-    // Play/Pause Toggle
     playPauseBtn.addEventListener('click', togglePlay);
-
-    // --- SMART TAP HANDLER (Double Tap 5s / Single Tap Toggle) ---
-    let lastTapTime = 0;
-    let tapTimeout = null;
-
-    videoContainer.addEventListener('click', (e) => {
-        // Ignore clicks on controls (they have their own listeners and bubble up)
-        if (e.target.closest('.player-controls-area') || e.target.closest('.input-group')) return;
-
-        const currentTime = new Date().getTime();
-        const tapLength = currentTime - lastTapTime;
-        const rect = videoContainer.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const width = rect.width;
-
-        // Zone Detection
-        const isLeft = x < width * 0.33;
-        const isRight = x > width * 0.66;
-
-        if (tapLength < 300 && tapLength > 0) {
-            // DOUBLE TAP DETECTED
-            clearTimeout(tapTimeout); // Cancel single tap action
-
-            if (isLeft) {
-                // Rewind 5s
-                videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 5);
-                triggerAnim('dtLeft');
-            } else if (isRight) {
-                // Forward 5s
-                videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + 5);
-                triggerAnim('dtRight');
-            } else {
-                // Center Double Tap -> Toggle Fullscreen or just Play?
-                // YouTube does Play/Pause in center. Let's just togglePlay usually. (Or Fullscreen logic)
-                toggleFullScreen();
-            }
-            e.preventDefault();
-        } else {
-            // SINGLE TAP DETECTED
-            // Delay slightly to wait for second tap
-            tapTimeout = setTimeout(() => {
-                togglePlay();
-            }, 300);
-        }
-        lastTapTime = currentTime;
-    });
-
-    function triggerAnim(elementId) {
-        const el = document.getElementById(elementId);
-        el.classList.add('active');
-        setTimeout(() => el.classList.remove('active'), 500);
-    }
-
-    // videoPlayer.addEventListener('click', togglePlay); // REPLACED BY ABOVE
+    videoPlayer.addEventListener('click', togglePlay); // Click video to toggle
 
     function togglePlay() {
         if (videoPlayer.paused) {
@@ -380,17 +326,8 @@ document.addEventListener('DOMContentLoaded', () => {
         showStatus(`Initializing Stream...`, 'info');
 
         // 1. Tell Server to Start Transcoding
-        // Force Transcode Check
-        const forceTranscode = document.getElementById('forceTranscode').checked;
-
-        // Auto-show for TV
-        const userAgent = navigator.userAgent;
-        if (/Web0S|Tizen|SMART-TV|SmartTV|Large Screen|GoogleTV|AndroidTV|HbbTV|Bravia|NetCast/i.test(userAgent)) {
-            document.getElementById('tvOptions').style.display = 'flex';
-        }
-
         try {
-            const startRes = await fetch(`/start?url=${encodeURIComponent(rawUrl)}&audioIndex=${audioIdx}&subIndex=${subIdx}&session=${sessionId}&force=${forceTranscode}`);
+            const startRes = await fetch(`/start?url=${encodeURIComponent(rawUrl)}&audioIndex=${audioIdx}&subIndex=${subIdx}&session=${sessionId}`);
             if (!startRes.ok) throw new Error('Failed to start stream server');
         } catch (err) {
             console.error(err);
@@ -487,22 +424,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             hls.startLoad();
                             break;
                         case Hls.ErrorTypes.MEDIA_ERROR:
-                            console.log('fatal media error encountered, trying Fallback (Transcode)...');
-                            showStatus('Incompatible Format. Optimizing for device...', 'info');
-
-                            // Trigger Server Fallback
-                            fetch(`/fallback?session=${sessionId}`)
-                                .then(() => {
-                                    // Restart Stream (Server will now force transcode)
-                                    hls.destroy();
-                                    isStreamStarting = false;
-                                    // Slight delay to let server cleanup
-                                    setTimeout(() => startStream('fallback'), 1000);
-                                })
-                                .catch(e => {
-                                    showStatus('Optimization failed. Please reload.', 'error');
-                                    hls.destroy();
-                                });
+                            console.log('fatal media error encountered, try to recover');
+                            hls.recoverMediaError();
                             break;
                         default:
                             hls.destroy();
