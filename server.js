@@ -243,6 +243,12 @@ const server = http.createServer((req, res) => {
                 const startEncodingProcess = () => {
                     console.log(`Starting HLS for Session ${sessionId}: ${videoUrl}`);
 
+                    // 1. DEVICE DETECTION (Moved Up for Hybrid Audio Logic)
+                    const userAgent = req.headers['user-agent'] || '';
+                    const isTV = /Web0S|Tizen|SMART-TV|SmartTV|Large Screen|GoogleTV|AndroidTV|HbbTV|Bravia|NetCast/i.test(userAgent);
+                    const isMobile = /Android|iPhone|iPad|Mobile/i.test(userAgent) && !isTV;
+                    console.log(`[Smart] Device: ${isTV ? 'TV' : isMobile ? 'Mobile' : 'Desktop'} (${userAgent})`);
+
                     // 1. Probe (Independent of session, just probing URL)
                     const probe = spawn('ffprobe', [
                         '-user_agent', USER_AGENT,
@@ -283,12 +289,30 @@ const server = http.createServer((req, res) => {
                         if (audioStreams.length > 0) {
                             varStreamMap = 'v:0,agroup:audio';
                             audioStreams.forEach((audio, i) => {
-                                // Safe 5.1 EQ Chain (Linear, No Split/Join)
-                                const fc = `[0:${audio.index}]aformat=channel_layouts=5.1:sample_rates=48000,` +
-                                    `equalizer=f=5000:width_type=q:width=1:g=4,` + // Treble Boost 1
-                                    `equalizer=f=6000:width_type=q:width=1:g=4,` + // Treble Boost 2
-                                    `volume=1.5,` +
-                                    `aformat=channel_layouts=5.1:sample_rates=48000[outa${i}];`;
+                                // Hybrid Audio Logic: Advanced Vocal Boost (TV) vs Safe Linear Boost (PC)
+                                let fc = '';
+                                if (isTV) {
+                                    // COMPLEX VOCAL BOOST (TV Only - uses AC3)
+                                    // Split -> EQ -> Mix -> Join
+                                    fc = `[0:${audio.index}]aformat=channel_layouts=5.1:sample_rates=48000[a51_${i}];` +
+                                        `[a51_${i}]channelsplit=channel_layout=5.1[FL_${i}][FR_${i}][FC_${i}][LFE_${i}][SL_${i}][SR_${i}];` +
+                                        `[FC_${i}]equalizer=f=5000:width_type=q:width=1:g=4,equalizer=f=8000:width_type=q:width=1:g=3[eFC_orig_${i}];` +
+                                        `[FL_${i}]equalizer=f=6000:width_type=q:width=1:g=4[eFL_${i}];` +
+                                        `[FR_${i}]equalizer=f=6000:width_type=q:width=1:g=4[eFR_${i}];` +
+                                        `[eFC_orig_${i}]asplit=3[eFC1_${i}][eFC2_${i}][eFC3_${i}];` +
+                                        `[eFL_${i}][eFC1_${i}]amix=inputs=2:weights='0.70 0.30'[nFL_${i}];` +
+                                        `[eFR_${i}][eFC2_${i}]amix=inputs=2:weights='0.70 0.30'[nFR_${i}];` +
+                                        `[eFC3_${i}]volume=1.5[nFC_${i}];` +
+                                        `[nFL_${i}][nFR_${i}][nFC_${i}][LFE_${i}][SL_${i}][SR_${i}]join=inputs=6:channel_layout=5.1,aformat=channel_layouts=5.1:sample_rates=48000[outa${i}];`;
+                                } else {
+                                    // SIMPLE LINEAR EQ (PC/Mobile - uses AAC)
+                                    // Direct EQ on stream, No Join
+                                    fc = `[0:${audio.index}]aformat=channel_layouts=5.1:sample_rates=48000,` +
+                                        `equalizer=f=5000:width_type=q:width=1:g=4,` +
+                                        `equalizer=f=6000:width_type=q:width=1:g=4,` +
+                                        `volume=1.5,` +
+                                        `aformat=channel_layouts=5.1:sample_rates=48000[outa${i}];`;
+                                }
 
                                 filterComplex += fc;
                                 audioMaps.push('-map', `[outa${i}]`);
