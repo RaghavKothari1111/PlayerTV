@@ -96,11 +96,61 @@ document.addEventListener('DOMContentLoaded', () => {
     videoPlayer.addEventListener('timeupdate', updateProgress);
     videoPlayer.addEventListener('progress', updateBuffer); // Listen for buffer updates
 
+    let serverEncodedTime = 0; // Tracks how much video is ready on server
+
+    function startHeartbeat() {
+        if (heartbeatInterval) clearInterval(heartbeatInterval);
+        // Ping every 1 second for smoother UI growth
+        heartbeatInterval = setInterval(() => {
+            fetch(`/ping?session=${sessionId}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.encodedDuration) {
+                        serverEncodedTime = data.encodedDuration;
+                        updateProgress(); // Update UI immediately
+                    }
+                })
+                .catch(e => console.log("Ping failed"));
+        }, 1000);
+    }
+
+    // Helper: Get Dynamic Duration (The "Loaded" Length)
+    function getDuration() {
+        // DETECT TV (Re-use isTV detection or just simplify)
+        const isTV = /Tizen|WebOS|SmartTV|BRAVIA|Android TV|TV|AppleTV|CrKey|Roku|Viera|Philips|Toshiba|LG|Samsung/i.test(navigator.userAgent);
+
+        // MODE: GROWING TIMELINE (Like Transcode Mode)
+        // If we are on TV, we NEVER trust the native duration because it shows the full file length.
+        // We want to show ONLY what is loaded (serverEncodedTime).
+        if (isTV) {
+            // If server hasn't reported yet, assume we are at the 'edge' (Live)
+            const safeServerTime = serverEncodedTime > 0 ? serverEncodedTime : videoPlayer.currentTime;
+            return Math.max(safeServerTime, videoPlayer.currentTime);
+        }
+
+        // PC/Mobile Fallback: Standard Logic with Server Limit
+        if (serverEncodedTime > 0) {
+            return Math.max(serverEncodedTime, videoPlayer.currentTime);
+        }
+
+        if (videoPlayer.duration && isFinite(videoPlayer.duration) && videoPlayer.duration > 0) {
+            return videoPlayer.duration;
+        }
+        return 0; // Unknown
+    }
+
     function updateProgress() {
-        if (!videoPlayer.duration) return;
-        const percent = (videoPlayer.currentTime / videoPlayer.duration) * 100;
-        progressBar.style.width = `${percent}%`;
-        timeDisplay.textContent = `${formatTime(videoPlayer.currentTime)} / ${formatTime(videoPlayer.duration)}`;
+        // "Growing Timeline" Logic:
+        const duration = getDuration();
+        if (!duration) {
+            progressBar.style.width = '0%';
+            timeDisplay.textContent = '0:00 / 0:00';
+            return;
+        }
+
+        const percent = (videoPlayer.currentTime / duration) * 100;
+        progressBar.style.width = `${Math.min(percent, 100)}%`;
+        timeDisplay.textContent = `${formatTime(videoPlayer.currentTime)} / ${formatTime(duration)}`;
     }
 
     function updateBuffer() {
@@ -182,10 +232,27 @@ document.addEventListener('DOMContentLoaded', () => {
         // Prevent focus stealing from video
         videoPlayer.focus();
 
-        if (hls && hls.audioTracks.length > 1) {
-            const newIndex = parseInt(audioSelect.value);
-            console.log(`Switching Audio Track to Index: ${newIndex}`);
+        const newIndex = parseInt(audioSelect.value);
+        console.log(`Switching Audio Track to Index: ${newIndex}`);
+
+        if (hls && hls.audioTracks && hls.audioTracks.length > 1) {
             hls.audioTrack = newIndex;
+        } else if (videoPlayer.audioTracks) {
+            // NATIVE SWITCHING Logic (Direct Mode)
+            // Iterate and set enabled state.
+            try {
+                for (let i = 0; i < videoPlayer.audioTracks.length; i++) {
+                    if (i === newIndex) {
+                        videoPlayer.audioTracks[i].enabled = true;
+                        logToServer(`[Audio] Native Track ${i} ENABLED`);
+                    } else {
+                        videoPlayer.audioTracks[i].enabled = false;
+                    }
+                }
+            } catch (e) {
+                console.error("Native Audio Switch Error", e);
+                logToServer(`[Error] Native Audio Switch: ${e.message}`);
+            }
         } else {
             console.log("Audio switch requested but HLS not controlling multiple tracks.");
         }
@@ -450,13 +517,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { isStreamStarting = false; }, 10000);
     }
 
-    function startHeartbeat() {
-        if (heartbeatInterval) clearInterval(heartbeatInterval);
-        // Ping every 5 seconds
-        heartbeatInterval = setInterval(() => {
-            fetch(`/ping?session=${sessionId}`).catch(e => console.log("Ping failed"));
-        }, 5000);
-    }
+
 
     // Stop heartbeat on unload
     window.addEventListener('beforeunload', () => {
