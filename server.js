@@ -317,8 +317,6 @@ const server = http.createServer((req, res) => {
                             '-f', 'hls',
                             '-hls_time', '6',
                             '-hls_list_size', '0',
-                            '-hls_time', '6',
-                            '-hls_list_size', '0',
                             '-hls_playlist_type', 'event', // Force Event Mode (Growing Playlist)
                             '-hls_allow_cache', '1',
                             '-start_number', '0',
