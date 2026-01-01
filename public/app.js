@@ -223,16 +223,23 @@ document.addEventListener('DOMContentLoaded', () => {
             hls.audioTrack = newIndex;
         } else if (videoPlayer.audioTracks) {
             // NATIVE SWITCHING Logic
-            // Standard spec: audioTracks is a list. Set 'enabled' on the one we want.
-            // Some browsers use index access, others might need iteration.
+            // Iterate and set enabled state.
+            // We assume Index 0 in Dropdown == Index 0 in Native Player.
+            // If the TV jumbles them, this will be wrong, but "Removing Old Code" means
+            // trusting the Standard behavior and removing any fancy re-mapping.
 
-            for (let i = 0; i < videoPlayer.audioTracks.length; i++) {
-                if (i === newIndex) {
-                    videoPlayer.audioTracks[i].enabled = true;
-                    logToServer(`[Audio] Native Track ${i} ENABLED`);
-                } else {
-                    videoPlayer.audioTracks[i].enabled = false;
+            try {
+                for (let i = 0; i < videoPlayer.audioTracks.length; i++) {
+                    if (i === newIndex) {
+                        videoPlayer.audioTracks[i].enabled = true;
+                        logToServer(`[Audio] Native Track ${i} ENABLED`);
+                    } else {
+                        videoPlayer.audioTracks[i].enabled = false;
+                    }
                 }
+            } catch (e) {
+                console.error("Native Audio Switch Error", e);
+                logToServer(`[Error] Native Audio Switch: ${e.message}`);
             }
         } else {
             console.log("Audio switch requested but no compatible API found.");
