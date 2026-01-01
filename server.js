@@ -346,6 +346,15 @@ const server = http.createServer((req, res) => {
                         let videoOpts = [];
                         if (videoCodec === 'libx264') {
                             videoOpts = ['-preset', 'ultrafast', '-tune', 'zerolatency', '-crf', '23', '-pix_fmt', 'yuv420p'];
+                        } else if (videoCodec === 'copy') {
+                            // Critical for HLS on TV: Apply correct bitstream filter based on codec
+                            if (codecName === 'hevc' || codecName === 'h265') {
+                                console.log("[Smart] Applying HEVC Bitstream Filter for HLS");
+                                videoOpts = ['-bsf:v', 'hevc_mp4toannexb'];
+                            } else {
+                                console.log("[Smart] Applying H.264 Bitstream Filter for HLS");
+                                videoOpts = ['-bsf:v', 'h264_mp4toannexb'];
+                            }
                         } else {
                             videoOpts = [];
                         }
@@ -354,14 +363,14 @@ const server = http.createServer((req, res) => {
                         const ffmpegArgs = [
                             '-user_agent', USER_AGENT,
                             '-y',
-                            '-fflags', '+genpts', // Generate Presentation Timestamps (Vital for Copy)
+                            '-copyts', // Copy original timestamps (Sync Fix for TV)
                             '-i', videoUrl,
                             '-map', '0:v:0',
                             ...audioMaps,
 
                             '-c:v', videoCodec,
                             ...videoOpts,
-                            '-avoid_negative_ts', 'make_zero', // Fix timestamp drift
+                            '-max_interleave_delta', '0', // Force tight audio/video interleaving
                         ];
 
                         if (audioStreams.length > 0) {
