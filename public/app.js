@@ -432,69 +432,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Try to populate tracks if native player exposes them (WebOS 4+ might)
                 if (videoPlayer.audioTracks && videoPlayer.audioTracks.length > 0) {
                     logToServer(`[Audio] Native Audio Tracks found: ${videoPlayer.audioTracks.length}`);
-                    // Wait a bit or populate immediately?
-                    // Native AudioTrackList is often live.
 
-                    const populateNativeTracks = () => {
-                        // Check if we need to rebuild (Optimization)
-                        if (audioSelect.options.length === videoPlayer.audioTracks.length) {
-                            let activeIndex = 0;
-                            for (let i = 0; i < videoPlayer.audioTracks.length; i++) {
-                                if (videoPlayer.audioTracks[i].enabled) {
-                                    activeIndex = i;
-                                    break;
-                                }
-                            }
-                            // Only update if value changed to avoid UI flickering
-                            if (audioSelect.value != activeIndex) {
-                                audioSelect.value = activeIndex;
-                            }
-                            return;
-                        }
+                    // FIXED: We DO NOT populate from Native Player anymore.
+                    // We rely strictly on the Server Metadata (fetched via /metadata).
+                    // This prevents the TV from overwriting the clean list with jumbled track orders.
 
-                        // Map to array for sorting
-                        const trackList = [];
-                        let activeIndex = 0;
-
-                        for (let i = 0; i < videoPlayer.audioTracks.length; i++) {
-                            const t = videoPlayer.audioTracks[i];
-                            trackList.push({ index: i, track: t });
-                            if (t.enabled) activeIndex = i;
-                        }
-
-                        // Sort by ID (to match Metadata/FFmpeg order)
-                        // Native players might load tracks out of order.
-                        trackList.sort((a, b) => {
-                            const idA = parseInt(a.track.id);
-                            const idB = parseInt(b.track.id);
-                            if (!isNaN(idA) && !isNaN(idB)) return idA - idB;
-                            return a.index - b.index; // Fallback to load order
-                        });
-
-                        const optionsHtml = trackList.map(item => {
-                            const t = item.track;
-                            // Use ID for label numbering if valid, else sequential
-                            const labelNum = (parseInt(t.id) !== undefined && !isNaN(parseInt(t.id))) ? parseInt(t.id) + 1 : item.index + 1;
-                            return `<option value="${item.index}">Audio ${labelNum} (${t.language || 'und'})</option>`;
-                        }).join('');
-
-                        if (optionsHtml.length > 0) {
-                            audioSelect.innerHTML = optionsHtml;
-                            audioSelect.value = activeIndex; // Set initial selection
-                            logToServer('[Audio] Native Tracks Sorted & Populated');
-                        }
-                    };
-
-                    populateNativeTracks(); // Try immediately
-
-                    // ON CHANGE: Just update the selection UI, DO NOT Rebuild
-                    videoPlayer.audioTracks.addEventListener('change', populateNativeTracks);
-
-                    // ON ADD TRACK: Rebuild might be needed
-                    videoPlayer.audioTracks.addEventListener('addtrack', () => {
-                        audioSelect.innerHTML = ''; // Force rebuild
-                        populateNativeTracks();
-                    });
+                    // We only verify that the indices align.
+                    // "Audio 1" in Dropdown (Index 0) -> videoPlayer.audioTracks[0]
                 }
             });
 
