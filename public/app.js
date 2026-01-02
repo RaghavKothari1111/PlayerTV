@@ -443,9 +443,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function updateSubtitle(videoUrl, subIndex) {
+        // Get custom subtitle overlay element
+        const customSubtitle = document.getElementById('customSubtitle');
+
         // Clear existing tracks
         const oldTracks = videoPlayer.querySelectorAll('track');
         oldTracks.forEach(t => t.remove());
+
+        // Clear custom subtitle display
+        customSubtitle.textContent = '';
+        customSubtitle.classList.remove('visible');
 
         if (subIndex != -1) {
             console.log(`Loading Subtitle Track: ${subIndex}`);
@@ -458,15 +465,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
             videoPlayer.appendChild(track);
 
-            // Force show
+            // Function to setup cue change listener
+            function setupCueChangeListener(textTrack) {
+                console.log('[Subtitle] Setting up cuechange listener');
+                textTrack.mode = 'hidden'; // Hide native, render custom
+
+                textTrack.addEventListener('cuechange', () => {
+                    const activeCues = textTrack.activeCues;
+                    console.log('[Subtitle] Cue change, active cues:', activeCues ? activeCues.length : 0);
+
+                    if (activeCues && activeCues.length > 0) {
+                        // Combine all active cues
+                        let subtitleText = '';
+                        for (let i = 0; i < activeCues.length; i++) {
+                            if (i > 0) subtitleText += '\n';
+                            subtitleText += activeCues[i].text;
+                        }
+                        customSubtitle.innerHTML = subtitleText.replace(/\n/g, '<br>');
+                        customSubtitle.classList.add('visible');
+                    } else {
+                        customSubtitle.textContent = '';
+                        customSubtitle.classList.remove('visible');
+                    }
+                });
+            }
+
+            // Try onload first
             track.onload = () => {
-                const textTrack = track.track;
-                textTrack.mode = 'showing';
+                console.log('[Subtitle] Track onload fired');
+                if (track.track) {
+                    setupCueChangeListener(track.track);
+                }
             };
-            // Fallback if onload doesn't fire immediately
+
+            // Fallback: Check after delay
             setTimeout(() => {
-                if (track.track) track.track.mode = 'showing';
-            }, 100);
+                if (track.track && track.track.mode !== 'hidden') {
+                    console.log('[Subtitle] Fallback: Setting up cuechange via timeout');
+                    setupCueChangeListener(track.track);
+                }
+            }, 500);
+
         } else {
             console.log("Subtitles Disabled");
         }
