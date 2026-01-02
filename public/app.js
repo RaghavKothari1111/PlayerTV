@@ -1001,8 +1001,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Keyboard Shortcuts ---
     document.addEventListener('keydown', (e) => {
-        // Ignore if user is typing in an input
-        if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT') return;
+        // Ignore if user is typing in an input (but NOT select)
+        if (document.activeElement.tagName === 'INPUT') return;
+
+        // If a SELECT is focused and arrow key pressed, blur it first so we can seek
+        if (document.activeElement.tagName === 'SELECT') {
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                document.activeElement.blur();
+                // Continue to process the seek below
+            } else {
+                return; // Let other keys work normally on selects
+            }
+        }
 
         switch (e.key) {
             case ' ': // Space: Toggle Play/Pause
