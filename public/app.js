@@ -455,24 +455,36 @@ document.addEventListener('DOMContentLoaded', () => {
         customSubtitle.classList.remove('visible');
 
         if (subIndex != -1) {
-            console.log(`Loading Subtitle Track: ${subIndex}`);
+            console.log(`[Subtitle] Loading Track Index: ${subIndex}`);
             const track = document.createElement('track');
             track.kind = 'subtitles';
             track.label = 'Active Subtitle';
             track.srclang = 'en';
             track.default = true;
-            track.src = `/subtitle?url=${encodeURIComponent(videoUrl)}&index=${subIndex}`;
+            track.src = `/subtitle?url=${encodeURIComponent(videoUrl)}&index=${subIndex}&t=${Date.now()}`;
 
             videoPlayer.appendChild(track);
 
             // Function to setup cue change listener
             function setupCueChangeListener(textTrack) {
-                console.log('[Subtitle] Setting up cuechange listener');
-                textTrack.mode = 'hidden'; // Hide native, render custom
+                if (textTrack.dataset && textTrack.dataset.listenerAttached) return;
 
-                textTrack.addEventListener('cuechange', () => {
+                console.log('[Subtitle] Setting up cuechange listener for track:', textTrack.label);
+
+                // CRITICAL: Hide native rendering so we can display it ourselves
+                textTrack.mode = 'hidden';
+
+                if (!textTrack.dataset) textTrack.dataset = {};
+                textTrack.dataset.listenerAttached = 'true';
+
+                // TEST: Force show subtitle overlay to verify it's visible
+                customSubtitle.innerHTML = '[Subtitles Loading...]';
+                customSubtitle.classList.add('visible');
+                console.log('[Subtitle] TEST: Forced visibility on overlay');
+
+                const onCueChange = () => {
                     const activeCues = textTrack.activeCues;
-                    console.log('[Subtitle] Cue change, active cues:', activeCues ? activeCues.length : 0);
+                    console.log('[Subtitle] Cue change. Active:', activeCues ? activeCues.length : 0);
 
                     if (activeCues && activeCues.length > 0) {
                         // Combine all active cues
@@ -481,14 +493,26 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (i > 0) subtitleText += '\n';
                             subtitleText += activeCues[i].text;
                         }
+                        console.log('[Subtitle] Displaying:', subtitleText.substring(0, 50));
                         customSubtitle.innerHTML = subtitleText.replace(/\n/g, '<br>');
                         customSubtitle.classList.add('visible');
                     } else {
                         customSubtitle.textContent = '';
                         customSubtitle.classList.remove('visible');
                     }
-                });
+                };
+
+                textTrack.removeEventListener('cuechange', onCueChange);
+                textTrack.addEventListener('cuechange', onCueChange);
+
+                // Check immediately too
+                onCueChange();
             }
+
+            // Error handling
+            track.onerror = (e) => {
+                console.error('[Subtitle] Track failed to load:', e);
+            };
 
             // Try onload first
             track.onload = () => {
@@ -498,13 +522,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             };
 
-            // Fallback: Check after delay
-            setTimeout(() => {
-                if (track.track && track.track.mode !== 'hidden') {
-                    console.log('[Subtitle] Fallback: Setting up cuechange via timeout');
+            // Poll for readyState (more reliable than just timeout)
+            const checkTrackReady = setInterval(() => {
+                if (!track.track) return;
+
+                const state = track.track.readyState;
+                const cuesCount = track.track.cues ? track.track.cues.length : 0;
+
+                console.log(`[Subtitle] Polling State: ${state} | Cues: ${cuesCount}`);
+
+                // FIXED: Trigger when cues exist, regardless of readyState (some browsers report undefined)
+                if (cuesCount > 0) {
+                    console.log('[Subtitle] Cues detected! Setting up listener.');
                     setupCueChangeListener(track.track);
+                    clearInterval(checkTrackReady);
+                }
+
+                // Force hidden mode ensuring it sticks
+                if (track.track.mode !== 'hidden') track.track.mode = 'hidden';
+
+                // Handle explicit error state
+                if (state === 3) {
+                    console.error('[Subtitle] Track Error State detected.');
+                    clearInterval(checkTrackReady);
                 }
             }, 500);
+
+            // Safety timeout (extended to 30s for slow streams)
+            setTimeout(() => {
+                clearInterval(checkTrackReady);
+                console.log('[Subtitle] Polling timeout reached.');
+            }, 30000);
 
         } else {
             console.log("Subtitles Disabled");
