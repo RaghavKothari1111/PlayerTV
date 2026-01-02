@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const seekFeedback = document.getElementById('seekFeedback');
 
     // --- Custom SVGs (Netflix Style) ---
-    // --- Custom SVGs (Netflix Style) ---
     const PLAY_ICON = `<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-play-fill center-icon-play" viewBox="0 0 16 16"><path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393"/></svg>`;
     const PAUSE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-pause-fill center-icon-pause" viewBox="0 0 16 16"><path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5m5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5"/></svg>`;
 
@@ -303,47 +302,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let serverDuration = 0; // Store duration from metadata
 
-    // Helper: Get best available duration
-    function getDuration() {
-        // Native HLS often reports Infinity
-        if (videoPlayer.duration && isFinite(videoPlayer.duration) && videoPlayer.duration > 0) {
-            return videoPlayer.duration;
-        }
-        return serverDuration;
-    }
-
-    function updateProgress() {
-        const duration = getDuration();
-        if (!duration) return;
-        const percent = (videoPlayer.currentTime / duration) * 100;
-        progressBar.style.width = `${percent}%`;
-        timeDisplay.textContent = `${formatTime(videoPlayer.currentTime)} / ${formatTime(duration)}`;
-    }
-
-    function updateBuffer() {
-        const duration = getDuration();
-        if (!duration) return;
-
-        if (videoPlayer.buffered.length > 0) {
-            // Find the buffered range that covers the current time
-            const currentTime = videoPlayer.currentTime;
-            let bufferedEnd = 0;
-
-            for (let i = 0; i < videoPlayer.buffered.length; i++) {
-                const checkStart = videoPlayer.buffered.start(i);
-                const checkEnd = videoPlayer.buffered.end(i);
-
-                // If current time is within this range (or close to it)
-                if (currentTime >= checkStart && currentTime <= checkEnd + 0.5) {
-                    bufferedEnd = checkEnd;
-                    break;
-                }
-            }
-
-            const percent = (bufferedEnd / duration) * 100;
-            progressBuffer.style.width = `${percent}%`;
-        }
-    }
+    // NOTE: getDuration(), updateProgress(), and updateBuffer() are defined later
+    // in the "Growing Timeline" section (~line 900+) with enhanced functionality.
 
     // Seek
     progressContainer.addEventListener('click', (e) => {
@@ -405,7 +365,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // HLS.js handles switching without restart if manifest has multiple audio tracks
     // NATIVE PLAYER: uses videoPlayer.audioTracks API
     audioSelect.addEventListener('change', () => {
-        // Prevent focus stealing from video
+        // Blur dropdown to allow inactivity timer to work
+        audioSelect.blur();
         videoPlayer.focus();
 
         const newIndex = parseInt(audioSelect.value);
@@ -435,6 +396,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Subtitle Change -> Seamless Update (No stream restart needed)
     subSelect.addEventListener('change', () => {
+        // Blur dropdown to allow inactivity timer to work (especially on mobile)
+        subSelect.blur();
+        videoPlayer.focus();
+
         const rawUrl = urlInput.value.trim();
         const subIdx = subSelect.value;
         updateSubtitle(rawUrl, subIdx);

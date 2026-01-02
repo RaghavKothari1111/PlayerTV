@@ -1003,3 +1003,90 @@
 [2026-01-02T17:41:34.057Z] Streaming Subtitles: https://video-downloads.googleusercontent.com/ADGPM2ntTOdaWSKTOkBBbA7sFj0tLddAQ19mDFGzXNNbzXxrk5G7qIEX8SoWhLWndWVQK31PluioEUYGzHjPxTU9zjbk0TRMb4lIyx7NJbM4kpqMxc-KvjiwvynYTtuZhbIbzTPe3dSFsPxQDBEF5mh8ngqKHmUNxKj4DOribU0fnylLd7-vEIvkJ2spYsJA_fLCYdMAKd_8rcPl3YullhUz0M4zzdbbxgbSIvyuF_s3uCGl6j_uIFIj5OqqMfgAH8wFlzdxQk4_zrStufJW3VKtHsGvKX8c7og9pr36mJ9G952CLnNVbz_vAk2ETR8wDoIT9yysQbnouDSdCEIRzxWOY4eHBKduz7HgfAv_hOZaTmynA3k88JxTwzVZ9RGq28RaDOXdQr_Oms6JAQ_hezqH9_gdVxg669vel0abdN-SBLTFQHflgNRUzKLjldlJcO-N-kJSY4VYpLWrN_uKbCm-isdoUPdK_20Wy5_Elog4ucgifcOEiq4o9nzzP1FnEcPlilpjL6AIRtPw30f1pQJpKSNfd3spn3-d0yodcOnGpCLaoUZd8ozsDVg_5qh4bnrFbT9PARzN0IjA1sV8BaprRhcalkT6TiGUBsMM-VYDe6FDuRFTIYc_XKdSdfscW_YejeoPcPW9I2tsTGT5RdTxLvr2KUlBKNWVCo649pv_2SFtsLcR7wyiUgXf7I7JwtAWb9mD4hcXNgMQ1FN8bc2Enzqae73hiuZXxwtVgFKYnpm9EIiUQlnIOUgXewLVIuwvTsGmsZ5vj4_Sk_kos_AyXBJYxjL_l32lomON8ymXjhbjQ3Xa5ZByGgPyMNdNyakIl0j8EaPfoiQJlcNuYIRyjBQfwnN-G23ANa7A4PzjEcoCOQyBbu-9zHhJgRyRNisgA4ZI9XBAVAiY0hMDIL3n5XV4bGg-jOleg3SK0lXuZBxGyUPT_e9jXpmnmv5Mwm5-5PWeWOjNHBQ0oPcAErzYjNatbkEczkIxM711GSF-54aLMHAhLPfbEhVZEq6gKm3KK0xDGHDTsMoozJenfuLUWvphUQAfz_dwUTWh8J2fkO357Xco91ZSbWW-5Uez0dcnml3M-ASi (Track 19)
 [2026-01-02T17:41:38.509Z] [CLIENT] [Event] Video Playing
 [2026-01-02T17:42:11.338Z] [CLIENT] [Event] Video Pause
+[2026-01-02T18:04:39.547Z] Fetching metadata for: https://video-downloads.googleusercontent.com/ADGPM2ntTOdaWSKTOkBBbA7sFj0tLddAQ19mDFGzXNNbzXxrk5G7qIEX8SoWhLWndWVQK31PluioEUYGzHjPxTU9zjbk0TRMb4lIyx7NJbM4kpqMxc-KvjiwvynYTtuZhbIbzTPe3dSFsPxQDBEF5mh8ngqKHmUNxKj4DOribU0fnylLd7-vEIvkJ2spYsJA_fLCYdMAKd_8rcPl3YullhUz0M4zzdbbxgbSIvyuF_s3uCGl6j_uIFIj5OqqMfgAH8wFlzdxQk4_zrStufJW3VKtHsGvKX8c7og9pr36mJ9G952CLnNVbz_vAk2ETR8wDoIT9yysQbnouDSdCEIRzxWOY4eHBKduz7HgfAv_hOZaTmynA3k88JxTwzVZ9RGq28RaDOXdQr_Oms6JAQ_hezqH9_gdVxg669vel0abdN-SBLTFQHflgNRUzKLjldlJcO-N-kJSY4VYpLWrN_uKbCm-isdoUPdK_20Wy5_Elog4ucgifcOEiq4o9nzzP1FnEcPlilpjL6AIRtPw30f1pQJpKSNfd3spn3-d0yodcOnGpCLaoUZd8ozsDVg_5qh4bnrFbT9PARzN0IjA1sV8BaprRhcalkT6TiGUBsMM-VYDe6FDuRFTIYc_XKdSdfscW_YejeoPcPW9I2tsTGT5RdTxLvr2KUlBKNWVCo649pv_2SFtsLcR7wyiUgXf7I7JwtAWb9mD4hcXNgMQ1FN8bc2Enzqae73hiuZXxwtVgFKYnpm9EIiUQlnIOUgXewLVIuwvTsGmsZ5vj4_Sk_kos_AyXBJYxjL_l32lomON8ymXjhbjQ3Xa5ZByGgPyMNdNyakIl0j8EaPfoiQJlcNuYIRyjBQfwnN-G23ANa7A4PzjEcoCOQyBbu-9zHhJgRyRNisgA4ZI9XBAVAiY0hMDIL3n5XV4bGg-jOleg3SK0lXuZBxGyUPT_e9jXpmnmv5Mwm5-5PWeWOjNHBQ0oPcAErzYjNatbkEczkIxM711GSF-54aLMHAhLPfbEhVZEq6gKm3KK0xDGHDTsMoozJenfuLUWvphUQAfz_dwUTWh8J2fkO357Xco91ZSbWW-5Uez0dcnml3M-ASi
+[2026-01-02T18:04:40.088Z] Fetching metadata for: https://video-downloads.googleusercontent.com/ADGPM2ntTOdaWSKTOkBBbA7sFj0tLddAQ19mDFGzXNNbzXxrk5G7qIEX8SoWhLWndWVQK31PluioEUYGzHjPxTU9zjbk0TRMb4lIyx7NJbM4kpqMxc-KvjiwvynYTtuZhbIbzTPe3dSFsPxQDBEF5mh8ngqKHmUNxKj4DOribU0fnylLd7-vEIvkJ2spYsJA_fLCYdMAKd_8rcPl3YullhUz0M4zzdbbxgbSIvyuF_s3uCGl6j_uIFIj5OqqMfgAH8wFlzdxQk4_zrStufJW3VKtHsGvKX8c7og9pr36mJ9G952CLnNVbz_vAk2ETR8wDoIT9yysQbnouDSdCEIRzxWOY4eHBKduz7HgfAv_hOZaTmynA3k88JxTwzVZ9RGq28RaDOXdQr_Oms6JAQ_hezqH9_gdVxg669vel0abdN-SBLTFQHflgNRUzKLjldlJcO-N-kJSY4VYpLWrN_uKbCm-isdoUPdK_20Wy5_Elog4ucgifcOEiq4o9nzzP1FnEcPlilpjL6AIRtPw30f1pQJpKSNfd3spn3-d0yodcOnGpCLaoUZd8ozsDVg_5qh4bnrFbT9PARzN0IjA1sV8BaprRhcalkT6TiGUBsMM-VYDe6FDuRFTIYc_XKdSdfscW_YejeoPcPW9I2tsTGT5RdTxLvr2KUlBKNWVCo649pv_2SFtsLcR7wyiUgXf7I7JwtAWb9mD4hcXNgMQ1FN8bc2Enzqae73hiuZXxwtVgFKYnpm9EIiUQlnIOUgXewLVIuwvTsGmsZ5vj4_Sk_kos_AyXBJYxjL_l32lomON8ymXjhbjQ3Xa5ZByGgPyMNdNyakIl0j8EaPfoiQJlcNuYIRyjBQfwnN-G23ANa7A4PzjEcoCOQyBbu-9zHhJgRyRNisgA4ZI9XBAVAiY0hMDIL3n5XV4bGg-jOleg3SK0lXuZBxGyUPT_e9jXpmnmv5Mwm5-5PWeWOjNHBQ0oPcAErzYjNatbkEczkIxM711GSF-54aLMHAhLPfbEhVZEq6gKm3KK0xDGHDTsMoozJenfuLUWvphUQAfz_dwUTWh8J2fkO357Xco91ZSbWW-5Uez0dcnml3M-ASi
+[2026-01-02T18:04:41.198Z] Audio Metadata: [
+  {
+    "index": 0,
+    "lang": "por",
+    "codec": "eac3"
+  },
+  {
+    "index": 1,
+    "lang": "eng",
+    "codec": "eac3"
+  },
+  {
+    "index": 2,
+    "lang": "hin",
+    "codec": "eac3"
+  },
+  {
+    "index": 3,
+    "lang": "tel",
+    "codec": "eac3"
+  }
+]
+[2026-01-02T18:04:41.211Z] Audio Metadata: [
+  {
+    "index": 0,
+    "lang": "por",
+    "codec": "eac3"
+  },
+  {
+    "index": 1,
+    "lang": "eng",
+    "codec": "eac3"
+  },
+  {
+    "index": 2,
+    "lang": "hin",
+    "codec": "eac3"
+  },
+  {
+    "index": 3,
+    "lang": "tel",
+    "codec": "eac3"
+  }
+]
+[2026-01-02T18:04:42.164Z] Fetching metadata for: https://video-downloads.googleusercontent.com/ADGPM2ntTOdaWSKTOkBBbA7sFj0tLddAQ19mDFGzXNNbzXxrk5G7qIEX8SoWhLWndWVQK31PluioEUYGzHjPxTU9zjbk0TRMb4lIyx7NJbM4kpqMxc-KvjiwvynYTtuZhbIbzTPe3dSFsPxQDBEF5mh8ngqKHmUNxKj4DOribU0fnylLd7-vEIvkJ2spYsJA_fLCYdMAKd_8rcPl3YullhUz0M4zzdbbxgbSIvyuF_s3uCGl6j_uIFIj5OqqMfgAH8wFlzdxQk4_zrStufJW3VKtHsGvKX8c7og9pr36mJ9G952CLnNVbz_vAk2ETR8wDoIT9yysQbnouDSdCEIRzxWOY4eHBKduz7HgfAv_hOZaTmynA3k88JxTwzVZ9RGq28RaDOXdQr_Oms6JAQ_hezqH9_gdVxg669vel0abdN-SBLTFQHflgNRUzKLjldlJcO-N-kJSY4VYpLWrN_uKbCm-isdoUPdK_20Wy5_Elog4ucgifcOEiq4o9nzzP1FnEcPlilpjL6AIRtPw30f1pQJpKSNfd3spn3-d0yodcOnGpCLaoUZd8ozsDVg_5qh4bnrFbT9PARzN0IjA1sV8BaprRhcalkT6TiGUBsMM-VYDe6FDuRFTIYc_XKdSdfscW_YejeoPcPW9I2tsTGT5RdTxLvr2KUlBKNWVCo649pv_2SFtsLcR7wyiUgXf7I7JwtAWb9mD4hcXNgMQ1FN8bc2Enzqae73hiuZXxwtVgFKYnpm9EIiUQlnIOUgXewLVIuwvTsGmsZ5vj4_Sk_kos_AyXBJYxjL_l32lomON8ymXjhbjQ3Xa5ZByGgPyMNdNyakIl0j8EaPfoiQJlcNuYIRyjBQfwnN-G23ANa7A4PzjEcoCOQyBbu-9zHhJgRyRNisgA4ZI9XBAVAiY0hMDIL3n5XV4bGg-jOleg3SK0lXuZBxGyUPT_e9jXpmnmv5Mwm5-5PWeWOjNHBQ0oPcAErzYjNatbkEczkIxM711GSF-54aLMHAhLPfbEhVZEq6gKm3KK0xDGHDTsMoozJenfuLUWvphUQAfz_dwUTWh8J2fkO357Xco91ZSbWW-5Uez0dcnml3M-ASi
+[2026-01-02T18:04:43.300Z] Audio Metadata: [
+  {
+    "index": 0,
+    "lang": "por",
+    "codec": "eac3"
+  },
+  {
+    "index": 1,
+    "lang": "eng",
+    "codec": "eac3"
+  },
+  {
+    "index": 2,
+    "lang": "hin",
+    "codec": "eac3"
+  },
+  {
+    "index": 3,
+    "lang": "tel",
+    "codec": "eac3"
+  }
+]
+[2026-01-02T18:04:43.307Z] [CLIENT] [Metadata] Server Duration: 4181.312s
+[2026-01-02T18:04:43.645Z] [Start] Request from Session: sess-1767326167134-zk5u9rwsq | User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 | isTV: false
+[2026-01-02T18:04:43.646Z] [Device] Brand: generic | Caps: {"video":["h264","hevc"],"maxH264Level":51,"maxHevcLevel":153,"audio":["aac","ac3","eac3","mp3"],"profiles":["baseline","main","high","main 10"]}
+[2026-01-02T18:04:43.647Z] Starting Session sess-1767326167134-zk5u9rwsq: https://video-downloads.googleusercontent.com/ADGPM2ntTOdaWSKTOkBBbA7sFj0tLddAQ19mDFGzXNNbzXxrk5G7qIEX8SoWhLWndWVQK31PluioEUYGzHjPxTU9zjbk0TRMb4lIyx7NJbM4kpqMxc-KvjiwvynYTtuZhbIbzTPe3dSFsPxQDBEF5mh8ngqKHmUNxKj4DOribU0fnylLd7-vEIvkJ2spYsJA_fLCYdMAKd_8rcPl3YullhUz0M4zzdbbxgbSIvyuF_s3uCGl6j_uIFIj5OqqMfgAH8wFlzdxQk4_zrStufJW3VKtHsGvKX8c7og9pr36mJ9G952CLnNVbz_vAk2ETR8wDoIT9yysQbnouDSdCEIRzxWOY4eHBKduz7HgfAv_hOZaTmynA3k88JxTwzVZ9RGq28RaDOXdQr_Oms6JAQ_hezqH9_gdVxg669vel0abdN-SBLTFQHflgNRUzKLjldlJcO-N-kJSY4VYpLWrN_uKbCm-isdoUPdK_20Wy5_Elog4ucgifcOEiq4o9nzzP1FnEcPlilpjL6AIRtPw30f1pQJpKSNfd3spn3-d0yodcOnGpCLaoUZd8ozsDVg_5qh4bnrFbT9PARzN0IjA1sV8BaprRhcalkT6TiGUBsMM-VYDe6FDuRFTIYc_XKdSdfscW_YejeoPcPW9I2tsTGT5RdTxLvr2KUlBKNWVCo649pv_2SFtsLcR7wyiUgXf7I7JwtAWb9mD4hcXNgMQ1FN8bc2Enzqae73hiuZXxwtVgFKYnpm9EIiUQlnIOUgXewLVIuwvTsGmsZ5vj4_Sk_kos_AyXBJYxjL_l32lomON8ymXjhbjQ3Xa5ZByGgPyMNdNyakIl0j8EaPfoiQJlcNuYIRyjBQfwnN-G23ANa7A4PzjEcoCOQyBbu-9zHhJgRyRNisgA4ZI9XBAVAiY0hMDIL3n5XV4bGg-jOleg3SK0lXuZBxGyUPT_e9jXpmnmv5Mwm5-5PWeWOjNHBQ0oPcAErzYjNatbkEczkIxM711GSF-54aLMHAhLPfbEhVZEq6gKm3KK0xDGHDTsMoozJenfuLUWvphUQAfz_dwUTWh8J2fkO357Xco91ZSbWW-5Uez0dcnml3M-ASi
+[2026-01-02T18:04:45.132Z] [Compat] Video: h264 Profile:main Level:40 MaxLevel:51 -> Codec:true Profile:true Level:true
+[2026-01-02T18:04:45.134Z] [Compat] Video: h264 Profile:main Level:40 MaxLevel:51 -> Codec:true Profile:true Level:true
+[2026-01-02T18:04:45.134Z] [Compat] Native: Video:true Audio:true
+[2026-01-02T18:04:45.134Z] [Decision] TV: false | ForceTranscode: false | VideoCompat: true -> FULL_TRANSCODE
+[2026-01-02T18:04:45.135Z] [FFmpeg] Args: -y -i https://video-downloads.googleusercontent.com/ADGPM2ntTOdaWSKTOkBBbA7sFj0tLddAQ19mDFGzXNNbzXxrk5G7qIEX8SoWhLWndWVQK31PluioEUYGzHjPxTU9zjbk0TRMb4lIyx7NJbM4kpqMxc-KvjiwvynYTtuZhbIbzTPe3dSFsPxQDBEF5mh8ngqKHmUNxKj4DOribU0fnylLd7-vEIvkJ2spYsJA_fLCYdMAKd_8rcPl3YullhUz0M4zzdbbxgbSIvyuF_s3uCGl6j_uIFIj5OqqMfgAH8wFlzdxQk4_zrStufJW3VKtHsGvKX8c7og9pr36mJ9G952CLnNVbz_vAk2ETR8wDoIT9yysQbnouDSdCEIRzxWOY4eHBKduz7HgfAv_hOZaTmynA3k88JxTwzVZ9RGq28RaDOXdQr_Oms6JAQ_hezqH9_gdVxg669vel0abdN-SBLTFQHflgNRUzKLjldlJcO-N-kJSY4VYpLWrN_uKbCm-isdoUPdK_20Wy5_Elog4ucgifcOEiq4o9nzzP1FnEcPlilpjL6AIRtPw30f1pQJpKSNfd3spn3-d0yodcOnGpCLaoUZd8ozsDVg_5qh4bnrFbT9PARzN0IjA1sV8BaprRhcalkT6TiGUBsMM-VYDe6FDuRFTIYc_XKdSdfscW_YejeoPcPW9I2tsTGT5RdTxLvr2KUlBKNWVCo649pv_2SFtsLcR7wyiUgXf7I7JwtAWb9mD4hcXNgMQ1FN8bc2Enzqae73hiuZXxwtVgFKYnpm9EIiUQlnIOUgXewLVIuwvTsGmsZ5vj4_Sk_kos_AyXBJYxjL_l32lomON8ymXjhbjQ3Xa5ZByGgPyMNdNyakIl0j8EaPfoiQJlcNuYIRyjBQfwnN-G23ANa7A4PzjEcoCOQyBbu-9zHhJgRyRNisgA4ZI9XBAVAiY0hMDIL3n5XV4bGg-jOleg3SK0lXuZBxGyUPT_e9jXpmnmv5Mwm5-5PWeWOjNHBQ0oPcAErzYjNatbkEczkIxM711GSF-54aLMHAhLPfbEhVZEq6gKm3KK0xDGHDTsMoozJenfuLUWvphUQAfz_dwUTWh8J2fkO357Xco91ZSbWW-5Uez0dcnml3M-ASi -filter_complex [0:1]channelsplit=channel_layout=5.1[FL_0][FR_0][FC_0][LFE_0][SL_0][SR_0];[FC_0]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_0];[FL_0]equalizer=f=6000:t=q:w=1:g=4[eFL_0];[FR_0]equalizer=f=6000:t=q:w=1:g=4[eFR_0];[eFC_0]asplit=3[eFC_L_0][eFC_R_0][eFC_C_0];[eFL_0][eFC_L_0]amix=inputs=2:weights='0.70 0.30'[nFL_0];[eFR_0][eFC_R_0]amix=inputs=2:weights='0.70 0.30'[nFR_0];[eFC_C_0]volume=1.5[nFC_0];[nFL_0][nFR_0][nFC_0][LFE_0][SL_0][SR_0]join=inputs=6:channel_layout=5.1[outa0];[0:2]channelsplit=channel_layout=5.1[FL_1][FR_1][FC_1][LFE_1][SL_1][SR_1];[FC_1]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_1];[FL_1]equalizer=f=6000:t=q:w=1:g=4[eFL_1];[FR_1]equalizer=f=6000:t=q:w=1:g=4[eFR_1];[eFC_1]asplit=3[eFC_L_1][eFC_R_1][eFC_C_1];[eFL_1][eFC_L_1]amix=inputs=2:weights='0.70 0.30'[nFL_1];[eFR_1][eFC_R_1]amix=inputs=2:weights='0.70 0.30'[nFR_1];[eFC_C_1]volume=1.5[nFC_1];[nFL_1][nFR_1][nFC_1][LFE_1][SL_1][SR_1]join=inputs=6:channel_layout=5.1[outa1];[0:3]channelsplit=channel_layout=5.1[FL_2][FR_2][FC_2][LFE_2][SL_2][SR_2];[FC_2]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_2];[FL_2]equalizer=f=6000:t=q:w=1:g=4[eFL_2];[FR_2]equalizer=f=6000:t=q:w=1:g=4[eFR_2];[eFC_2]asplit=3[eFC_L_2][eFC_R_2][eFC_C_2];[eFL_2][eFC_L_2]amix=inputs=2:weights='0.70 0.30'[nFL_2];[eFR_2][eFC_R_2]amix=inputs=2:weights='0.70 0.30'[nFR_2];[eFC_C_2]volume=1.5[nFC_2];[nFL_2][nFR_2][nFC_2][LFE_2][SL_2][SR_2]join=inputs=6:channel_layout=5.1[outa2];[0:4]channelsplit=channel_layout=5.1[FL_3][FR_3][FC_3][LFE_3][SL_3][SR_3];[FC_3]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_3];[FL_3]equalizer=f=6000:t=q:w=1:g=4[eFL_3];[FR_3]equalizer=f=6000:t=q:w=1:g=4[eFR_3];[eFC_3]asplit=3[eFC_L_3][eFC_R_3][eFC_C_3];[eFL_3][eFC_L_3]amix=inputs=2:weights='0.70 0.30'[nFL_3];[eFR_3][eFC_R_3]amix=inputs=2:weights='0.70 0.30'[nFR_3];[eFC_C_3]volume=1.5[nFC_3];[nFL_3][nFR_3][nFC_3][LFE_3][SL_3][SR_3]join=inputs=6:channel_layout=5.1[outa3] -map 0:v:0 -map [outa0] -map [outa1] -map [outa2] -map [outa3] -c:v libx264 -preset ultrafast -tune zerolatency -crf 23 -pix_fmt yuv420p -c:a aac -b:a 640k -ac 6 -max_muxing_queue_size 4096 -f hls -hls_time 6 -hls_list_size 0 -hls_playlist_type event -hls_allow_cache 1 -start_number 0 -master_pl_name main.m3u8 -var_stream_map v:0,agroup:audio a:0,agroup:audio,language:por,name:Portuguese a:1,agroup:audio,language:eng,name:English a:2,agroup:audio,language:hin,name:Hindi a:3,agroup:audio,language:tel,name:Telugu -hls_segment_filename /home/kali/Desktop/VideoPlayer2/public/hls/sess-1767326167134-zk5u9rwsq/stream_%v_%d.ts /home/kali/Desktop/VideoPlayer2/public/hls/sess-1767326167134-zk5u9rwsq/stream_%v.m3u8
+[2026-01-02T18:04:50.141Z] Stream Ready for Session sess-1767326167134-zk5u9rwsq [FULL_TRANSCODE]!
+[2026-01-02T18:04:50.150Z] [CLIENT] [Init] Server Mode: FULL_TRANSCODE
+[2026-01-02T18:04:50.153Z] [CLIENT] [Detection] UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 | Optimization: Standard
+[2026-01-02T18:04:50.154Z] [CLIENT] [Player] Using Hls.js Player
+[2026-01-02T18:04:50.196Z] [CLIENT] [Event] Video Play
+[2026-01-02T18:04:50.209Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T18:04:57.086Z] Streaming Subtitles: https://video-downloads.googleusercontent.com/ADGPM2ntTOdaWSKTOkBBbA7sFj0tLddAQ19mDFGzXNNbzXxrk5G7qIEX8SoWhLWndWVQK31PluioEUYGzHjPxTU9zjbk0TRMb4lIyx7NJbM4kpqMxc-KvjiwvynYTtuZhbIbzTPe3dSFsPxQDBEF5mh8ngqKHmUNxKj4DOribU0fnylLd7-vEIvkJ2spYsJA_fLCYdMAKd_8rcPl3YullhUz0M4zzdbbxgbSIvyuF_s3uCGl6j_uIFIj5OqqMfgAH8wFlzdxQk4_zrStufJW3VKtHsGvKX8c7og9pr36mJ9G952CLnNVbz_vAk2ETR8wDoIT9yysQbnouDSdCEIRzxWOY4eHBKduz7HgfAv_hOZaTmynA3k88JxTwzVZ9RGq28RaDOXdQr_Oms6JAQ_hezqH9_gdVxg669vel0abdN-SBLTFQHflgNRUzKLjldlJcO-N-kJSY4VYpLWrN_uKbCm-isdoUPdK_20Wy5_Elog4ucgifcOEiq4o9nzzP1FnEcPlilpjL6AIRtPw30f1pQJpKSNfd3spn3-d0yodcOnGpCLaoUZd8ozsDVg_5qh4bnrFbT9PARzN0IjA1sV8BaprRhcalkT6TiGUBsMM-VYDe6FDuRFTIYc_XKdSdfscW_YejeoPcPW9I2tsTGT5RdTxLvr2KUlBKNWVCo649pv_2SFtsLcR7wyiUgXf7I7JwtAWb9mD4hcXNgMQ1FN8bc2Enzqae73hiuZXxwtVgFKYnpm9EIiUQlnIOUgXewLVIuwvTsGmsZ5vj4_Sk_kos_AyXBJYxjL_l32lomON8ymXjhbjQ3Xa5ZByGgPyMNdNyakIl0j8EaPfoiQJlcNuYIRyjBQfwnN-G23ANa7A4PzjEcoCOQyBbu-9zHhJgRyRNisgA4ZI9XBAVAiY0hMDIL3n5XV4bGg-jOleg3SK0lXuZBxGyUPT_e9jXpmnmv5Mwm5-5PWeWOjNHBQ0oPcAErzYjNatbkEczkIxM711GSF-54aLMHAhLPfbEhVZEq6gKm3KK0xDGHDTsMoozJenfuLUWvphUQAfz_dwUTWh8J2fkO357Xco91ZSbWW-5Uez0dcnml3M-ASi (Track 19)
+[2026-01-02T18:05:00.281Z] [CLIENT] [Event] Video Playing
+[2026-01-02T18:05:20.003Z] [CLIENT] [Event] Video Pause
