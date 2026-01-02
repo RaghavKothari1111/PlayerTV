@@ -66,3 +66,572 @@
     "codec": "aac"
   }
 ]
+[2026-01-02T00:51:48.134Z] [CLIENT] [Event] Video Play
+[2026-01-02T00:51:48.136Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T00:55:02.157Z] [CLIENT] [Event] Video Play
+[2026-01-02T00:55:02.158Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T00:56:05.899Z] [CLIENT] [Event] Video Pause
+[2026-01-02T00:56:06.625Z] [CLIENT] [Event] Video Play
+[2026-01-02T00:56:06.626Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T00:56:07.286Z] [CLIENT] [Event] Video Pause
+[2026-01-02T00:56:07.897Z] [CLIENT] [Event] Video Play
+[2026-01-02T00:56:07.898Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:03:30.776Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:03:30.777Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:03:31.577Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:03:32.179Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:03:32.179Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:03:32.842Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:03:33.344Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:03:33.345Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:04:00.896Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:04:01.394Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:04:01.400Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:04:01.960Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:04:20.432Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:04:20.432Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:04:20.552Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:04:22.045Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:04:22.046Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:04:22.162Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:04:24.709Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:04:24.710Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:04:24.827Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:04:42.977Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:04:42.978Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:04:43.096Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:04:44.037Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:04:44.037Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:04:44.157Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:04:44.388Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:04:44.388Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:04:44.510Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:04:45.530Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:04:45.530Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:04:46.423Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:04:48.658Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:04:48.658Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:04:48.772Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:04:48.981Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:04:48.982Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:04:49.100Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:04:53.723Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:04:53.724Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:04:53.842Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:04:54.543Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:04:54.544Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:04:54.663Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:05:47.511Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:05:47.511Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:05:48.022Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:05:48.507Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:05:48.508Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:05:49.016Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:06:00.812Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:06:00.812Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:06:00.930Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:06:05.395Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:06:05.396Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:06:05.515Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:06:07.851Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:06:07.852Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:06:07.972Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:06:13.222Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:06:13.223Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:06:13.340Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:06:19.763Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:06:19.763Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:06:19.884Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:06:20.471Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:06:20.472Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:06:20.589Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:06:23.505Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:06:23.506Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:06:23.622Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:06:24.195Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:06:24.196Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:06:24.318Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:06:45.491Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:06:45.491Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:06:46.104Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:06:46.670Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:06:46.670Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:06:47.250Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:06:54.095Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:06:54.095Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:06:54.624Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:07:02.461Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:07:02.462Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:07:03.529Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:07:46.769Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:07:46.770Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:07:47.255Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:07:50.170Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:07:50.170Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:07:50.605Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:07:51.037Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:07:51.037Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:07:51.462Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:10:17.921Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:10:17.921Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:10:18.685Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:10:28.115Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:10:28.116Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:10:28.777Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:10:29.526Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:10:29.527Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:10:31.398Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:10:34.932Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:10:34.933Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:10:36.688Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:10:38.228Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:10:38.229Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:10:39.607Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:12:01.512Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:12:01.512Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:12:02.302Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:12:03.199Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:12:03.200Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:12:05.726Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:12:06.987Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:12:06.988Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:12:08.091Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:12:08.923Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:12:08.926Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:12:09.896Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:12:10.826Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:12:10.829Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:12:11.830Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:12:14.005Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:12:14.009Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:12:16.060Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:12:18.132Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:12:18.133Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:13:57.150Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:13:57.150Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:13:58.053Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:13:59.324Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:13:59.325Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:14:01.011Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:14:02.045Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:14:02.048Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:14:03.428Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:14:05.115Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:14:05.116Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:14:06.737Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:14:08.205Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:14:08.206Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:14:59.380Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:15:06.562Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:15:06.562Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:16:25.640Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:16:25.641Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:16:26.626Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:16:27.646Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:16:27.647Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:16:28.675Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:16:30.252Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:16:30.253Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:16:31.670Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:16:33.038Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:16:33.038Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:18:12.141Z] Fetching metadata for: https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF
+[2026-01-02T01:18:12.320Z] [Start] Request from Session: sess-1767315097657-637zh6rin | User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 | isTV: false
+[2026-01-02T01:18:12.321Z] [Device] Brand: generic | Caps: {"video":["h264","hevc"],"maxH264Level":51,"maxHevcLevel":153,"audio":["aac","ac3","eac3","mp3"],"profiles":["baseline","main","high","main 10"]}
+[2026-01-02T01:18:12.321Z] Starting Session sess-1767315097657-637zh6rin: https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF
+[2026-01-02T01:18:14.349Z] [Compat] Video: h264 Profile:main Level:40 MaxLevel:51 -> Codec:true Profile:true Level:true
+[2026-01-02T01:18:14.350Z] [Compat] Video: h264 Profile:main Level:40 MaxLevel:51 -> Codec:true Profile:true Level:true
+[2026-01-02T01:18:14.350Z] [Compat] Native: Video:true Audio:true
+[2026-01-02T01:18:14.350Z] [Decision] TV: false | ForceTranscode: false | VideoCompat: true -> FULL_TRANSCODE
+[2026-01-02T01:18:14.351Z] [FFmpeg] Args: -y -i https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF -filter_complex [0:1]channelsplit=channel_layout=5.1[FL_0][FR_0][FC_0][LFE_0][SL_0][SR_0];[FC_0]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_0];[FL_0]equalizer=f=6000:t=q:w=1:g=4[eFL_0];[FR_0]equalizer=f=6000:t=q:w=1:g=4[eFR_0];[eFC_0]asplit=3[eFC_L_0][eFC_R_0][eFC_C_0];[eFL_0][eFC_L_0]amix=inputs=2:weights='0.70 0.30'[nFL_0];[eFR_0][eFC_R_0]amix=inputs=2:weights='0.70 0.30'[nFR_0];[eFC_C_0]volume=1.5[nFC_0];[nFL_0][nFR_0][nFC_0][LFE_0][SL_0][SR_0]join=inputs=6:channel_layout=5.1[outa0];[0:2]channelsplit=channel_layout=5.1[FL_1][FR_1][FC_1][LFE_1][SL_1][SR_1];[FC_1]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_1];[FL_1]equalizer=f=6000:t=q:w=1:g=4[eFL_1];[FR_1]equalizer=f=6000:t=q:w=1:g=4[eFR_1];[eFC_1]asplit=3[eFC_L_1][eFC_R_1][eFC_C_1];[eFL_1][eFC_L_1]amix=inputs=2:weights='0.70 0.30'[nFL_1];[eFR_1][eFC_R_1]amix=inputs=2:weights='0.70 0.30'[nFR_1];[eFC_C_1]volume=1.5[nFC_1];[nFL_1][nFR_1][nFC_1][LFE_1][SL_1][SR_1]join=inputs=6:channel_layout=5.1[outa1];[0:3]channelsplit=channel_layout=5.1[FL_2][FR_2][FC_2][LFE_2][SL_2][SR_2];[FC_2]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_2];[FL_2]equalizer=f=6000:t=q:w=1:g=4[eFL_2];[FR_2]equalizer=f=6000:t=q:w=1:g=4[eFR_2];[eFC_2]asplit=3[eFC_L_2][eFC_R_2][eFC_C_2];[eFL_2][eFC_L_2]amix=inputs=2:weights='0.70 0.30'[nFL_2];[eFR_2][eFC_R_2]amix=inputs=2:weights='0.70 0.30'[nFR_2];[eFC_C_2]volume=1.5[nFC_2];[nFL_2][nFR_2][nFC_2][LFE_2][SL_2][SR_2]join=inputs=6:channel_layout=5.1[outa2];[0:4]channelsplit=channel_layout=5.1[FL_3][FR_3][FC_3][LFE_3][SL_3][SR_3];[FC_3]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_3];[FL_3]equalizer=f=6000:t=q:w=1:g=4[eFL_3];[FR_3]equalizer=f=6000:t=q:w=1:g=4[eFR_3];[eFC_3]asplit=3[eFC_L_3][eFC_R_3][eFC_C_3];[eFL_3][eFC_L_3]amix=inputs=2:weights='0.70 0.30'[nFL_3];[eFR_3][eFC_R_3]amix=inputs=2:weights='0.70 0.30'[nFR_3];[eFC_C_3]volume=1.5[nFC_3];[nFL_3][nFR_3][nFC_3][LFE_3][SL_3][SR_3]join=inputs=6:channel_layout=5.1[outa3] -map 0:v:0 -map [outa0] -map [outa1] -map [outa2] -map [outa3] -c:v libx264 -preset ultrafast -tune zerolatency -crf 23 -pix_fmt yuv420p -c:a aac -b:a 640k -ac 6 -max_muxing_queue_size 4096 -f hls -hls_time 6 -hls_list_size 0 -hls_playlist_type event -hls_allow_cache 1 -start_number 0 -master_pl_name main.m3u8 -var_stream_map v:0,agroup:audio a:0,agroup:audio,language:por,name:Portuguese a:1,agroup:audio,language:eng,name:English a:2,agroup:audio,language:hin,name:Hindi a:3,agroup:audio,language:tel,name:Telugu -hls_segment_filename /home/kali/Desktop/VideoPlayer2/public/hls/sess-1767315097657-637zh6rin/stream_%v_%d.ts /home/kali/Desktop/VideoPlayer2/public/hls/sess-1767315097657-637zh6rin/stream_%v.m3u8
+[2026-01-02T01:18:19.143Z] Audio Metadata: [
+  {
+    "index": 0,
+    "lang": "por",
+    "codec": "eac3"
+  },
+  {
+    "index": 1,
+    "lang": "eng",
+    "codec": "eac3"
+  },
+  {
+    "index": 2,
+    "lang": "hin",
+    "codec": "eac3"
+  },
+  {
+    "index": 3,
+    "lang": "tel",
+    "codec": "eac3"
+  }
+]
+[2026-01-02T01:18:19.148Z] [CLIENT] [Metadata] Server Duration: 4291.52s
+[2026-01-02T01:18:23.859Z] Stream Ready for Session sess-1767315097657-637zh6rin [FULL_TRANSCODE]!
+[2026-01-02T01:18:23.865Z] [CLIENT] [Init] Server Mode: FULL_TRANSCODE
+[2026-01-02T01:18:23.870Z] [CLIENT] [Detection] UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 | Optimization: Standard
+[2026-01-02T01:18:23.870Z] [CLIENT] [Player] Using Hls.js Player
+[2026-01-02T01:18:23.905Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:18:23.905Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:18:24.259Z] [CLIENT] [Event] Video Playing
+[2026-01-02T01:18:42.481Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:18:43.474Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:18:43.475Z] [CLIENT] [Event] Video Playing
+[2026-01-02T01:18:50.188Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:18:54.127Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:18:54.127Z] [CLIENT] [Event] Video Playing
+[2026-01-02T01:18:57.107Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:24:40.518Z] Fetching metadata for: https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF
+[2026-01-02T01:24:42.119Z] Audio Metadata: [
+  {
+    "index": 0,
+    "lang": "por",
+    "codec": "eac3"
+  },
+  {
+    "index": 1,
+    "lang": "eng",
+    "codec": "eac3"
+  },
+  {
+    "index": 2,
+    "lang": "hin",
+    "codec": "eac3"
+  },
+  {
+    "index": 3,
+    "lang": "tel",
+    "codec": "eac3"
+  }
+]
+[2026-01-02T01:24:42.124Z] [CLIENT] [Metadata] Server Duration: 4291.52s
+[2026-01-02T01:24:43.960Z] [Start] Request from Session: sess-1767315097657-637zh6rin | User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 | isTV: false
+[2026-01-02T01:24:43.961Z] [Device] Brand: generic | Caps: {"video":["h264","hevc"],"maxH264Level":51,"maxHevcLevel":153,"audio":["aac","ac3","eac3","mp3"],"profiles":["baseline","main","high","main 10"]}
+[2026-01-02T01:24:43.961Z] Starting Session sess-1767315097657-637zh6rin: https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF
+[2026-01-02T01:24:45.417Z] [Compat] Video: h264 Profile:main Level:40 MaxLevel:51 -> Codec:true Profile:true Level:true
+[2026-01-02T01:24:45.418Z] [Compat] Video: h264 Profile:main Level:40 MaxLevel:51 -> Codec:true Profile:true Level:true
+[2026-01-02T01:24:45.418Z] [Compat] Native: Video:true Audio:true
+[2026-01-02T01:24:45.418Z] [Decision] TV: false | ForceTranscode: false | VideoCompat: true -> FULL_TRANSCODE
+[2026-01-02T01:24:45.419Z] [FFmpeg] Args: -y -i https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF -filter_complex [0:1]channelsplit=channel_layout=5.1[FL_0][FR_0][FC_0][LFE_0][SL_0][SR_0];[FC_0]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_0];[FL_0]equalizer=f=6000:t=q:w=1:g=4[eFL_0];[FR_0]equalizer=f=6000:t=q:w=1:g=4[eFR_0];[eFC_0]asplit=3[eFC_L_0][eFC_R_0][eFC_C_0];[eFL_0][eFC_L_0]amix=inputs=2:weights='0.70 0.30'[nFL_0];[eFR_0][eFC_R_0]amix=inputs=2:weights='0.70 0.30'[nFR_0];[eFC_C_0]volume=1.5[nFC_0];[nFL_0][nFR_0][nFC_0][LFE_0][SL_0][SR_0]join=inputs=6:channel_layout=5.1[outa0];[0:2]channelsplit=channel_layout=5.1[FL_1][FR_1][FC_1][LFE_1][SL_1][SR_1];[FC_1]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_1];[FL_1]equalizer=f=6000:t=q:w=1:g=4[eFL_1];[FR_1]equalizer=f=6000:t=q:w=1:g=4[eFR_1];[eFC_1]asplit=3[eFC_L_1][eFC_R_1][eFC_C_1];[eFL_1][eFC_L_1]amix=inputs=2:weights='0.70 0.30'[nFL_1];[eFR_1][eFC_R_1]amix=inputs=2:weights='0.70 0.30'[nFR_1];[eFC_C_1]volume=1.5[nFC_1];[nFL_1][nFR_1][nFC_1][LFE_1][SL_1][SR_1]join=inputs=6:channel_layout=5.1[outa1];[0:3]channelsplit=channel_layout=5.1[FL_2][FR_2][FC_2][LFE_2][SL_2][SR_2];[FC_2]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_2];[FL_2]equalizer=f=6000:t=q:w=1:g=4[eFL_2];[FR_2]equalizer=f=6000:t=q:w=1:g=4[eFR_2];[eFC_2]asplit=3[eFC_L_2][eFC_R_2][eFC_C_2];[eFL_2][eFC_L_2]amix=inputs=2:weights='0.70 0.30'[nFL_2];[eFR_2][eFC_R_2]amix=inputs=2:weights='0.70 0.30'[nFR_2];[eFC_C_2]volume=1.5[nFC_2];[nFL_2][nFR_2][nFC_2][LFE_2][SL_2][SR_2]join=inputs=6:channel_layout=5.1[outa2];[0:4]channelsplit=channel_layout=5.1[FL_3][FR_3][FC_3][LFE_3][SL_3][SR_3];[FC_3]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_3];[FL_3]equalizer=f=6000:t=q:w=1:g=4[eFL_3];[FR_3]equalizer=f=6000:t=q:w=1:g=4[eFR_3];[eFC_3]asplit=3[eFC_L_3][eFC_R_3][eFC_C_3];[eFL_3][eFC_L_3]amix=inputs=2:weights='0.70 0.30'[nFL_3];[eFR_3][eFC_R_3]amix=inputs=2:weights='0.70 0.30'[nFR_3];[eFC_C_3]volume=1.5[nFC_3];[nFL_3][nFR_3][nFC_3][LFE_3][SL_3][SR_3]join=inputs=6:channel_layout=5.1[outa3] -map 0:v:0 -map [outa0] -map [outa1] -map [outa2] -map [outa3] -c:v libx264 -preset ultrafast -tune zerolatency -crf 23 -pix_fmt yuv420p -c:a aac -b:a 640k -ac 6 -max_muxing_queue_size 4096 -f hls -hls_time 6 -hls_list_size 0 -hls_playlist_type event -hls_allow_cache 1 -start_number 0 -master_pl_name main.m3u8 -var_stream_map v:0,agroup:audio a:0,agroup:audio,language:por,name:Portuguese a:1,agroup:audio,language:eng,name:English a:2,agroup:audio,language:hin,name:Hindi a:3,agroup:audio,language:tel,name:Telugu -hls_segment_filename /home/kali/Desktop/VideoPlayer2/public/hls/sess-1767315097657-637zh6rin/stream_%v_%d.ts /home/kali/Desktop/VideoPlayer2/public/hls/sess-1767315097657-637zh6rin/stream_%v.m3u8
+[2026-01-02T01:24:53.927Z] Stream Ready for Session sess-1767315097657-637zh6rin [FULL_TRANSCODE]!
+[2026-01-02T01:24:53.933Z] [CLIENT] [Init] Server Mode: FULL_TRANSCODE
+[2026-01-02T01:24:53.937Z] [CLIENT] [Detection] UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 | Optimization: Standard
+[2026-01-02T01:24:53.938Z] [CLIENT] [Player] Using Hls.js Player
+[2026-01-02T01:24:53.987Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:24:53.988Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:25:04.007Z] [CLIENT] [Event] Video Playing
+[2026-01-02T01:25:20.015Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:30:13.352Z] [CLIENT] HLS Fatal Error: networkError - levelLoadTimeOut
+[2026-01-02T01:30:33.403Z] Fetching metadata for: https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF
+[2026-01-02T01:30:35.200Z] Audio Metadata: [
+  {
+    "index": 0,
+    "lang": "por",
+    "codec": "eac3"
+  },
+  {
+    "index": 1,
+    "lang": "eng",
+    "codec": "eac3"
+  },
+  {
+    "index": 2,
+    "lang": "hin",
+    "codec": "eac3"
+  },
+  {
+    "index": 3,
+    "lang": "tel",
+    "codec": "eac3"
+  }
+]
+[2026-01-02T01:30:35.204Z] [CLIENT] [Metadata] Server Duration: 4291.52s
+[2026-01-02T01:30:38.448Z] [Start] Request from Session: sess-1767315097657-637zh6rin | User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 | isTV: false
+[2026-01-02T01:30:38.448Z] [Device] Brand: generic | Caps: {"video":["h264","hevc"],"maxH264Level":51,"maxHevcLevel":153,"audio":["aac","ac3","eac3","mp3"],"profiles":["baseline","main","high","main 10"]}
+[2026-01-02T01:30:38.449Z] Starting Session sess-1767315097657-637zh6rin: https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF
+[2026-01-02T01:30:40.324Z] [Compat] Video: h264 Profile:main Level:40 MaxLevel:51 -> Codec:true Profile:true Level:true
+[2026-01-02T01:30:40.325Z] [Compat] Video: h264 Profile:main Level:40 MaxLevel:51 -> Codec:true Profile:true Level:true
+[2026-01-02T01:30:40.325Z] [Compat] Native: Video:true Audio:true
+[2026-01-02T01:30:40.325Z] [Decision] TV: false | ForceTranscode: false | VideoCompat: true -> FULL_TRANSCODE
+[2026-01-02T01:30:40.326Z] [FFmpeg] Args: -y -i https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF -filter_complex [0:1]channelsplit=channel_layout=5.1[FL_0][FR_0][FC_0][LFE_0][SL_0][SR_0];[FC_0]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_0];[FL_0]equalizer=f=6000:t=q:w=1:g=4[eFL_0];[FR_0]equalizer=f=6000:t=q:w=1:g=4[eFR_0];[eFC_0]asplit=3[eFC_L_0][eFC_R_0][eFC_C_0];[eFL_0][eFC_L_0]amix=inputs=2:weights='0.70 0.30'[nFL_0];[eFR_0][eFC_R_0]amix=inputs=2:weights='0.70 0.30'[nFR_0];[eFC_C_0]volume=1.5[nFC_0];[nFL_0][nFR_0][nFC_0][LFE_0][SL_0][SR_0]join=inputs=6:channel_layout=5.1[outa0];[0:2]channelsplit=channel_layout=5.1[FL_1][FR_1][FC_1][LFE_1][SL_1][SR_1];[FC_1]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_1];[FL_1]equalizer=f=6000:t=q:w=1:g=4[eFL_1];[FR_1]equalizer=f=6000:t=q:w=1:g=4[eFR_1];[eFC_1]asplit=3[eFC_L_1][eFC_R_1][eFC_C_1];[eFL_1][eFC_L_1]amix=inputs=2:weights='0.70 0.30'[nFL_1];[eFR_1][eFC_R_1]amix=inputs=2:weights='0.70 0.30'[nFR_1];[eFC_C_1]volume=1.5[nFC_1];[nFL_1][nFR_1][nFC_1][LFE_1][SL_1][SR_1]join=inputs=6:channel_layout=5.1[outa1];[0:3]channelsplit=channel_layout=5.1[FL_2][FR_2][FC_2][LFE_2][SL_2][SR_2];[FC_2]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_2];[FL_2]equalizer=f=6000:t=q:w=1:g=4[eFL_2];[FR_2]equalizer=f=6000:t=q:w=1:g=4[eFR_2];[eFC_2]asplit=3[eFC_L_2][eFC_R_2][eFC_C_2];[eFL_2][eFC_L_2]amix=inputs=2:weights='0.70 0.30'[nFL_2];[eFR_2][eFC_R_2]amix=inputs=2:weights='0.70 0.30'[nFR_2];[eFC_C_2]volume=1.5[nFC_2];[nFL_2][nFR_2][nFC_2][LFE_2][SL_2][SR_2]join=inputs=6:channel_layout=5.1[outa2];[0:4]channelsplit=channel_layout=5.1[FL_3][FR_3][FC_3][LFE_3][SL_3][SR_3];[FC_3]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_3];[FL_3]equalizer=f=6000:t=q:w=1:g=4[eFL_3];[FR_3]equalizer=f=6000:t=q:w=1:g=4[eFR_3];[eFC_3]asplit=3[eFC_L_3][eFC_R_3][eFC_C_3];[eFL_3][eFC_L_3]amix=inputs=2:weights='0.70 0.30'[nFL_3];[eFR_3][eFC_R_3]amix=inputs=2:weights='0.70 0.30'[nFR_3];[eFC_C_3]volume=1.5[nFC_3];[nFL_3][nFR_3][nFC_3][LFE_3][SL_3][SR_3]join=inputs=6:channel_layout=5.1[outa3] -map 0:v:0 -map [outa0] -map [outa1] -map [outa2] -map [outa3] -c:v libx264 -preset ultrafast -tune zerolatency -crf 23 -pix_fmt yuv420p -c:a aac -b:a 640k -ac 6 -max_muxing_queue_size 4096 -f hls -hls_time 6 -hls_list_size 0 -hls_playlist_type event -hls_allow_cache 1 -start_number 0 -master_pl_name main.m3u8 -var_stream_map v:0,agroup:audio a:0,agroup:audio,language:por,name:Portuguese a:1,agroup:audio,language:eng,name:English a:2,agroup:audio,language:hin,name:Hindi a:3,agroup:audio,language:tel,name:Telugu -hls_segment_filename /home/kali/Desktop/VideoPlayer2/public/hls/sess-1767315097657-637zh6rin/stream_%v_%d.ts /home/kali/Desktop/VideoPlayer2/public/hls/sess-1767315097657-637zh6rin/stream_%v.m3u8
+[2026-01-02T01:30:50.339Z] Stream Ready for Session sess-1767315097657-637zh6rin [FULL_TRANSCODE]!
+[2026-01-02T01:30:50.350Z] [CLIENT] [Init] Server Mode: FULL_TRANSCODE
+[2026-01-02T01:30:50.355Z] [CLIENT] [Detection] UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 | Optimization: Standard
+[2026-01-02T01:30:50.362Z] [CLIENT] [Player] Using Hls.js Player
+[2026-01-02T01:30:50.385Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:30:50.393Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:31:00.471Z] [CLIENT] [Event] Video Playing
+[2026-01-02T01:31:26.308Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:31:36.945Z] Fetching metadata for: https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF
+[2026-01-02T01:31:37.650Z] Fetching metadata for: https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF
+[2026-01-02T01:31:38.373Z] Audio Metadata: [
+  {
+    "index": 0,
+    "lang": "por",
+    "codec": "eac3"
+  },
+  {
+    "index": 1,
+    "lang": "eng",
+    "codec": "eac3"
+  },
+  {
+    "index": 2,
+    "lang": "hin",
+    "codec": "eac3"
+  },
+  {
+    "index": 3,
+    "lang": "tel",
+    "codec": "eac3"
+  }
+]
+[2026-01-02T01:31:39.369Z] Audio Metadata: [
+  {
+    "index": 0,
+    "lang": "por",
+    "codec": "eac3"
+  },
+  {
+    "index": 1,
+    "lang": "eng",
+    "codec": "eac3"
+  },
+  {
+    "index": 2,
+    "lang": "hin",
+    "codec": "eac3"
+  },
+  {
+    "index": 3,
+    "lang": "tel",
+    "codec": "eac3"
+  }
+]
+[2026-01-02T01:31:39.583Z] Fetching metadata for: https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF
+[2026-01-02T01:31:41.882Z] Audio Metadata: [
+  {
+    "index": 0,
+    "lang": "por",
+    "codec": "eac3"
+  },
+  {
+    "index": 1,
+    "lang": "eng",
+    "codec": "eac3"
+  },
+  {
+    "index": 2,
+    "lang": "hin",
+    "codec": "eac3"
+  },
+  {
+    "index": 3,
+    "lang": "tel",
+    "codec": "eac3"
+  }
+]
+[2026-01-02T01:31:41.886Z] [CLIENT] [Metadata] Server Duration: 4291.52s
+[2026-01-02T01:31:44.617Z] [Start] Request from Session: sess-1767315097657-637zh6rin | User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 | isTV: false
+[2026-01-02T01:31:44.618Z] [Device] Brand: generic | Caps: {"video":["h264","hevc"],"maxH264Level":51,"maxHevcLevel":153,"audio":["aac","ac3","eac3","mp3"],"profiles":["baseline","main","high","main 10"]}
+[2026-01-02T01:31:44.618Z] Starting Session sess-1767315097657-637zh6rin: https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF
+[2026-01-02T01:31:46.367Z] [Compat] Video: h264 Profile:main Level:40 MaxLevel:51 -> Codec:true Profile:true Level:true
+[2026-01-02T01:31:46.368Z] [Compat] Video: h264 Profile:main Level:40 MaxLevel:51 -> Codec:true Profile:true Level:true
+[2026-01-02T01:31:46.368Z] [Compat] Native: Video:true Audio:true
+[2026-01-02T01:31:46.368Z] [Decision] TV: false | ForceTranscode: false | VideoCompat: true -> FULL_TRANSCODE
+[2026-01-02T01:31:46.369Z] [FFmpeg] Args: -y -i https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF -filter_complex [0:1]channelsplit=channel_layout=5.1[FL_0][FR_0][FC_0][LFE_0][SL_0][SR_0];[FC_0]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_0];[FL_0]equalizer=f=6000:t=q:w=1:g=4[eFL_0];[FR_0]equalizer=f=6000:t=q:w=1:g=4[eFR_0];[eFC_0]asplit=3[eFC_L_0][eFC_R_0][eFC_C_0];[eFL_0][eFC_L_0]amix=inputs=2:weights='0.70 0.30'[nFL_0];[eFR_0][eFC_R_0]amix=inputs=2:weights='0.70 0.30'[nFR_0];[eFC_C_0]volume=1.5[nFC_0];[nFL_0][nFR_0][nFC_0][LFE_0][SL_0][SR_0]join=inputs=6:channel_layout=5.1[outa0];[0:2]channelsplit=channel_layout=5.1[FL_1][FR_1][FC_1][LFE_1][SL_1][SR_1];[FC_1]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_1];[FL_1]equalizer=f=6000:t=q:w=1:g=4[eFL_1];[FR_1]equalizer=f=6000:t=q:w=1:g=4[eFR_1];[eFC_1]asplit=3[eFC_L_1][eFC_R_1][eFC_C_1];[eFL_1][eFC_L_1]amix=inputs=2:weights='0.70 0.30'[nFL_1];[eFR_1][eFC_R_1]amix=inputs=2:weights='0.70 0.30'[nFR_1];[eFC_C_1]volume=1.5[nFC_1];[nFL_1][nFR_1][nFC_1][LFE_1][SL_1][SR_1]join=inputs=6:channel_layout=5.1[outa1];[0:3]channelsplit=channel_layout=5.1[FL_2][FR_2][FC_2][LFE_2][SL_2][SR_2];[FC_2]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_2];[FL_2]equalizer=f=6000:t=q:w=1:g=4[eFL_2];[FR_2]equalizer=f=6000:t=q:w=1:g=4[eFR_2];[eFC_2]asplit=3[eFC_L_2][eFC_R_2][eFC_C_2];[eFL_2][eFC_L_2]amix=inputs=2:weights='0.70 0.30'[nFL_2];[eFR_2][eFC_R_2]amix=inputs=2:weights='0.70 0.30'[nFR_2];[eFC_C_2]volume=1.5[nFC_2];[nFL_2][nFR_2][nFC_2][LFE_2][SL_2][SR_2]join=inputs=6:channel_layout=5.1[outa2];[0:4]channelsplit=channel_layout=5.1[FL_3][FR_3][FC_3][LFE_3][SL_3][SR_3];[FC_3]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_3];[FL_3]equalizer=f=6000:t=q:w=1:g=4[eFL_3];[FR_3]equalizer=f=6000:t=q:w=1:g=4[eFR_3];[eFC_3]asplit=3[eFC_L_3][eFC_R_3][eFC_C_3];[eFL_3][eFC_L_3]amix=inputs=2:weights='0.70 0.30'[nFL_3];[eFR_3][eFC_R_3]amix=inputs=2:weights='0.70 0.30'[nFR_3];[eFC_C_3]volume=1.5[nFC_3];[nFL_3][nFR_3][nFC_3][LFE_3][SL_3][SR_3]join=inputs=6:channel_layout=5.1[outa3] -map 0:v:0 -map [outa0] -map [outa1] -map [outa2] -map [outa3] -c:v libx264 -preset ultrafast -tune zerolatency -crf 23 -pix_fmt yuv420p -c:a aac -b:a 640k -ac 6 -max_muxing_queue_size 4096 -f hls -hls_time 6 -hls_list_size 0 -hls_playlist_type event -hls_allow_cache 1 -start_number 0 -master_pl_name main.m3u8 -var_stream_map v:0,agroup:audio a:0,agroup:audio,language:por,name:Portuguese a:1,agroup:audio,language:eng,name:English a:2,agroup:audio,language:hin,name:Hindi a:3,agroup:audio,language:tel,name:Telugu -hls_segment_filename /home/kali/Desktop/VideoPlayer2/public/hls/sess-1767315097657-637zh6rin/stream_%v_%d.ts /home/kali/Desktop/VideoPlayer2/public/hls/sess-1767315097657-637zh6rin/stream_%v.m3u8
+[2026-01-02T01:31:55.382Z] Stream Ready for Session sess-1767315097657-637zh6rin [FULL_TRANSCODE]!
+[2026-01-02T01:31:55.398Z] [CLIENT] [Init] Server Mode: FULL_TRANSCODE
+[2026-01-02T01:31:55.399Z] [CLIENT] [Detection] UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 | Optimization: Standard
+[2026-01-02T01:31:55.404Z] [CLIENT] [Player] Using Hls.js Player
+[2026-01-02T01:31:55.435Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:31:55.440Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:32:05.494Z] [CLIENT] [Event] Video Playing
+[2026-01-02T01:32:49.349Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:32:50.276Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:32:50.390Z] [CLIENT] [Event] Video Playing
+[2026-01-02T01:32:52.368Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:34:37.960Z] Fetching metadata for: https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF
+[2026-01-02T01:34:39.789Z] Audio Metadata: [
+  {
+    "index": 0,
+    "lang": "por",
+    "codec": "eac3"
+  },
+  {
+    "index": 1,
+    "lang": "eng",
+    "codec": "eac3"
+  },
+  {
+    "index": 2,
+    "lang": "hin",
+    "codec": "eac3"
+  },
+  {
+    "index": 3,
+    "lang": "tel",
+    "codec": "eac3"
+  }
+]
+[2026-01-02T01:34:39.794Z] [CLIENT] [Metadata] Server Duration: 4291.52s
+[2026-01-02T01:34:46.669Z] [Start] Request from Session: sess-1767315097657-637zh6rin | User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 | isTV: false
+[2026-01-02T01:34:46.669Z] [Device] Brand: generic | Caps: {"video":["h264","hevc"],"maxH264Level":51,"maxHevcLevel":153,"audio":["aac","ac3","eac3","mp3"],"profiles":["baseline","main","high","main 10"]}
+[2026-01-02T01:34:46.670Z] Starting Session sess-1767315097657-637zh6rin: https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF
+[2026-01-02T01:34:48.251Z] [Compat] Video: h264 Profile:main Level:40 MaxLevel:51 -> Codec:true Profile:true Level:true
+[2026-01-02T01:34:48.252Z] [Compat] Video: h264 Profile:main Level:40 MaxLevel:51 -> Codec:true Profile:true Level:true
+[2026-01-02T01:34:48.252Z] [Compat] Native: Video:true Audio:true
+[2026-01-02T01:34:48.252Z] [Decision] TV: false | ForceTranscode: false | VideoCompat: true -> FULL_TRANSCODE
+[2026-01-02T01:34:48.253Z] [FFmpeg] Args: -y -i https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF -filter_complex [0:1]channelsplit=channel_layout=5.1[FL_0][FR_0][FC_0][LFE_0][SL_0][SR_0];[FC_0]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_0];[FL_0]equalizer=f=6000:t=q:w=1:g=4[eFL_0];[FR_0]equalizer=f=6000:t=q:w=1:g=4[eFR_0];[eFC_0]asplit=3[eFC_L_0][eFC_R_0][eFC_C_0];[eFL_0][eFC_L_0]amix=inputs=2:weights='0.70 0.30'[nFL_0];[eFR_0][eFC_R_0]amix=inputs=2:weights='0.70 0.30'[nFR_0];[eFC_C_0]volume=1.5[nFC_0];[nFL_0][nFR_0][nFC_0][LFE_0][SL_0][SR_0]join=inputs=6:channel_layout=5.1[outa0];[0:2]channelsplit=channel_layout=5.1[FL_1][FR_1][FC_1][LFE_1][SL_1][SR_1];[FC_1]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_1];[FL_1]equalizer=f=6000:t=q:w=1:g=4[eFL_1];[FR_1]equalizer=f=6000:t=q:w=1:g=4[eFR_1];[eFC_1]asplit=3[eFC_L_1][eFC_R_1][eFC_C_1];[eFL_1][eFC_L_1]amix=inputs=2:weights='0.70 0.30'[nFL_1];[eFR_1][eFC_R_1]amix=inputs=2:weights='0.70 0.30'[nFR_1];[eFC_C_1]volume=1.5[nFC_1];[nFL_1][nFR_1][nFC_1][LFE_1][SL_1][SR_1]join=inputs=6:channel_layout=5.1[outa1];[0:3]channelsplit=channel_layout=5.1[FL_2][FR_2][FC_2][LFE_2][SL_2][SR_2];[FC_2]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_2];[FL_2]equalizer=f=6000:t=q:w=1:g=4[eFL_2];[FR_2]equalizer=f=6000:t=q:w=1:g=4[eFR_2];[eFC_2]asplit=3[eFC_L_2][eFC_R_2][eFC_C_2];[eFL_2][eFC_L_2]amix=inputs=2:weights='0.70 0.30'[nFL_2];[eFR_2][eFC_R_2]amix=inputs=2:weights='0.70 0.30'[nFR_2];[eFC_C_2]volume=1.5[nFC_2];[nFL_2][nFR_2][nFC_2][LFE_2][SL_2][SR_2]join=inputs=6:channel_layout=5.1[outa2];[0:4]channelsplit=channel_layout=5.1[FL_3][FR_3][FC_3][LFE_3][SL_3][SR_3];[FC_3]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_3];[FL_3]equalizer=f=6000:t=q:w=1:g=4[eFL_3];[FR_3]equalizer=f=6000:t=q:w=1:g=4[eFR_3];[eFC_3]asplit=3[eFC_L_3][eFC_R_3][eFC_C_3];[eFL_3][eFC_L_3]amix=inputs=2:weights='0.70 0.30'[nFL_3];[eFR_3][eFC_R_3]amix=inputs=2:weights='0.70 0.30'[nFR_3];[eFC_C_3]volume=1.5[nFC_3];[nFL_3][nFR_3][nFC_3][LFE_3][SL_3][SR_3]join=inputs=6:channel_layout=5.1[outa3] -map 0:v:0 -map [outa0] -map [outa1] -map [outa2] -map [outa3] -c:v libx264 -preset ultrafast -tune zerolatency -crf 23 -pix_fmt yuv420p -c:a aac -b:a 640k -ac 6 -max_muxing_queue_size 4096 -f hls -hls_time 6 -hls_list_size 0 -hls_playlist_type event -hls_allow_cache 1 -start_number 0 -master_pl_name main.m3u8 -var_stream_map v:0,agroup:audio a:0,agroup:audio,language:por,name:Portuguese a:1,agroup:audio,language:eng,name:English a:2,agroup:audio,language:hin,name:Hindi a:3,agroup:audio,language:tel,name:Telugu -hls_segment_filename /home/kali/Desktop/VideoPlayer2/public/hls/sess-1767315097657-637zh6rin/stream_%v_%d.ts /home/kali/Desktop/VideoPlayer2/public/hls/sess-1767315097657-637zh6rin/stream_%v.m3u8
+[2026-01-02T01:34:54.759Z] Stream Ready for Session sess-1767315097657-637zh6rin [FULL_TRANSCODE]!
+[2026-01-02T01:34:54.767Z] [CLIENT] [Init] Server Mode: FULL_TRANSCODE
+[2026-01-02T01:34:54.771Z] [CLIENT] [Detection] UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 | Optimization: Standard
+[2026-01-02T01:34:54.775Z] [CLIENT] [Player] Using Hls.js Player
+[2026-01-02T01:34:54.811Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:34:54.813Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:35:04.913Z] [CLIENT] [Event] Video Playing
+[2026-01-02T01:35:17.074Z] Fetching metadata for: https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF
+[2026-01-02T01:35:18.917Z] Audio Metadata: [
+  {
+    "index": 0,
+    "lang": "por",
+    "codec": "eac3"
+  },
+  {
+    "index": 1,
+    "lang": "eng",
+    "codec": "eac3"
+  },
+  {
+    "index": 2,
+    "lang": "hin",
+    "codec": "eac3"
+  },
+  {
+    "index": 3,
+    "lang": "tel",
+    "codec": "eac3"
+  }
+]
+[2026-01-02T01:35:18.930Z] [CLIENT] [Metadata] Server Duration: 4291.52s
+[2026-01-02T01:35:21.676Z] [Start] Request from Session: sess-1767315097657-637zh6rin | User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 | isTV: false
+[2026-01-02T01:35:21.677Z] Stream already active for session sess-1767315097657-637zh6rin. Reusing.
+[2026-01-02T01:35:21.700Z] [CLIENT] [Init] Server Mode: FULL_TRANSCODE
+[2026-01-02T01:35:21.731Z] [CLIENT] [Detection] UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 | Optimization: Standard
+[2026-01-02T01:35:21.732Z] [CLIENT] [Player] Using Hls.js Player
+[2026-01-02T01:35:21.785Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:35:21.787Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:35:22.781Z] [CLIENT] [Event] Video Playing
+[2026-01-02T01:39:20.474Z] Fetching metadata for: https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF
+[2026-01-02T01:39:21.768Z] [Start] Request from Session: sess-1767315097657-637zh6rin | User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 | isTV: false
+[2026-01-02T01:39:21.769Z] [Device] Brand: generic | Caps: {"video":["h264","hevc"],"maxH264Level":51,"maxHevcLevel":153,"audio":["aac","ac3","eac3","mp3"],"profiles":["baseline","main","high","main 10"]}
+[2026-01-02T01:39:21.769Z] Starting Session sess-1767315097657-637zh6rin: https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF
+[2026-01-02T01:39:22.339Z] Audio Metadata: [
+  {
+    "index": 0,
+    "lang": "por",
+    "codec": "eac3"
+  },
+  {
+    "index": 1,
+    "lang": "eng",
+    "codec": "eac3"
+  },
+  {
+    "index": 2,
+    "lang": "hin",
+    "codec": "eac3"
+  },
+  {
+    "index": 3,
+    "lang": "tel",
+    "codec": "eac3"
+  }
+]
+[2026-01-02T01:39:22.343Z] [CLIENT] [Metadata] Server Duration: 4291.52s
+[2026-01-02T01:39:23.403Z] [Compat] Video: h264 Profile:main Level:40 MaxLevel:51 -> Codec:true Profile:true Level:true
+[2026-01-02T01:39:23.404Z] [Compat] Video: h264 Profile:main Level:40 MaxLevel:51 -> Codec:true Profile:true Level:true
+[2026-01-02T01:39:23.404Z] [Compat] Native: Video:true Audio:true
+[2026-01-02T01:39:23.404Z] [Decision] TV: false | ForceTranscode: false | VideoCompat: true -> FULL_TRANSCODE
+[2026-01-02T01:39:23.405Z] [FFmpeg] Args: -y -i https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF -filter_complex [0:1]channelsplit=channel_layout=5.1[FL_0][FR_0][FC_0][LFE_0][SL_0][SR_0];[FC_0]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_0];[FL_0]equalizer=f=6000:t=q:w=1:g=4[eFL_0];[FR_0]equalizer=f=6000:t=q:w=1:g=4[eFR_0];[eFC_0]asplit=3[eFC_L_0][eFC_R_0][eFC_C_0];[eFL_0][eFC_L_0]amix=inputs=2:weights='0.70 0.30'[nFL_0];[eFR_0][eFC_R_0]amix=inputs=2:weights='0.70 0.30'[nFR_0];[eFC_C_0]volume=1.5[nFC_0];[nFL_0][nFR_0][nFC_0][LFE_0][SL_0][SR_0]join=inputs=6:channel_layout=5.1[outa0];[0:2]channelsplit=channel_layout=5.1[FL_1][FR_1][FC_1][LFE_1][SL_1][SR_1];[FC_1]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_1];[FL_1]equalizer=f=6000:t=q:w=1:g=4[eFL_1];[FR_1]equalizer=f=6000:t=q:w=1:g=4[eFR_1];[eFC_1]asplit=3[eFC_L_1][eFC_R_1][eFC_C_1];[eFL_1][eFC_L_1]amix=inputs=2:weights='0.70 0.30'[nFL_1];[eFR_1][eFC_R_1]amix=inputs=2:weights='0.70 0.30'[nFR_1];[eFC_C_1]volume=1.5[nFC_1];[nFL_1][nFR_1][nFC_1][LFE_1][SL_1][SR_1]join=inputs=6:channel_layout=5.1[outa1];[0:3]channelsplit=channel_layout=5.1[FL_2][FR_2][FC_2][LFE_2][SL_2][SR_2];[FC_2]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_2];[FL_2]equalizer=f=6000:t=q:w=1:g=4[eFL_2];[FR_2]equalizer=f=6000:t=q:w=1:g=4[eFR_2];[eFC_2]asplit=3[eFC_L_2][eFC_R_2][eFC_C_2];[eFL_2][eFC_L_2]amix=inputs=2:weights='0.70 0.30'[nFL_2];[eFR_2][eFC_R_2]amix=inputs=2:weights='0.70 0.30'[nFR_2];[eFC_C_2]volume=1.5[nFC_2];[nFL_2][nFR_2][nFC_2][LFE_2][SL_2][SR_2]join=inputs=6:channel_layout=5.1[outa2];[0:4]channelsplit=channel_layout=5.1[FL_3][FR_3][FC_3][LFE_3][SL_3][SR_3];[FC_3]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_3];[FL_3]equalizer=f=6000:t=q:w=1:g=4[eFL_3];[FR_3]equalizer=f=6000:t=q:w=1:g=4[eFR_3];[eFC_3]asplit=3[eFC_L_3][eFC_R_3][eFC_C_3];[eFL_3][eFC_L_3]amix=inputs=2:weights='0.70 0.30'[nFL_3];[eFR_3][eFC_R_3]amix=inputs=2:weights='0.70 0.30'[nFR_3];[eFC_C_3]volume=1.5[nFC_3];[nFL_3][nFR_3][nFC_3][LFE_3][SL_3][SR_3]join=inputs=6:channel_layout=5.1[outa3] -map 0:v:0 -map [outa0] -map [outa1] -map [outa2] -map [outa3] -c:v libx264 -preset ultrafast -tune zerolatency -crf 23 -pix_fmt yuv420p -c:a aac -b:a 640k -ac 6 -max_muxing_queue_size 4096 -f hls -hls_time 6 -hls_list_size 0 -hls_playlist_type event -hls_allow_cache 1 -start_number 0 -master_pl_name main.m3u8 -var_stream_map v:0,agroup:audio a:0,agroup:audio,language:por,name:Portuguese a:1,agroup:audio,language:eng,name:English a:2,agroup:audio,language:hin,name:Hindi a:3,agroup:audio,language:tel,name:Telugu -hls_segment_filename /home/kali/Desktop/VideoPlayer2/public/hls/sess-1767315097657-637zh6rin/stream_%v_%d.ts /home/kali/Desktop/VideoPlayer2/public/hls/sess-1767315097657-637zh6rin/stream_%v.m3u8
+[2026-01-02T01:39:30.920Z] Stream Ready for Session sess-1767315097657-637zh6rin [FULL_TRANSCODE]!
+[2026-01-02T01:39:30.925Z] [CLIENT] [Init] Server Mode: FULL_TRANSCODE
+[2026-01-02T01:39:30.928Z] [CLIENT] [Detection] UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 | Optimization: Standard
+[2026-01-02T01:39:30.928Z] [CLIENT] [Player] Using Hls.js Player
+[2026-01-02T01:39:30.968Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:39:30.971Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:39:41.819Z] [CLIENT] [Event] Video Playing
+[2026-01-02T01:39:53.534Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:39:54.586Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:39:54.592Z] [CLIENT] [Event] Video Playing
+[2026-01-02T01:40:02.126Z] Streaming Subtitles: https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF (Track 18)
+[2026-01-02T01:40:25.457Z] Fetching metadata for: https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF
+[2026-01-02T01:40:27.384Z] Audio Metadata: [
+  {
+    "index": 0,
+    "lang": "por",
+    "codec": "eac3"
+  },
+  {
+    "index": 1,
+    "lang": "eng",
+    "codec": "eac3"
+  },
+  {
+    "index": 2,
+    "lang": "hin",
+    "codec": "eac3"
+  },
+  {
+    "index": 3,
+    "lang": "tel",
+    "codec": "eac3"
+  }
+]
+[2026-01-02T01:40:27.394Z] [CLIENT] [Metadata] Server Duration: 4291.52s
+[2026-01-02T01:42:58.951Z] Fetching metadata for: https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF
+[2026-01-02T01:43:00.430Z] Audio Metadata: [
+  {
+    "index": 0,
+    "lang": "por",
+    "codec": "eac3"
+  },
+  {
+    "index": 1,
+    "lang": "eng",
+    "codec": "eac3"
+  },
+  {
+    "index": 2,
+    "lang": "hin",
+    "codec": "eac3"
+  },
+  {
+    "index": 3,
+    "lang": "tel",
+    "codec": "eac3"
+  }
+]
+[2026-01-02T01:43:00.436Z] [CLIENT] [Metadata] Server Duration: 4291.52s
+[2026-01-02T01:43:02.406Z] [Start] Request from Session: sess-1767315097657-637zh6rin | User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 | isTV: false
+[2026-01-02T01:43:02.406Z] [Device] Brand: generic | Caps: {"video":["h264","hevc"],"maxH264Level":51,"maxHevcLevel":153,"audio":["aac","ac3","eac3","mp3"],"profiles":["baseline","main","high","main 10"]}
+[2026-01-02T01:43:02.407Z] Starting Session sess-1767315097657-637zh6rin: https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF
+[2026-01-02T01:43:03.751Z] [Compat] Video: h264 Profile:main Level:40 MaxLevel:51 -> Codec:true Profile:true Level:true
+[2026-01-02T01:43:03.751Z] [Compat] Video: h264 Profile:main Level:40 MaxLevel:51 -> Codec:true Profile:true Level:true
+[2026-01-02T01:43:03.751Z] [Compat] Native: Video:true Audio:true
+[2026-01-02T01:43:03.752Z] [Decision] TV: false | ForceTranscode: false | VideoCompat: true -> FULL_TRANSCODE
+[2026-01-02T01:43:03.752Z] [FFmpeg] Args: -y -i https://video-downloads.googleusercontent.com/ADGPM2l8ymSEfvp1CB2ZF9I-UYGAIGmORC-qJ-EmFaqhnB2TDnYsd6rDM1k3LkPEP32O75ic-0oThV9bX3IokPmMvSTvEDfo8v7qhGZPGmBz1cgLpl2N2jldwoyBIj4PGorLcDNLjtNz3kM1Lzx069NneWs85kjITpqNgaLNISWSDteXJnIGaayKB5L3pXLGYRDP0-hi_HBlRUryjDLpbbyhL7aDASDIK4dXLnwLr8mb1FkBc3Ksu-6cLSddB2nzv3-WENVmqNzpBSdX0rjzKl26Ewgpn763N3_2iDNX_vqxCiaBEdTQJtfDnP2wmPgHeIDiBTzBmFY7yNg-PG4y1flPjHHkIzfGKL9K32l3S91RfTA8ugWxMS2wIaLmLxSsUWwZFc0TwxFqGJ6gpaWGXhKYeqT-sflrSCnJWWwyCbfEF1CyAS2rr8-S2-RDFHcb4OcPaeiaZKfwmgpOb_KGqTrwmvOhv4A4sYfg_1ZVMZLpaxOAEUf_SxxupPF4z3SDCZ8MzvEyemNYQXd6lte5o5czPL49X-QaOOCB6pQtbUV2R4kfBp_nzgFG6N-sh-kI-J9_hOof8k7MHgDpJuAsM4sZZJr1VAcWUJGcPHBH-3fBck0gG9uAyt87RyVRbIZppdJHeiSE5TUEVpqCliy5vnH8nSMD0mRSosMxBfwXMSu5b8mKg36C9AK1_8I04sTLyfHLTwDGt1UwYRw-XiGwbm_QqIY3lMDWe0_lNJj5wYYPNDi3Kwg476fe3nZgSxZmvnWlbX_c3l-RT0Lh_ocBMNX0WJ2ySNs0LVDqBApo2GqUlZo6LB9_A6c1A5BXVgBDQnm1cBMzEvLnES8YIRGv0P5IZArdrqekTlMXcKdjeCrBS_ZummBzT0Y_yL16-zXnwAjAy-XSuGP0RcUEotNgyxo5i290ULmUlRxQlEV4a9lZ5ueMAGUnKEkq_3GWxodEA5MBItK4t54OLlhZy3s4CWtitGtKMnVP61N5AFqkBXRCnCOcJ44gPlDuO3d91XJjgekYNy5U7qM1sGtVZQwaQiXBkijHLK1xzl7W6zI6TFCPMsYprwxwRptha_h5KjGLQlJrJ3kvVEoF -filter_complex [0:1]channelsplit=channel_layout=5.1[FL_0][FR_0][FC_0][LFE_0][SL_0][SR_0];[FC_0]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_0];[FL_0]equalizer=f=6000:t=q:w=1:g=4[eFL_0];[FR_0]equalizer=f=6000:t=q:w=1:g=4[eFR_0];[eFC_0]asplit=3[eFC_L_0][eFC_R_0][eFC_C_0];[eFL_0][eFC_L_0]amix=inputs=2:weights='0.70 0.30'[nFL_0];[eFR_0][eFC_R_0]amix=inputs=2:weights='0.70 0.30'[nFR_0];[eFC_C_0]volume=1.5[nFC_0];[nFL_0][nFR_0][nFC_0][LFE_0][SL_0][SR_0]join=inputs=6:channel_layout=5.1[outa0];[0:2]channelsplit=channel_layout=5.1[FL_1][FR_1][FC_1][LFE_1][SL_1][SR_1];[FC_1]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_1];[FL_1]equalizer=f=6000:t=q:w=1:g=4[eFL_1];[FR_1]equalizer=f=6000:t=q:w=1:g=4[eFR_1];[eFC_1]asplit=3[eFC_L_1][eFC_R_1][eFC_C_1];[eFL_1][eFC_L_1]amix=inputs=2:weights='0.70 0.30'[nFL_1];[eFR_1][eFC_R_1]amix=inputs=2:weights='0.70 0.30'[nFR_1];[eFC_C_1]volume=1.5[nFC_1];[nFL_1][nFR_1][nFC_1][LFE_1][SL_1][SR_1]join=inputs=6:channel_layout=5.1[outa1];[0:3]channelsplit=channel_layout=5.1[FL_2][FR_2][FC_2][LFE_2][SL_2][SR_2];[FC_2]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_2];[FL_2]equalizer=f=6000:t=q:w=1:g=4[eFL_2];[FR_2]equalizer=f=6000:t=q:w=1:g=4[eFR_2];[eFC_2]asplit=3[eFC_L_2][eFC_R_2][eFC_C_2];[eFL_2][eFC_L_2]amix=inputs=2:weights='0.70 0.30'[nFL_2];[eFR_2][eFC_R_2]amix=inputs=2:weights='0.70 0.30'[nFR_2];[eFC_C_2]volume=1.5[nFC_2];[nFL_2][nFR_2][nFC_2][LFE_2][SL_2][SR_2]join=inputs=6:channel_layout=5.1[outa2];[0:4]channelsplit=channel_layout=5.1[FL_3][FR_3][FC_3][LFE_3][SL_3][SR_3];[FC_3]equalizer=f=5000:t=q:w=1:g=4,equalizer=f=8000:t=q:w=1:g=3[eFC_3];[FL_3]equalizer=f=6000:t=q:w=1:g=4[eFL_3];[FR_3]equalizer=f=6000:t=q:w=1:g=4[eFR_3];[eFC_3]asplit=3[eFC_L_3][eFC_R_3][eFC_C_3];[eFL_3][eFC_L_3]amix=inputs=2:weights='0.70 0.30'[nFL_3];[eFR_3][eFC_R_3]amix=inputs=2:weights='0.70 0.30'[nFR_3];[eFC_C_3]volume=1.5[nFC_3];[nFL_3][nFR_3][nFC_3][LFE_3][SL_3][SR_3]join=inputs=6:channel_layout=5.1[outa3] -map 0:v:0 -map [outa0] -map [outa1] -map [outa2] -map [outa3] -c:v libx264 -preset ultrafast -tune zerolatency -crf 23 -pix_fmt yuv420p -c:a aac -b:a 640k -ac 6 -max_muxing_queue_size 4096 -f hls -hls_time 6 -hls_list_size 0 -hls_playlist_type event -hls_allow_cache 1 -start_number 0 -master_pl_name main.m3u8 -var_stream_map v:0,agroup:audio a:0,agroup:audio,language:por,name:Portuguese a:1,agroup:audio,language:eng,name:English a:2,agroup:audio,language:hin,name:Hindi a:3,agroup:audio,language:tel,name:Telugu -hls_segment_filename /home/kali/Desktop/VideoPlayer2/public/hls/sess-1767315097657-637zh6rin/stream_%v_%d.ts /home/kali/Desktop/VideoPlayer2/public/hls/sess-1767315097657-637zh6rin/stream_%v.m3u8
+[2026-01-02T01:43:10.768Z] Stream Ready for Session sess-1767315097657-637zh6rin [FULL_TRANSCODE]!
+[2026-01-02T01:43:10.775Z] [CLIENT] [Init] Server Mode: FULL_TRANSCODE
+[2026-01-02T01:43:10.777Z] [CLIENT] [Detection] UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 | Optimization: Standard
+[2026-01-02T01:43:10.778Z] [CLIENT] [Player] Using Hls.js Player
+[2026-01-02T01:43:10.843Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:43:10.844Z] [CLIENT] [Event] Video Waiting (Buffering)
+[2026-01-02T01:43:20.958Z] [CLIENT] [Event] Video Playing
+[2026-01-02T01:43:45.189Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:43:46.711Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:43:46.713Z] [CLIENT] [Event] Video Playing
+[2026-01-02T01:43:48.122Z] [CLIENT] [Event] Video Pause
+[2026-01-02T01:43:52.064Z] [CLIENT] [Event] Video Play
+[2026-01-02T01:43:52.096Z] [CLIENT] [Event] Video Playing
+[2026-01-02T01:43:53.537Z] [CLIENT] [Event] Video Pause

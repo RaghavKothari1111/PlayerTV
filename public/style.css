@@ -1,11 +1,69 @@
 :root {
-    --primary: #6366f1;
-    --accent: #a855f7;
-    --bg-dark: #0f172a;
-    --glass: rgba(255, 255, 255, 0.05);
+    --primary: #E50914;
+    /* Netflix Red */
+    --accent: #B20710;
+    --bg-dark: #141414;
+    /* Netflix Dark Grey */
+    --glass: rgba(20, 20, 20, 0.8);
+    /* Darker, less glassy */
     --glass-border: rgba(255, 255, 255, 0.1);
-    --text: #f8fafc;
-    --text-muted: #94a3b8;
+    --text: #ffffff;
+    --text-muted: #b3b3b3;
+}
+
+/* ... existing styles ... */
+
+/* Seek Feedback Overlay */
+.seek-feedback {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    /* Default to center if no side class (though we'll always use one) */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* This overrides the above transform */
+
+    background: rgba(0, 0, 0, 0.7);
+    padding: 15px 25px;
+    border-radius: 30px;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 600;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.seek-feedback.active {
+    opacity: 1;
+}
+
+.seek-feedback.seek-left {
+    left: 15%;
+    right: auto;
+    transform: translateY(-50%);
+}
+
+.seek-feedback.seek-right {
+    right: 15%;
+    left: auto;
+    transform: translateY(-50%);
+}
+
+/* Updated Control Bar Gradient */
+.player-controls-area {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.5) 60%, transparent 100%);
+    padding-bottom: 25px;
+    /* More breathing room */
+}
+
+.control-btn svg {
+    width: 24px;
+    height: 24px;
 }
 
 * {
@@ -136,28 +194,6 @@ video:focus,
     box-shadow: none !important;
 }
 
-.placeholder-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.7);
-    color: var(--text-muted);
-    pointer-events: none;
-    transition: opacity 0.5s;
-}
-
-.placeholder-overlay span {
-    border: 1px solid var(--glass-border);
-    padding: 10px 20px;
-    border-radius: 50px;
-    background: rgba(255, 255, 255, 0.05);
-}
-
 /* Custom Player Controls (Bottom Bar) */
 .player-controls-area {
     position: absolute;
@@ -176,10 +212,10 @@ video:focus,
     /* Disable clicks when hidden */
 }
 
-/* Show when active OR paused OR hovering controls explicitly (safety) */
+/* Show when active OR paused OR hovering controls */
 .video-wrapper.user-active .player-controls-area,
 .video-wrapper.is-paused .player-controls-area,
-.player-controls-area:hover {
+.video-wrapper .player-controls-area:hover {
     opacity: 1;
     pointer-events: auto;
 }
@@ -262,6 +298,34 @@ video:focus,
     /* Reset global button shadow */
 }
 
+/* Buffering Spinner */
+.buffering-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--primary);
+    animation: spin 1s ease-in-out infinite;
+    z-index: 20;
+    display: none;
+    /* Hidden by default */
+    pointer-events: none;
+}
+
+.buffering-spinner.active {
+    display: block;
+}
+
+@keyframes spin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
 .control-btn:hover {
     color: var(--primary);
     transform: scale(1.1);
@@ -314,36 +378,63 @@ video:focus,
     pointer-events: none;
 }
 
-.video-wrapper.user-active .center-controls,
-.video-wrapper.is-paused .center-controls {
+/* Momentary Feedback Class */
+.center-controls.show-feedback {
     opacity: 1;
-    pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
+    transition: opacity 0.1s, transform 0.1s;
+}
+
+/* Default state: slightly scaled down and hidden */
+.center-controls {
+    /* ... existing props ... */
+    transform: translate(-50%, -50%) scale(0.8);
+    transition: opacity 0.3s, transform 0.3s;
 }
 
 .center-btn {
-    background: rgba(0, 0, 0, 0.6);
-    border: none;
+    background: rgba(0, 0, 0, 0.5);
+    border: 3px solid rgba(255, 255, 255, 0.2);
     border-radius: 50%;
-    width: 70px;
-    height: 70px;
+    width: 100px;
+    /* Massive button */
+    height: 100px;
     color: white;
     font-size: 2rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.2s, background 0.2s;
-}
-
-.center-btn ion-icon {
-    font-size: inherit;
-    width: 1em;
-    height: 1em;
+    transition: transform 0.2s, background 0.2s, border-color 0.2s;
+    backdrop-filter: blur(4px);
+    padding: 0;
+    /* Ensure no padding steals space */
 }
 
 .center-btn:hover {
     transform: scale(1.1);
-    background: rgba(99, 102, 241, 0.7);
+    background: rgba(0, 0, 0, 0.7);
+    /* Darker on hover, not blue */
+    border-color: white;
+    /* White border on hover for visibility */
+}
+
+.center-btn svg {
+    width: 60%;
+    /* 60px visual size */
+    height: 60%;
+    transform: scale(1.35);
+    /* Slightly reduced from 1.5 */
+    fill: white;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
+    display: block;
+    /* Ensure block layout */
+}
+
+/* Fix visual centering for Play icon */
+.center-btn svg.center-icon-play {
+    margin-left: 5px;
+    /* Nudge right to center visually */
 }
 
 #volumeSlider {

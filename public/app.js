@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const playBtn = document.getElementById('playBtn');
     const videoPlayer = document.getElementById('videoPlayer');
     const videoContainer = document.getElementById('videoContainer');
-    const placeholder = document.getElementById('placeholder');
+
     const statusMessage = document.getElementById('statusMessage');
     const fullscreenBtn = document.getElementById('fullscreenBtn');
 
@@ -24,6 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Center Controls (YouTube-style) ---
     const centerPlayPauseBtn = document.getElementById('centerPlayPauseBtn');
+    const seekFeedback = document.getElementById('seekFeedback');
+
+    // --- Custom SVGs (Netflix Style) ---
+    // --- Custom SVGs (Netflix Style) ---
+    const PLAY_ICON = `<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-play-fill center-icon-play" viewBox="0 0 16 16"><path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393"/></svg>`;
+    const PAUSE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-pause-fill center-icon-pause" viewBox="0 0 16 16"><path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5m5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5"/></svg>`;
 
     // Initially show subtitle select
     // subSelect.style.display = 'none'; // REMOVED
@@ -80,18 +86,81 @@ document.addEventListener('DOMContentLoaded', () => {
     function togglePlay() {
         if (videoPlayer.paused) {
             videoPlayer.play();
-            playPauseBtn.innerHTML = '<ion-icon name="pause"></ion-icon>';
-            if (centerPlayPauseBtn) centerPlayPauseBtn.innerHTML = '<ion-icon name="pause"></ion-icon>';
-            videoContainer.classList.remove('is-paused'); // Remove paused class
-            startInactivityTimer(); // Start hiding logic
+            playPauseBtn.innerHTML = PAUSE_ICON;
+            // Center icon shows PAUSE briefly to indicate "Now Paused"? 
+            // YouTube logic: Tap -> shows controls (Pause button if playing).
+            // User requested: "appear for a second showing the current state of video".
+            // If we just stared PLAYING, the current state is PLAYING, so we show PAUSE icon (action to pause) or PLAY icon (status)?
+            // YouTube Desktop: Shows PLAY icon briefly when you play. Shows PAUSE icon briefly when you pause.
+            // Let's show the Status Icon (Play icon if playing, Pause icon if paused) or Action Icon?
+            // "showing the current state of video" -> If playing, show Play? Or show Pause (controls)?
+            // Standard overlay: When playing, icon is Pause. When paused, icon is Play.
+            // BUT "Bezel" feedback usually shows what just happened.
+            // If I click Play, I see a Play icon animation. If I click Pause, I see Pause icon animation.
+            // Let's try matching the action: Play -> Show Play Icon, Pause -> Show Pause Icon.
+
+            if (centerPlayPauseBtn) {
+                centerPlayPauseBtn.innerHTML = PLAY_ICON; // Show what just happened: PLAY
+                showCenterFeedback();
+            }
+
+            videoContainer.classList.remove('is-paused');
+            startInactivityTimer();
         } else {
             videoPlayer.pause();
-            playPauseBtn.innerHTML = '<ion-icon name="play"></ion-icon>';
-            if (centerPlayPauseBtn) centerPlayPauseBtn.innerHTML = '<ion-icon name="play"></ion-icon>';
-            videoContainer.classList.add('is-paused'); // Keep controls visible
-            clearTimeout(inactivityTimeout); // Stop hiding logic
-            videoContainer.classList.add('user-active'); // Ensure visible
+            playPauseBtn.innerHTML = PLAY_ICON;
+
+            if (centerPlayPauseBtn) {
+                centerPlayPauseBtn.innerHTML = PAUSE_ICON; // Show what just happened: PAUSE
+                showCenterFeedback();
+            }
+
+            videoContainer.classList.add('is-paused');
+            clearTimeout(inactivityTimeout);
+            videoContainer.classList.add('user-active');
         }
+    }
+
+    // --- Center Play/Pause Feedback (YouTube Style) ---
+    let centerFeedbackTimeout;
+    const centerControls = document.getElementById('centerControls'); // Get container
+
+    function showCenterFeedback() {
+        // Show container
+        centerControls.classList.add('show-feedback');
+
+        // Hide after 0.5s (User requested 0.5 sec)
+        clearTimeout(centerFeedbackTimeout);
+        centerFeedbackTimeout = setTimeout(() => {
+            centerControls.classList.remove('show-feedback');
+        }, 500); // 0.5 second
+    }
+
+    // --- Seek Feedback Logic ---
+    let seekFeedbackTimeout;
+    function showSeekFeedback(text, iconName) {
+        // e.g. text="5s", iconName="rewind" or "forward"
+        let iconHtml = '';
+
+        // Reset position classes
+        seekFeedback.classList.remove('seek-left', 'seek-right');
+
+        if (iconName === 'rewind') {
+            iconHtml = '<ion-icon name="play-back"></ion-icon>';
+            seekFeedback.classList.add('seek-left');
+        }
+        if (iconName === 'forward') {
+            iconHtml = '<ion-icon name="play-forward"></ion-icon>';
+            seekFeedback.classList.add('seek-right');
+        }
+
+        seekFeedback.innerHTML = `${iconHtml}<span>${text}</span>`;
+        seekFeedback.classList.add('active');
+
+        clearTimeout(seekFeedbackTimeout);
+        seekFeedbackTimeout = setTimeout(() => {
+            seekFeedback.classList.remove('active');
+        }, 500); // 0.5 second
     }
 
     // --- Center Controls Event Handlers (YouTube-style) ---
@@ -100,6 +169,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastTapTime = 0;
     let lastTapX = 0;
     const DOUBLE_TAP_THRESHOLD = 300; // ms
+
+    // --- Device Detection for Double-Tap Behavior ---
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
     videoPlayer.addEventListener('click', (e) => {
         e.preventDefault();
@@ -115,21 +187,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (isDblTap) {
             // Double-tap detected
-            if (tapPosition < 0.4) {
-                // Left 40% - Rewind 5s
-                videoPlayer.currentTime = Math.max(videoPlayer.currentTime - 5, 0);
-                startInactivityTimer();
-                console.log('Double-tap: Rewind 5s');
-            } else if (tapPosition > 0.6) {
-                // Right 40% - Forward 5s
-                const targetFwd = Math.min(videoPlayer.currentTime + 5, getDuration());
-                videoPlayer.currentTime = targetFwd;
-                startInactivityTimer();
-                console.log('Double-tap: Forward 5s');
+            if (isMobile) {
+                // MOBILE: Seek on sides, Play/Pause in center
+                if (tapPosition < 0.4) {
+                    // Left 40% - Rewind 5s
+                    videoPlayer.currentTime = Math.max(videoPlayer.currentTime - 5, 0);
+                    startInactivityTimer();
+                    showSeekFeedback('5s', 'rewind');
+                } else if (tapPosition > 0.6) {
+                    // Right 40% - Forward 5s
+                    const targetFwd = Math.min(videoPlayer.currentTime + 5, getDuration());
+                    videoPlayer.currentTime = targetFwd;
+                    startInactivityTimer();
+                    showSeekFeedback('5s', 'forward');
+                } else {
+                    // Center 20% - Play/Pause
+                    togglePlay();
+                }
             } else {
-                // Center 20% - Play/Pause
-                togglePlay();
+                // PC: Double-click toggles Fullscreen
+                toggleFullScreen();
             }
+
             // Reset tap tracking
             lastTapTime = 0;
             lastTapX = 0;
@@ -138,10 +217,30 @@ document.addEventListener('DOMContentLoaded', () => {
             lastTapTime = currentTime;
             lastTapX = clickX;
 
-            // Single tap in center still toggles play (after delay to check for double-tap)
+            // Single tap logic (with delay to wait for potential double-tap)
             setTimeout(() => {
-                if (Date.now() - lastTapTime >= DOUBLE_TAP_THRESHOLD) {
-                    if (tapPosition >= 0.4 && tapPosition <= 0.6) {
+                if (lastTapTime !== 0 && Date.now() - lastTapTime >= DOUBLE_TAP_THRESHOLD) {
+                    // If tap wasn't followed by another tap (i.e. it stayed a single tap)
+
+                    if (isMobile) {
+                        // Mobile: Center tap toggles play. Side taps show controls? 
+                        // Existing logic: Center 20% toggles play. 
+                        // Let's allow clicking ANYWHERE to toggle Play/Show controls on Mobile?
+                        // User request implies focusing on "seek is only for mobile".
+                        // Standard mobile player: Tap anywhere toggles controls visibility.
+                        // But our togglePlay() handles PLAY/PAUSE.
+                        // Let's stick to existing: Center region toggles Play.
+                        if (tapPosition >= 0.4 && tapPosition <= 0.6) {
+                            togglePlay();
+                        } else {
+                            // Tapping sides on mobile usually just shows controls
+                            startInactivityTimer();
+                            videoContainer.classList.add('user-active');
+                        }
+                    } else {
+                        // PC: Click anywhere toggles play (standard Desktop behavior)
+                        // UNLESS we want to restrict to center?
+                        // YouTube PC: Click anywhere on video toggles play.
                         togglePlay();
                     }
                 }
@@ -158,22 +257,43 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     videoPlayer.addEventListener('play', () => {
-        playPauseBtn.innerHTML = '<ion-icon name="pause"></ion-icon>';
-        if (centerPlayPauseBtn) centerPlayPauseBtn.innerHTML = '<ion-icon name="pause"></ion-icon>';
+        playPauseBtn.innerHTML = PAUSE_ICON;
+        if (centerPlayPauseBtn) centerPlayPauseBtn.innerHTML = PAUSE_ICON;
+
+        // Remove paused state and start auto-hide timer
+        videoContainer.classList.remove('is-paused');
+        startInactivityTimer();
+
         logToServer('[Event] Video Play');
     });
 
+    // Buffering Spinner
+    const bufferingSpinner = document.getElementById('bufferingSpinner');
+
+    videoPlayer.addEventListener('waiting', () => {
+        logToServer('[Event] Video Waiting (Buffering)');
+        bufferingSpinner.classList.add('active');
+    });
+
+    videoPlayer.addEventListener('playing', () => {
+        bufferingSpinner.classList.remove('active');
+    });
+
+    videoPlayer.addEventListener('canplay', () => {
+        bufferingSpinner.classList.remove('active');
+    });
+
     videoPlayer.addEventListener('pause', () => {
-        playPauseBtn.innerHTML = '<ion-icon name="play"></ion-icon>';
-        if (centerPlayPauseBtn) centerPlayPauseBtn.innerHTML = '<ion-icon name="play"></ion-icon>';
+        bufferingSpinner.classList.remove('active');
+        playPauseBtn.innerHTML = PLAY_ICON;
+        if (centerPlayPauseBtn) centerPlayPauseBtn.innerHTML = PLAY_ICON;
         logToServer('[Event] Video Pause');
     });
 
     videoPlayer.addEventListener('error', (e) => {
+        bufferingSpinner.classList.remove('active'); // Hide on error
         logToServer(`[Error] Video Error: ${videoPlayer.error ? videoPlayer.error.message : 'Unknown'}`);
     });
-
-    videoPlayer.addEventListener('waiting', () => logToServer('[Event] Video Waiting (Buffering)'));
     videoPlayer.addEventListener('playing', () => logToServer('[Event] Video Playing'));
     videoPlayer.addEventListener('ended', () => logToServer('[Event] Video Ended'));
 
@@ -511,7 +631,7 @@ document.addEventListener('DOMContentLoaded', () => {
             videoPlayer.addEventListener('error', directErrorHandler);
 
             videoPlayer.play().catch(e => console.log("Autoplay blocked"));
-            placeholder.style.opacity = '0';
+            videoPlayer.play().catch(e => console.log("Autoplay blocked"));
             isStreamStarting = false;
             return; // DONE
         }
@@ -566,7 +686,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 showStatus('Playing (HLS)', 'success');
-                placeholder.style.opacity = '0';
+                showStatus('Playing (HLS)', 'success');
 
                 // --- SYNC AUDIO TRACKS ---
                 // We prefer the Metadata-populated list because it has codec details.
@@ -632,7 +752,6 @@ document.addEventListener('DOMContentLoaded', () => {
             videoPlayer.addEventListener('loadedmetadata', function () {
                 videoPlayer.play();
                 showStatus('Playing (Native)', 'success');
-                placeholder.style.opacity = '0';
                 startHeartbeat();
                 isStreamStarting = false;
             });
@@ -796,19 +915,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Reset timer on interaction - Bind to DOCUMENT to catch fullscreen events reliably
-    const activityEvents = ['mousemove', 'click', 'keydown', 'touchstart'];
-    activityEvents.forEach(evt => {
-        document.addEventListener(evt, () => {
-            // Only logic if we are interacting with the player or in fullscreen
-            // (Simple check: always active if page is loaded, as it's the main app)
-            if (videoPlayer.paused) {
-                videoContainer.classList.add('user-active');
-                clearTimeout(inactivityTimeout); // Don't hide if paused
-            } else {
-                startInactivityTimer();
-            }
-        });
+    // Reset timer on interaction within VIDEO CONTAINER only
+    // This prevents page-wide events from interfering
+    videoContainer.addEventListener('mousemove', () => {
+        if (videoPlayer.paused) {
+            videoContainer.classList.add('user-active');
+            clearTimeout(inactivityTimeout);
+        } else {
+            startInactivityTimer();
+        }
+    });
+
+    // Also restart timer on click anywhere in video container
+    videoContainer.addEventListener('click', () => {
+        if (!videoPlayer.paused) {
+            startInactivityTimer();
+        }
+    });
+
+    // Handle touch events for mobile
+    videoContainer.addEventListener('touchstart', () => {
+        if (videoPlayer.paused) {
+            videoContainer.classList.add('user-active');
+            clearTimeout(inactivityTimeout);
+        } else {
+            startInactivityTimer();
+        }
     });
 
     // Handle initial state
@@ -829,17 +961,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Trigger activity to show controls briefly
                 startInactivityTimer();
                 break;
-            case 'ArrowRight': // Forward 10s
+            case 'ArrowRight': // Forward 5s
                 e.preventDefault();
                 // Skip forward 5 seconds (was 10s)
                 const targetFwd = Math.min(videoPlayer.currentTime + 5, getDuration());
                 videoPlayer.currentTime = targetFwd;
                 startInactivityTimer();
+                showSeekFeedback('5s', 'forward');
                 break;
             case 'ArrowLeft': // Rewind 5s
                 e.preventDefault();
                 videoPlayer.currentTime = Math.max(videoPlayer.currentTime - 5, 0);
                 startInactivityTimer();
+                showSeekFeedback('5s', 'rewind');
                 break;
             case 'f': // Fullscreen
             case 'F':
