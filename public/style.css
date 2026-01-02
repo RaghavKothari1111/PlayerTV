@@ -11,6 +11,29 @@
     --text-muted: #b3b3b3;
 }
 
+/* ===== GLOBAL FOCUS RESET (All Devices) ===== */
+/* Remove focus outline on click/touch for ALL interactive elements */
+button:focus,
+select:focus,
+input:focus,
+a:focus,
+[tabindex]:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Restore focus ring ONLY for keyboard navigation (accessibility) */
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* ===== END GLOBAL FOCUS RESET ===== */
+
 /* ... existing styles ... */
 
 /* Seek Feedback Overlay */
@@ -344,6 +367,27 @@ video:focus,
     cursor: pointer;
     outline: none;
     transition: all 0.2s;
+}
+
+/* Remove focus ring on click/touch, keep for keyboard */
+.control-select:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.control-select:focus-visible {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.3);
+}
+
+.control-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.control-btn:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
 }
 
 .control-select:hover {
@@ -683,6 +727,10 @@ video::cue {
 
 .track-select:focus {
     outline: none;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.track-select:focus-visible {
     border-color: var(--primary);
     box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
 }
